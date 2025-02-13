@@ -50,4 +50,4 @@ jobs:
           test-command: "npm test"
 
       - name: Stop services
-        run: docker-compose -f docker-compose.yml down
+        run: docker compose down
