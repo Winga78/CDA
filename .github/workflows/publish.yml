@@ -23,7 +23,7 @@ jobs:
       - name: Wait for MySQL to be ready
         run: |
           echo "Waiting for MySQL to be ready..."
-          until docker exec $(docker ps -qf "name=mysql-db") mysqladmin ping -h 127.0.0.1 --silent; do
+          until docker exec $(docker ps -qf "name=mysql-service") mysqladmin ping -h 127.0.0.1 --silent; do
             sleep 5
           done
           echo "MySQL is ready!"
@@ -46,7 +46,7 @@ jobs:
         uses: adambirds/docker-compose-action@v1.5.0
         with:
           compose-file: "docker-compose.yml"
-          test-container: "cda-vote-service-1"
+          test-container: "vote-service"
           test-command: "npm test"
 
       - name: Stop services
