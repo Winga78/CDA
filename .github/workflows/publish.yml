@@ -1,0 +1,53 @@
+name: CI - Docker Compose Tests
+
+on: 
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  test-services:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start all services
+        uses: adambirds/docker-compose-action@v1.5.0
+        with:
+          compose-file: "docker-compose.yml"
+          up-flags: "--build -d"
+
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          until docker exec $(docker ps -qf "name=mysql-db") mysqladmin ping -h 127.0.0.1 --silent; do
+            sleep 5
+          done
+          echo "MySQL is ready!"
+
+      - name: Run tests for Auth service
+        uses: adambirds/docker-compose-action@v1.5.0
+        with:
+          compose-file: "docker-compose.yml"
+          test-container: "auth-service"
+          test-command: "npm test"
+
+      - name: Run tests for Chat service
+        uses: adambirds/docker-compose-action@v1.5.0
+        with:
+          compose-file: "docker-compose.yml"
+          test-container: "chat-service"
+          test-command: "npm test"
+
+      - name: Run tests for Vote service
+        uses: adambirds/docker-compose-action@v1.5.0
+        with:
+          compose-file: "docker-compose.yml"
+          test-container: "cda-vote-service-1"
+          test-command: "npm test"
+
+      - name: Stop services
+        run: docker-compose -f docker-compose.yml down

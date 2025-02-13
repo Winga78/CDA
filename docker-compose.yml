@@ -1,0 +1,73 @@
+networks:
+  cda-networks:
+    driver: bridge
+
+services:
+  auth-service:
+    build: ./services/auth-service
+    container_name: auth-service
+    ports: 
+      - 3000:3000
+    networks:
+      - cda-networks
+    restart: always
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  chat-service:
+    build: ./services/chat-service
+    container_name: chat-service
+    ports: 
+      - 3001:3001
+    networks:
+      - cda-networks
+    depends_on:
+       mysql:
+         condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  vote-service:
+    build: ./services/vote-service
+    ports: 
+      - 3003:3003
+    networks:
+      - cda-networks
+    depends_on:
+       mysql:
+         condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+       MYSQL_ALLOW_EMPTY_PASSWORD: yes
+       MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - cda-networks
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  mysql_data:
