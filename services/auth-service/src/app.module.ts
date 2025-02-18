@@ -20,6 +20,7 @@ import configuration, { CONFIG_DATABASE } from './config/database.config';
       },
       inject: [ConfigService],
     }),
+    //base de donnée en mode production ici
   ],
   controllers: [AppController],
   providers: [AppService],
