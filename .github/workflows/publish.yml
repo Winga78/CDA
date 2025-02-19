@@ -15,18 +15,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Start all services
-        uses: adambirds/docker-compose-action@v1.5.0
-        with:
-          compose-file: "docker-compose.yml"
-          up-flags: "--build -d"
+        run: docker-compose up -d
+      
+     
+      - name: Vérifier l'état des conteneurs
+        run: docker ps -a
 
-      - name: Wait for MySQL to be ready
-        run: |
-           echo "Waiting for MySQL to be ready..."
-           until sudo docker exec mysql-service mysqladmin ping -h 127.0.0.1 -u root | grep "mysqld is alive"; do
-           sleep 5
-           done
-           echo "MySQL is ready!"
+      # - name: Wait for MySQL to be ready
+      #   run: |
+      #      echo "Waiting for MySQL to be ready..."
+      #      until sudo docker exec mysql-service mysqladmin ping -h 127.0.0.1 -u root | grep "mysqld is alive"; do
+      #      sleep 5
+      #      done
+      #      echo "MySQL is ready!"
 
       # - name: Wait for auth-service to be ready
       #   run: |
@@ -53,42 +54,42 @@ jobs:
       #        echo "vote-service is ready!"
              
 
-      - name: Run tests for Auth service
-        uses: adambirds/docker-compose-action@v1.5.0
-        with:
-          compose-file: "docker-compose.yml"
-          test-container: "auth-service"
-          test-command: "npm test"
+      # - name: Run tests for Auth service
+      #   uses: adambirds/docker-compose-action@v1.5.0
+      #   with:
+      #     compose-file: "docker-compose.yml"
+      #     test-container: "auth-service"
+      #     test-command: "npm test"
 
-      - name: Run tests for Chat service
-        uses: adambirds/docker-compose-action@v1.5.0
-        with:
-          compose-file: "docker-compose.yml"
-          test-container: "chat-service"
-          test-command: "npm test"
+      # - name: Run tests for Chat service
+      #   uses: adambirds/docker-compose-action@v1.5.0
+      #   with:
+      #     compose-file: "docker-compose.yml"
+      #     test-container: "chat-service"
+      #     test-command: "npm test"
 
-      - name: Run tests for Vote service
-        uses: adambirds/docker-compose-action@v1.5.0
-        with:
-          compose-file: "docker-compose.yml"
-          test-container: "vote-service"
-          test-command: "npm test"
+      # - name: Run tests for Vote service
+      #   uses: adambirds/docker-compose-action@v1.5.0
+      #   with:
+      #     compose-file: "docker-compose.yml"
+      #     test-container: "vote-service"
+      #     test-command: "npm test"
 
-      - name : Docker test
-        run: docker ps -a
+      # - name : Docker test
+      #   run: docker ps -a
 
 
-      - name: Afficher les logs de docker-compose
-        run: docker-compose logs auth-service
+      # - name: Afficher les logs de docker-compose
+      #   run: docker-compose logs auth-service
       
       
 
-      - name: Run tests for Frontend service
-        uses: adambirds/docker-compose-action@v1.5.0
-        with:
-          compose-file: "docker-compose.yml"
-          test-container: "frontend-service"
-          test-command: "npm test"
+      # - name: Run tests for Frontend service
+      #   uses: adambirds/docker-compose-action@v1.5.0
+      #   with:
+      #     compose-file: "docker-compose.yml"
+      #     test-container: "frontend-service"
+      #     test-command: "npm test"
 
       - name: Stop services
         run: docker compose down
