@@ -27,7 +27,30 @@ jobs:
            sleep 5
            done
            echo "MySQL is ready!"
-
+           - name: Wait for auth-service to be ready
+           run: |
+             echo "Waiting for auth-service to be ready..."
+             until curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ | grep "200"; do
+               sleep 5
+             done
+             echo "auth-service is ready!"
+   
+      - name: Wait for chat-service to be ready
+        run: |
+             echo "Waiting for chat-service to be ready..."
+             until curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/ | grep "200"; do
+               sleep 5
+             done
+             echo "chat-service is ready!"
+   
+      - name: Wait for vote-service to be ready
+        run: |
+             echo "Waiting for vote-service to be ready..."
+             until curl -s -o /dev/null -w "%{http_code}" http://localhost:3003/ | grep "200"; do
+               sleep 5
+             done
+             echo "vote-service is ready!"
+             
 
       - name: Run tests for Auth service
         uses: adambirds/docker-compose-action@v1.5.0
