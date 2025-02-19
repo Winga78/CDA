@@ -16,10 +16,24 @@ jobs:
 
       - name: Start all services
         run: docker compose up -d
+
+
+      - name: Afficher les logs auth
+        run: docker-compose logs auth-service
+
+        
+      - name: Afficher les logs de vote
+        run: docker-compose logs vote-service
+        
+      - name: Afficher les logs de chat 
+        run: docker-compose logs chat-service
       
      
       - name: Vérifier l'état des conteneurs
         run: docker ps -a
+
+      
+
 
       # - name: Wait for MySQL to be ready
       #   run: |
