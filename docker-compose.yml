@@ -11,13 +11,6 @@ services:
        - 4000:4000
      networks:
        - cda-networks
-     depends_on:
-       auth-service:
-         condition: service_healthy
-       chat-service:
-         condition: service_healthy
-       vote-service:
-         condition: service_healthy
      volumes:
        - ./frontend:/app
        - /app/node_modules
