@@ -50,6 +50,17 @@ jobs:
           test-container: "vote-service"
           test-command: "npm test"
 
+      - name: Wait for Backend to be ready
+        run: |
+          echo "Waiting for Backend to be ready..."
+          until docker exec auth-service curl -f http://localhost:3000/ && \
+          docker exec chat-service curl -f http://localhost:3001/ && \
+          docker exec vote-service curl -f http://localhost:3003/; do
+          echo "Still waiting for backend services..."
+          sleep 5
+          done
+          echo "Backend is ready!"
+
       - name: Run tests for Frontend service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
