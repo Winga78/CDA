@@ -40,8 +40,11 @@ jobs:
         run: docker compose logs chat-service
       
      
-      - name: Vérifier l'état des conteneurs
-        run: docker ps -a
+      - name: Vérifier l’installation de vitest
+        run: |
+          cd frontend
+          npx vitest --version
+
 
       # - name: Wait for MySQL to be ready
       #   run: |
