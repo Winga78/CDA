@@ -13,16 +13,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: Créer le fichier .env
+        run: |
+          echo "VITE_VOTE_SERVICE_URL=${{ secrets.VITE_VOTE_SERVICE_URL }}" >> .env
+          echo "VITE_AUTH_SERVICE_URL=${{ secrets.VITE_AUTH_SERVICE_URL }}" >> .env
+          echo "VITE_CHAT_SERVICE_URL=${{ secrets.VITE_CHAT_SERVICE_URL }}" >> .env
+          echo "DB_TYPE=${{ secrets.DB_TYPE }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
 
       - name: Start all services
         run: docker compose up -d
-        env: 
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_TYPE: ${{ secrets.DB_TYPE }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_USER: ${{ secrets.DB_USER }}
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
 
       - name: Afficher les logs auth
         run: docker compose logs auth-service
