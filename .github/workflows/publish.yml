@@ -16,6 +16,13 @@ jobs:
 
       - name: Start all services
         run: docker compose up -d
+        env: 
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_TYPE: ${{ secrets.DB_TYPE }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          DB_USER: ${{ secrets.DB_USER }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
 
       - name: Afficher les logs auth
         run: docker compose logs auth-service
