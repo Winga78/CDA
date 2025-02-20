@@ -30,7 +30,7 @@ services:
     build: ./services/auth-service
     container_name: auth-service
     environment:
-      MONGODB_URI : ${{MONGODB_URI}}
+      MONGODB_URI : ${MONGODB_URI}
     ports: 
       - 3000:3000
     networks:
@@ -48,7 +48,6 @@ services:
     build: ./services/chat-service
     container_name: chat-service
     environment:
-      MONGODB_URI: ${MONGODB_URI}
       DB_PORT: ${DB_PORT}
       DB_TYPE: ${DB_TYPE}
       DB_HOST: ${DB_TYPE}
@@ -74,7 +73,6 @@ services:
     build: ./services/vote-service
     container_name: vote-service
     environment:
-      MONGODB_URI: ${MONGODB_URI}
       DB_PORT: ${DB_PORT}
       DB_TYPE: ${DB_TYPE}
       DB_HOST: ${DB_HOST}
