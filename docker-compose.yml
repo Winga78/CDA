@@ -13,7 +13,11 @@ services:
        - cda-networks
      volumes:
        - ./frontend:/app
-       - /app/node_modules
+       - ./frontend/node_modules:/app/node_modules
+     environment: 
+          VITE_VOTE_SERVICE_URL: ${VITE_VOTE_SERVICE_URL}
+          VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+          VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
      healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4000/ || exit 1"]
       interval: 40s
@@ -25,6 +29,8 @@ services:
   auth-service:
     build: ./services/auth-service
     container_name: auth-service
+    environment:
+      MONGODB_URI : ${{MONGODB_URI}}
     ports: 
       - 3000:3000
     networks:
@@ -41,6 +47,13 @@ services:
   chat-service:
     build: ./services/chat-service
     container_name: chat-service
+    environment:
+      MONGODB_URI: ${MONGODB_URI}
+      DB_PORT: ${DB_PORT}
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_TYPE}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
     ports: 
       - 3001:3001
     networks:
@@ -60,6 +73,13 @@ services:
   vote-service:
     build: ./services/vote-service
     container_name: vote-service
+    environment:
+      MONGODB_URI: ${MONGODB_URI}
+      DB_PORT: ${DB_PORT}
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
     ports: 
       - 3003:3003
     networks:
