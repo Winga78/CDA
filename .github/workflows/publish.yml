@@ -73,9 +73,5 @@ jobs:
           test-container: "frontend-service"
           test-command: "npm test"
 
-
-      - name: Check services
-        run: docker ps
-        
       - name: Stop services
         run: docker compose down
