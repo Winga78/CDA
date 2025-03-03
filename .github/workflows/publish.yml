@@ -43,6 +43,7 @@ jobs:
       - name: Vérifier l’installation de vitest
         run: |
           cd frontend
+          npm install
           npx vitest --version
 
 
