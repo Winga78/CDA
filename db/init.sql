@@ -8,7 +8,7 @@ CREATE TABLE User (
     birthday DATE NOT NULL,
     avatar VARCHAR(255),
     role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
-    createdAt DATE NOT NULL
+    createdAt DATETIME NOT NULL
 );
 
 -- Table Collection
@@ -16,8 +16,8 @@ CREATE TABLE Collection (
     coll_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
-    createdAt DATE NOT NULL,
-    modifiedAt DATE NOT NULL,
+    createdAt DATETIME NOT NULL,
+    modifiedAt DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
 );
 
@@ -28,8 +28,8 @@ CREATE TABLE Project (
     coll_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    createdAt DATE NOT NULL,
-    modifiedAt DATE NOT NULL,
+    createdAt DATETIME NOT NULL,
+    modifiedAt DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
     FOREIGN KEY (coll_id) REFERENCES Collection(coll_id) ON DELETE CASCADE
 );
@@ -41,8 +41,8 @@ CREATE TABLE Post (
     project_id INT NOT NULL,
     titre VARCHAR(255) NOT NULL,
     description TEXT,
-    createdAt DATE NOT NULL,
-    modifiedAt TDATE NOT NULL,
+    createdAt DATETIME NOT NULL,
+    modifiedAt DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
     FOREIGN KEY (project_id) REFERENCES Project(project_id) ON DELETE CASCADE
 );
@@ -60,9 +60,10 @@ CREATE TABLE Project_has_participated (
 CREATE TABLE Post_has_voted (
     us_post_vote_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    post_id INT NOT NULL,
+    po_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (post_id) REFERENCES Post(post_id) ON DELETE CASCADE
+    FOREIGN KEY (po_id) REFERENCES Post(post_id) ON DELETE CASCADE,
+    UNIQUE (user_id, post_id)
 );
 
 -- Table Comment
@@ -71,8 +72,8 @@ CREATE TABLE Comment (
     user_id INT NOT NULL,
     po_id INT NOT NULL,
     contenu TEXT NOT NULL,
-    createdAt DATE NOT NULL,
-    modifiedAt DATE NOT NULL,
+    createdAt DATETIME NOT NULL,
+    modifiedAt DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
     FOREIGN KEY (po_id) REFERENCES Post(post_id) ON DELETE CASCADE
 );
@@ -83,7 +84,8 @@ CREATE TABLE Com_has_voted (
     user_id INT NOT NULL,
     com_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (com_id) REFERENCES Comment(com_id) ON DELETE CASCADE
+    FOREIGN KEY (com_id) REFERENCES Comment(com_id) ON DELETE CASCADE,
+    UNIQUE (user_id, com_id)
 );
 
 -- Table Media
@@ -95,8 +97,8 @@ CREATE TABLE Media (
     type VARCHAR(50) NOT NULL,
     path VARCHAR(255) NOT NULL,
     size INT NOT NULL,
-    createdAt DATE NOT NULL,
-    modifiedAt DATE NOT NULL,
+    createdAt DATETIME NOT NULL,
+    modifiedAt DATETIME NOT NULL,
     FOREIGN KEY (po_id) REFERENCES Post(post_id) ON DELETE SET NULL,
     FOREIGN KEY (com_id) REFERENCES Comment(com_id) ON DELETE SET NULL
 );
