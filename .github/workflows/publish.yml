@@ -34,7 +34,7 @@ jobs:
 
         
       - name: Afficher les logs de vote
-        run: docker compose logs vote-service
+        run: docker compose logs project-service
         
       - name: Afficher les logs de chat 
         run: docker compose logs chat-service
