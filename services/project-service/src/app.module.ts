@@ -2,13 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CommentsModule } from './comments/comments.module';
-import { MediasModule } from './medias/medias.module';
-import { PostsModule } from './posts/posts.module';
+import { CollectionsModule } from './collections/collections.module';
+import { ProjectsModule } from './projects/projects.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { CONFIG_DATABASE } from './config/database.config';
-import { ProfileService } from './profile/profile.service';
 
 @Module({
   imports: [
@@ -39,12 +37,12 @@ import { ProfileService } from './profile/profile.service';
         synchronize: true,
       })
     }),
-     CommentsModule,
-     MediasModule,
-     PostsModule
+    ProjectsModule,
+    CollectionsModule,
     //base de donnée en mode production ici
   ],
   controllers: [AppController],
-  providers: [AppService, ProfileService],
+  providers: [AppService],
 })
 export class AppModule {}
+

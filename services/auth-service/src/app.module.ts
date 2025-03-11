@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { CONFIG_DATABASE } from './config/database.config';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,6 +23,8 @@ import configuration, { CONFIG_DATABASE } from './config/database.config';
       },
       inject: [ConfigService],
     }),
+    UsersModule,
+    AuthModule,
     //base de donnée en mode production ici
   ],
   controllers: [AppController],

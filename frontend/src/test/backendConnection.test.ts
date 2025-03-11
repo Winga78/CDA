@@ -9,7 +9,7 @@ describe("Auth-service Connection", () => {
 
 describe("Chat-service Connection", () => {
     it("doit répondre avec un statut 200", async () => {
-      const response = await fetch(process.env.VITE_VOTE_SERVICE_URL||"http://localhost:3001/");
+      const response = await fetch(process.env.VITE_VOTE_SERVICE_URL||"http://chat-service:3001/");
       expect(response.status).toBe(200);
     });
 });
@@ -17,7 +17,7 @@ describe("Chat-service Connection", () => {
 
 describe("Vote-service Connection", () => {
     it("doit répondre avec un statut 200", async () => {
-      const response = await fetch(process.env.VITE_CHAT_SERVICE_URL||"http://vote-service:3003");
+      const response = await fetch(process.env.VITE_PROJECT_SERVICE_URL||"http://project-service:3002");
       expect(response.status).toBe(200);
     });
 });

@@ -18,7 +18,7 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/api/vote': {
-        target: process.env.VITE_VOTE_SERVICE_URL || 'http://vote-service:3003',
+        target: process.env.VITE_PROJECT_SERVICE_URL || 'http://project-service:3002',
         changeOrigin: true,
       },
       '/api/chat': {
