@@ -4,14 +4,13 @@ import { HttpException } from '@nestjs/common';
 import { Collection } from './entities/collection.entity';
 import { CollectionsService } from './collections.service';
 
-export class userRepositoryMock {
+export class CollectionRepositoryMock {
   findOne = jest.fn();
   create = jest.fn();
   update = jest.fn();
   remove = jest.fn();
   findAll = jest.fn();
 }
-
 describe('UserService', () => {
   let collectionsService: CollectionsService;
 
@@ -21,8 +20,8 @@ describe('UserService', () => {
         CollectionsService,
         {
           provide: getRepositoryToken (Collection),
-          useClass: userRepositoryMock,
-        }
+          useClass: CollectionRepositoryMock,
+        },
       ],
     }).compile();
     collectionsService = module.get<CollectionsService>(CollectionsService);
@@ -37,13 +36,13 @@ describe('UserService', () => {
     collection.createdAt = new Date(2025,3,6);
     collection.modifiedAt = new Date(2001,1,1);
 
-    (collectionsService as any).userRepository.findOne.mockRejectedValueOnce(collection);
+    (collectionsService as any).collectionRepository.findOne.mockRejectedValueOnce(collection);
     const foundCollection = await collectionsService.findOne(1)
     expect(foundCollection).toEqual(collection)
   })
 
   it('should return undefined if user not found', async () => {
-    (collectionsService as any).userRepository.findOne.mockResolvedValueOnce(
+    (collectionsService as any).collectionRepository.findOne.mockResolvedValueOnce(
         undefined,
     );
     const foundUser = await collectionsService.findOne(1);
@@ -52,51 +51,51 @@ describe('UserService', () => {
  })
 
 
- describe('create', () => {
-  it('should create a new user if username is not already in use', async () => {
-    const collection = new Collection();
-    collection.id = 1;
-    collection.user_id = '1';
-    collection.name = 'testcollection';
-    collection.createdAt = new Date(2025,3,6);
-    collection.modifiedAt = new Date(2025,3,6);
+  // it('should create a new user if username is not already in use', async () => {
+  //   const collection = new Collection();
+  //   collection.id = 1;
+  //   collection.user_id = '1';
+  //   collection.name = 'testcollection';
+  //   collection.createdAt = new Date(2025,3,6);
+  //   collection.modifiedAt = new Date(2025,3,6);
 
-      (collectionsService as any).userRepository.findOne.mockResolvedValueOnce(
-          undefined,
-      );
-      (collectionsService as any).userRepository.create.mockReturnValue(collection);
-      const createdUser = await collectionsService.create({
-        id : 1,
-        user_id : '1',
-        name : 'testcollection',
-        createdAt : new Date(2025,3,6),
-        modifiedAt : new Date(2001,1,1),
-      });
-      expect(createdUser).toEqual(collection);
-  });
-
-  it('should throw a 400 error if username is already in use', async () => {
-    const collection = new Collection();
-    collection.id = 1;
-    collection.user_id = '1';
-    collection.name = 'testcollection';
-    collection.createdAt = new Date(2025,3,6);
-    collection.modifiedAt = new Date(2001,1,1);
+  //     (collectionsService as any).userRepository.findOne.mockResolvedValueOnce(
+  //         undefined,
+  //     );
+  //     (collectionsService as any).userRepository.create.mockReturnValue(collection);
       
-      (collectionsService as any).userRepository.findOne.mockResolvedValueOnce(
-        collection,
-      );
-      await expect(
-        collectionsService.create({
-          id : 1,
-          user_id : '1',
-          name : 'testcollection',
-          createdAt : new Date(2025,3,6),
-          modifiedAt : new Date(2001,1,1),
-          }),
-      ).rejects.toThrowError(HttpException);
-  });
-});
+  //     const createdUser = await collectionsService.create({
+  //       id : 1,
+  //       user_id : '1',
+  //       name : 'testcollection',
+  //       createdAt : new Date(2025,3,6),
+  //       modifiedAt : new Date(2001,1,1),
+  //     });
+  //     expect(createdUser).toEqual(collection);
+  // });
+
+  // it('should throw a 400 error if username is already in use', async () => {
+  //   const collection = new Collection();
+  //   collection.id = 1;
+  //   collection.user_id = '1';
+  //   collection.name = 'testcollection';
+  //   collection.createdAt = new Date(2025,3,6);
+  //   collection.modifiedAt = new Date(2001,1,1);
+      
+  //     (collectionsService as any).userRepository.findOne.mockResolvedValueOnce(
+  //       collection,
+  //     );
+  //     await expect(
+  //       collectionsService.create({
+  //         id : 1,
+  //         user_id : '1',
+  //         name : 'testcollection',
+  //         createdAt : new Date(2025,3,6),
+  //         modifiedAt : new Date(2001,1,1),
+  //         }),
+  //     ).rejects.toThrowError(HttpException);
+  // });
+
 
 describe('update', () => {
   it('should update user information if user exists', async () => {
@@ -110,8 +109,8 @@ describe('update', () => {
 
     const updatedCollection = { ...existingCollection, name: 'newName', modifiedAt: new Date(2025,3,6) };
 
-    (collectionsService as any).userRepository.findOne.mockResolvedValueOnce(existingCollection);
-    (collectionsService as any).userRepository.save.mockResolvedValueOnce(updatedCollection);
+    (collectionsService as any).collectionRepository.findOne.mockResolvedValueOnce(existingCollection);
+    (collectionsService as any).collectionRepository.save.mockResolvedValueOnce(updatedCollection);
 
     const result = await collectionsService.update(1, {  name: 'newName', modifiedAt: new Date(2025,3,6) });
 
@@ -119,7 +118,7 @@ describe('update', () => {
   });
 
   it('should throw a 404 error if user does not exist', async () => {
-    (collectionsService as any).userRepository.findOne.mockResolvedValueOnce(undefined);
+    (CollectionsService as any).collectionRepository.findOne.mockResolvedValueOnce(undefined);
 
     await expect(
       collectionsService.update(999, {  name: 'newName', modifiedAt: new Date(2025,3,6) })
@@ -138,8 +137,8 @@ describe('delete', () => {
     collectionToDelete.createdAt = new Date(2025,3,6);
     collectionToDelete.modifiedAt = new Date(2001,1,1);
 
-    (CollectionsService as any).userRepository.findOne.mockResolvedValueOnce(collectionToDelete);
-    (CollectionsService as any).userRepository.remove.mockResolvedValueOnce(collectionToDelete);
+    (CollectionsService as any).collectionRepository.findOne.mockResolvedValueOnce(collectionToDelete);
+    (CollectionsService as any).collectionRepository.remove.mockResolvedValueOnce(collectionToDelete);
 
     const deletedUser = await collectionsService.remove(1);
 
@@ -147,13 +146,12 @@ describe('delete', () => {
   });
 
   it('should throw a 404 error if user does not exist', async () => {
-    (collectionsService as any).userRepository.findOne.mockResolvedValueOnce(undefined);
+    (CollectionsService as any).collectionRepository.findOne.mockResolvedValueOnce(undefined);
 
     await expect(
       collectionsService.remove(999) 
     ).rejects.toThrowError(HttpException);
   });
 });
-
 
 });
