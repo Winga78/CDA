@@ -10,6 +10,5 @@ import { ProfileService } from 'src/profile/profile.service';
   imports: [TypeOrmModule.forFeature([Project]), CollectionsModule, HttpModule, ProfileService],
   controllers: [ProjectsController],
   providers: [ProjectsService],
- 
 })
 export class ProjectsModule {}

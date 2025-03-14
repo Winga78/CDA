@@ -4,20 +4,20 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository, UpdateResult } from 'typeorm';
-import { ProfileService } from 'src/profile/profile.service';
-
+import { HttpService } from '@nestjs/axios';
+import { userProfile } from '../profils.utils';
 @Injectable()
 export class PostsService {
 
   constructor(
     @InjectRepository(Post)
     private readonly postRepo: Repository<Post>,
-       private readonly profileService : ProfileService
+       private readonly httpService: HttpService
   ) { }
 
   async create(authHeader : string, createPostDto: CreatePostDto) : Promise<Post> {
 
-        const user = await this.profileService.userProfile(authHeader);
+        const user = await userProfile(this.httpService,authHeader);
     
         const createPost : CreatePostDto = {
           user_id : user.id,

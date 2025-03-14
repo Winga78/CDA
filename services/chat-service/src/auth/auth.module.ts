@@ -1,15 +1,18 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
+import { PostsModule } from '../posts/posts.module';
 import { jwtConstants } from './constants';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
+import { MediasModule } from '../medias/medias.module';
+import { CommentsModule } from '../comments/comments.module';
 
 @Module({
   imports: [
-    UsersModule, 
+    PostsModule, 
+    CommentsModule,
+    MediasModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
@@ -18,12 +21,10 @@ import { AuthGuard } from './auth.guard';
   ],
   controllers: [AuthController],
   providers: [
-    AuthService, 
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
   ],
-  exports: [AuthService],
 })
 export class AuthModule {}

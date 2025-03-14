@@ -22,13 +22,18 @@ export class CommentsController {
     return this.commentsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentsService.update(+id, updateCommentDto);
+  @Patch()
+  update(@Body() updateCommentDto: UpdateCommentDto) {
+    return this.commentsService.update(updateCommentDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.commentsService.remove(+id);
+  }
+
+  @Get('post')
+  findByIdPost(@Body() post : any) {
+    return this.commentsService.findOneByPostId(post);
   }
 }

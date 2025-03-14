@@ -11,7 +11,7 @@ export class CreateProjectDto {
     readonly user_id: string;  
   
     @IsInt()
-    readonly collection: DeepPartial<Collection>; 
+    readonly collection?: DeepPartial<Collection>; 
   
     @IsArray()
     @IsString({ each: true })

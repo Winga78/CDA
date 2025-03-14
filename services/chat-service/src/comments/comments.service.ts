@@ -1,25 +1,26 @@
-import { Injectable , NotFoundException , ConflictException} from '@nestjs/common';
+import { Injectable , NotFoundException , ConflictException , BadRequestException} from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository , UpdateResult} from 'typeorm';
 import { Comment } from './entities/comment.entity';
 import { Post } from 'src/posts/entities/post.entity';
-import { ProfileService } from 'src/profile/profile.service';
+import { lastValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { userProfile } from '../profils.utils';
 
 @Injectable()
 export class CommentsService {
-
     constructor(
       @InjectRepository(Comment)
       private readonly commentRepo: Repository<Comment>,
-      private readonly profileService : ProfileService
+      private readonly httpService: HttpService
     ) { }
 
   async create(authHeader : string, createCommentDto: CreateCommentDto) : Promise<Comment>{
     // Récupérer le socket envoyer par le frontend
  
-    const user = await this.profileService.userProfile(authHeader);
+    const user = await userProfile(this.httpService, authHeader);
 
     const createComment : CreateCommentDto = {
       commentator : user.id,
@@ -48,12 +49,17 @@ export class CommentsService {
     return comment;
   }
 
-  async update(id: number, updateCommentDto: UpdateCommentDto) : Promise<UpdateResult> {
-    const comment= await this.commentRepo.update(id, updateCommentDto);
-    if (!comment)
-      throw new NotFoundException('Impossible de mettre à jour, commentaire non trouvé');
+  async update(updateCommentDto: UpdateCommentDto): Promise<UpdateResult> {
+    if (!updateCommentDto.id) {
+      throw new BadRequestException("L'ID du commentaire est requis");
+    }
 
-    return comment
+    const existingComment = await this.commentRepo.findOneBy({ id: updateCommentDto.id });
+    if (!existingComment) {
+      throw new NotFoundException('Impossible de mettre à jour, commentaire non trouvé');
+    }
+
+    return await this.commentRepo.update(updateCommentDto.id, updateCommentDto);
   }
 
   async remove(id: number) : Promise<{message : string}> {
@@ -63,9 +69,14 @@ export class CommentsService {
    return {message : 'Commentaire supprimé avec succès'}
   }
 
-  async findOneByPostId(post_id: Post) : Promise<Comment | null >{
-    return await this.commentRepo.findOneBy({po_id : post_id});
+  async findOneByPostId(post_id: Post): Promise<Comment> {
+    const comment = await this.commentRepo.findOneBy({ po_id: post_id });
+
+    if (!comment) {
+      throw new NotFoundException("Aucun commentaire trouvé pour ce post");
+    }
+
+    return comment;
   }
 
-  //chercher des commentaires par id de Post 
 }

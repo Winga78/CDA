@@ -1,6 +1,6 @@
 
 import { Entity, Column, ManyToOne ,PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, JoinColumn  } from 'typeorm';
-import { Post } from 'src/posts/entities/post.entity';
+import { Post } from '../../posts/entities/post.entity';
 
 @Entity()
 export class Comment {

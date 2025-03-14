@@ -14,7 +14,7 @@ export class AuthService {
     const user = await this.usersService.findOneByEmail(email);
     const isMatch = await bcrypt.compare(pass, user?.password);
     if (!isMatch) {
-      throw new UnauthorizedException('Mot de passe incorrect');
+      throw new UnauthorizedException('Email ou mot de passe incorrect');
     }
     const payload = { id: user['_id'] , email: user.email , role: user.role};
     return {
