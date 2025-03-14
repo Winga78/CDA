@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CommentsModule } from './comments/comments.module';
-import { MediasModule } from './medias/medias.module';
 import { PostsModule } from './posts/posts.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -38,8 +36,6 @@ import configuration, { CONFIG_DATABASE } from './config/database.config';
         synchronize: true,
       })
     }),
-     CommentsModule,
-     MediasModule,
      PostsModule, 
     //base de donnée en mode production ici
   ],

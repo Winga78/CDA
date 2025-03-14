@@ -1,6 +1,5 @@
 
-import { Entity, Column, ManyToOne ,PrimaryGeneratedColumn, JoinColumn,ManyToMany , JoinTable } from 'typeorm';
-import { Collection } from '../../collections/entities/collection.entity';
+import { Entity, Column ,PrimaryGeneratedColumn} from 'typeorm';
 
 @Entity()
 export class Project {
@@ -10,11 +9,12 @@ export class Project {
   @Column({ nullable: false })
   user_id: string;
 
-  @ManyToOne(() => Collection)
-  collection: Collection;
-
-  @JoinTable({ name: "Project_has_participated" })
-  participants: string[];
+  @Column()
+  participants: [
+    {
+      email : string
+    }
+  ];
 
   @Column()
   name: string;

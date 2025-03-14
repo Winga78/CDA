@@ -1,6 +1,4 @@
 import { IsString, IsInt, IsOptional, IsArray, IsDateString } from 'class-validator';
-import { DeepPartial } from 'typeorm/common/DeepPartial';
-import { Collection } from '../../collections/entities/collection.entity';
 
 export class CreateProjectDto {
 
@@ -9,9 +7,6 @@ export class CreateProjectDto {
 
     @IsString()
     readonly user_id: string;  
-  
-    @IsInt()
-    readonly collection?: DeepPartial<Collection>; 
   
     @IsArray()
     @IsString({ each: true })

@@ -10,8 +10,18 @@ export class Post {
 
   project_id: number;
 
-  @JoinTable({ name: "Post_has_voted" })
-  participants: string[];
+  @Column()
+  participants_has_voted: [{
+    user_id : string,
+    firtname : string,
+    lastname : string,
+    email : string,
+    password : string,
+    birthday : Date;
+    avatar : string,
+    role : string;
+    createdAt : Date
+  }];
 
   @Column()
   titre: string;
