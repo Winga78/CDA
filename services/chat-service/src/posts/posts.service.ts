@@ -22,7 +22,6 @@ export class PostsService {
         const createPost : CreatePostDto = {
           user_id : user.id,
           project_id : createPostDto.project_id,
-          participants : createPostDto.participants,
           titre : createPostDto.titre,
           description : createPostDto.description,
           createdAt : new Date(),
@@ -43,6 +42,7 @@ export class PostsService {
     return post
   }
 
+  //Update des participants qui ont voté pour le poste
   async update(id: number, updatePostDto: UpdatePostDto) : Promise<UpdateResult> {
     const updatePost = await this.postRepo.update(id, updatePostDto);
     if (!updatePost)

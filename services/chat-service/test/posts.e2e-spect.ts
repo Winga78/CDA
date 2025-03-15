@@ -98,45 +98,50 @@ describe('Comments Endpoints (e2e)', () => {
 
   });
 
-  // describe('PATCH /posts/', () => {
-  //        let post;
+  describe('PATCH /posts/', () => {
+         let post;
+         let users_has_voted;
 
-  //     beforeAll(async () => {
-  //       post = await request(app.getHttpServer())
-  //       .post('/posts')
-  //       .set('Authorization', `Bearer ${token}`)
-  //       .send(createPost);
-  //     })
+      beforeAll(async () => {
+        post = await request(app.getHttpServer())
+        .post('/posts')
+        .set('Authorization', `Bearer ${token}`)
+        .send(createPost);
+        
+        for (let i = 0; i < 5; i++) {
+          users_has_voted.push(createUser)
+        }
+      })
 
-  //   it('should update a post', async () => {
-  //     const res = await request(app.getHttpServer())
-  //       .patch(`/posts/`)
-  //       .set('Authorization', `Bearer ${token}`)
-  //       .send({ ...post, description: 'Updated description'});
-  //     expect(res.statusCode).toBe(200);
-  //   });
+    it('should update a post', async () => {
+      const res = await request(app.getHttpServer())
+        .patch(`/posts/`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ...post, participants: users_has_voted})
+      expect(res.statusCode).toBe(200);
+    });
 
-  //   it('should not update post without authentication', async () => {
-  //     const res = await request(app.getHttpServer()).patch('/posts').send(createPost);
-  //     expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-  //     expect(res.body).toHaveProperty('message', 'Token manquant');
-  //   });
+    it('should not update post without authentication', async () => {
+      const res = await request(app.getHttpServer()).patch('/posts').send(createPost);
+      expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+      expect(res.body).toHaveProperty('message', 'Token manquant');
+    });
 
-  //   it('should not update post with invalid token', async () => {
-  //     const res = await request(app.getHttpServer()).patch('/posts').set('Authorization', 'Bearer invalid-token');
+    it('should not update post with invalid token', async () => {
+      const res = await request(app.getHttpServer()).patch('/posts').set('Authorization', 'Bearer invalid-token');
 
-  //     expect(res.statusCode).toBe(401);
-  //     expect(res.body).toHaveProperty('message', 'Token invalide');
-  //   });
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty('message', 'Token invalide');
+    });
 
-  //   it('should not update post with malformed token', async () => {
-  //     const res = await request(app.getHttpServer()).patch('/posts').set('Authorization', 'InvalidTokenFormat');
+    it('should not update post with malformed token', async () => {
+      const res = await request(app.getHttpServer()).patch('/posts').set('Authorization', 'InvalidTokenFormat');
 
-  //     expect(res.statusCode).toBe(401);
-  //     expect(res.body).toHaveProperty('message', 'Token manquant');
-  //   });
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty('message', 'Token manquant');
+    });
 
-  // });
+  });
 
   // describe('GET /posts', () => {
   //   it('should return all posts', async () => {

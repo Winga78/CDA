@@ -29,8 +29,6 @@ export class ProjectsService {
 
     const createProject : CreateProjectDto = {
       user_id : user.id,
-      collection : createProjectDto.collection,
-      participants : createProjectDto.participants,
       name : createProjectDto.name,
       description : createProjectDto.description,
       createdAt : new Date(),
@@ -53,6 +51,7 @@ export class ProjectsService {
     return project;
   }
 
+  // mettre à jour la liste des participants au projet, le nom et la description
   async update(id: number, updateProjectDto: UpdateProjectDto): Promise<Project | null> {
     const project = await this.projectsRepository.findOneBy({ id });
 
@@ -73,7 +72,6 @@ export class ProjectsService {
       throw new NotFoundException('Impossible de mettre à jour, projet non trouvé');
     }
     const updateProject : UpdateProjectDto = {
-      collection : updateProjectDto.collection,
       participants : updateProjectDto.participants,
       name : updateProjectDto.name,
       description : updateProjectDto.description,

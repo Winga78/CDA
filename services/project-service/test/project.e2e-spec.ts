@@ -10,6 +10,7 @@ let dataSource: DataSource;
 let app: INestApplication;
 let token:any;
 let userConnected:any;
+
 const createUser = {
   firstname: faker.person.firstName(),
   lastname: faker.person.lastName(),
@@ -66,7 +67,6 @@ beforeEach(async () => {
 describe('Comments Endpoints (e2e)', () => {
    const createProject : CreateProjectDto = {
     user_id: userConnected?.id,
-    participants: [],
     name: faker.lorem.words(3),
     description: faker.lorem.sentence(),
     createdAt: new Date(),
@@ -97,12 +97,17 @@ describe('Comments Endpoints (e2e)', () => {
 
     describe('PATCH /projects/', () => {
          let project;
+         let users_participants;
 
       beforeAll(async () => {
         project = await request(app.getHttpServer())
         .post('/projects')
         .set('Authorization', `Bearer ${token}`)
         .send(createProject);
+
+        for (let i = 0; i < 5; i++) {
+          users_participants.push({email : faker.internet.email()})
+        }
       })
 
     it('should update a project', async () => {
