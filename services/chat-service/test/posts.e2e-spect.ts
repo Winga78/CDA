@@ -46,7 +46,6 @@ describe('Comments Endpoints (e2e)', () => {
    const createPost : CreatePostDto = {
     user_id: userConnected?.id,
     project_id: faker.number.int({ min: 1, max: 100 }),
-    participants: [],
     titre: faker.lorem.words(3),
     description: faker.lorem.sentence(),
     createdAt: new Date(),

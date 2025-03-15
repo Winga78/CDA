@@ -12,7 +12,7 @@ export class CreatePostDto {
 
   @IsArray()
   @IsString({ each: true })
-  readonly participants_has_voted: [{
+  readonly participants_has_voted?: [{
     user_id : string,
     firtname : string,
     lastname : string,
