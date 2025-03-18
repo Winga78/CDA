@@ -5,8 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { HttpService } from '@nestjs/axios';
-import {lastValueFrom} from 'rxjs';
-import { ProfileService } from 'src/profile/profile.service';
 
 @Injectable()
 export class ProjectsService {
@@ -14,19 +12,16 @@ export class ProjectsService {
     @InjectRepository(Project)
     private projectsRepository: Repository<Project>,
     private readonly httpService: HttpService,
-    private readonly profileService : ProfileService
+
   ) {}
 
-  async create(authHeader : string ,createProjectDto: CreateProjectDto): Promise<Project> {
+  async create(user:any ,createProjectDto: CreateProjectDto): Promise<Project> {
     
     const existingProject = await this.projectsRepository.findOneBy({ name: createProjectDto.name });
     
     if (existingProject) {
       throw new ConflictException('Un projet avec ce nom existe déjà');
     }
-   
-    const user = await this.profileService.userProfile(authHeader);
-
     const createProject : CreateProjectDto = {
       user_id : user.id,
       name : createProjectDto.name,
@@ -45,7 +40,7 @@ export class ProjectsService {
     const project = await this.projectsRepository.findOneBy({ id });
 
     if (!project) {
-      throw new NotFoundException('Projet non trouvé');
+      throw new NotFoundException('Aucun project trouvé pour cette id');
     }
 
     return project;
@@ -59,27 +54,15 @@ export class ProjectsService {
       throw new NotFoundException('Impossible de mettre à jour, projet non trouvé');
     }
 
-    await this.projectsRepository.update(id, updateProjectDto);
-
-    return this.projectsRepository.findOneBy({ id });
-  }
-
-
-  async updateDrop(updateProjectDto: UpdateProjectDto): Promise<Project | null> {
-    const project = await this.projectsRepository.findOneBy({ id : updateProjectDto.id });
-
-    if (!project) {
-      throw new NotFoundException('Impossible de mettre à jour, projet non trouvé');
-    }
     const updateProject : UpdateProjectDto = {
       participants : updateProjectDto.participants,
       name : updateProjectDto.name,
       description : updateProjectDto.description,
       modifiedAt : new Date()
     }
-    await this.projectsRepository.update({id : updateProjectDto.id}, updateProject);
+    await this.projectsRepository.update(id, updateProject);
 
-    return this.projectsRepository.findOneBy({ id : updateProjectDto.id });
+    return this.projectsRepository.findOneBy({ id });
   }
 
   async remove(id: number): Promise<{ message: string }> {
@@ -94,8 +77,8 @@ export class ProjectsService {
     return { message: 'Projet supprimé avec succès' };
   }
 
-  async findAllByUserId(authHeader : string): Promise<Project[]>{
-    const user = await this.profileService.userProfile(authHeader);
+  async findAllByUserId(user:any): Promise<Project[]>{
+  
     return await this.projectsRepository.findBy({user_id : user.id});
   }
   

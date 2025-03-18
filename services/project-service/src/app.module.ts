@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { CONFIG_DATABASE } from './config/database.config';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import configuration, { CONFIG_DATABASE } from './config/database.config';
         synchronize: true,
       })
     }),
+    ProjectsModule
     //base de donnée en mode production ici
   ],
   controllers: [AppController],

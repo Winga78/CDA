@@ -1,7 +1,7 @@
 
 import { Entity, Column ,PrimaryGeneratedColumn} from 'typeorm';
 
-@Entity()
+@Entity('Project')
 export class Project {
   @PrimaryGeneratedColumn()
   id: number;
@@ -9,12 +9,8 @@ export class Project {
   @Column({ nullable: false })
   user_id: string;
 
-  @Column()
-  participants: [
-    {
-      email : string
-    }
-  ];
+  @Column({ type: 'json', nullable: true })
+  participants: { email: string }[];
 
   @Column()
   name: string;

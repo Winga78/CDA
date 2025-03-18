@@ -4,12 +4,15 @@ import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { database, imports} from './constants';
 import { faker } from '@faker-js/faker';
-import { CreateProjectDto } from 'src/projects/dto/create-project.dto';
+import { CreateProjectDto } from '../src/projects/dto/create-project.dto';
+import { Project } from '../src/projects/entities/project.entity'
+import axios from 'axios';
+import { A } from '@faker-js/faker/dist/airline-CBNP41sR';
+import { debugPort } from 'process';
+import { cp } from 'fs';
 
 let dataSource: DataSource;
 let app: INestApplication;
-let token:any;
-let userConnected:any;
 
 const createUser = {
   firstname: faker.person.firstName(),
@@ -31,41 +34,23 @@ beforeAll(async () => {
     username: database.username,
     password: database.password,
     database: database.database,
-    entities: [Comment],
+    entities: [Project],
     synchronize: true,
     dropSchema: true,
   });
 
   await dataSource.initialize();
-
-  const moduleFixture: TestingModule = await Test.createTestingModule({
-    imports,
-  }).compile();
-
-  app = moduleFixture.createNestApplication();
-  await app.init();
 });
 
 afterAll(async () => {
   await dataSource.destroy();
-  await app.close();
 });
 
-beforeEach(async () => {
-  const createUserResponse = await request(app.getHttpServer()).post('/users/').send(createUser);
-  const loginRes = await request(app.getHttpServer()).post('/auth/login').send({
-    email: createUserResponse.body.email,
-    password: createUserResponse.body.password,
-  });
-  token = loginRes.body.access_token;
 
-  const userProfile = await request(app.getHttpServer()).get('/auth/profile').set('Authorization', `Bearer ${token}`);
-  userConnected = userProfile.body;
-
-});
-
-describe('Comments Endpoints (e2e)', () => {
-   const createProject : CreateProjectDto = {
+describe('Projects Endpoints (e2e)', () => {
+  let token:any;
+  let userConnected:any;
+  const createProject : CreateProjectDto = {
     user_id: userConnected?.id,
     name: faker.lorem.words(3),
     description: faker.lorem.sentence(),
@@ -73,13 +58,34 @@ describe('Comments Endpoints (e2e)', () => {
     modifiedAt: new Date(),
   };
 
+  beforeAll(async()=>{
+
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports,
+    }).compile();
+  
+    app = moduleFixture.createNestApplication();
+    await app.init();
+    
+    const createUserResponse = await axios.post('http://localhost:3000/users', createUser);
+    const loginRes = await axios.post('http://localhost:3000/auth/login', {email : createUserResponse.data.email , password : createUser.password});
+
+    token = loginRes.data.access_token;
+
+    const userProfile = await request(app.getHttpServer()).get('/auth/profile').set('Authorization', `Bearer ${token}`);
+     userConnected = userProfile.body;
+  })
+
+  afterAll(async () => {
+    await app.close();
+  });
+
   describe('POST /projects', () => {
     it('should create a projects', async () => {
       const res = await request(app.getHttpServer())
         .post('/projects')
         .set('Authorization', `Bearer ${token}`)
         .send(createProject);
-
       expect(res.statusCode).toBe(HttpStatus.CREATED);
       expect(res.body).toHaveProperty('user_id', userConnected.id);
       expect(res.body).toHaveProperty('id');
@@ -87,7 +93,7 @@ describe('Comments Endpoints (e2e)', () => {
       expect(res.body).toHaveProperty('description', createProject.description);
     });
 
-    it('should not create project* without authentication', async () => {
+    it('should not create project without authentication', async () => {
       const res = await request(app.getHttpServer()).post('/projects').send(createProject);
       expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
       expect(res.body).toHaveProperty('message', 'Token manquant');
@@ -96,43 +102,70 @@ describe('Comments Endpoints (e2e)', () => {
   });
 
     describe('PATCH /projects/', () => {
-         let project;
-         let users_participants;
-
+      let project : any;   
+      let users_participants : any[] =[];
+      const newproject : CreateProjectDto = {
+        user_id: userConnected?.id,
+        name: faker.lorem.words(3),
+        description: faker.lorem.sentence(),
+        createdAt: new Date(),
+        modifiedAt: new Date(),
+      };
       beforeAll(async () => {
-        project = await request(app.getHttpServer())
-        .post('/projects')
-        .set('Authorization', `Bearer ${token}`)
-        .send(createProject);
+        const resProject = await request(app.getHttpServer())
+          .post('/projects')
+          .set('Authorization', `Bearer ${token}`)
+          .send(newproject);
 
-        for (let i = 0; i < 5; i++) {
-          users_participants.push({email : faker.internet.email()})
-        }
-      })
+        project = resProject.body;
+    
+        users_participants = Array.from({ length: 5 }, () => ({
+          email: faker.internet.email(),
+        }));
+  
+      });
+    
+      it('should update a project', async () => {
+        expect(project).toBeDefined();
+        expect(project.id).toBeDefined();
+    
+        const res = await request(app.getHttpServer())
+          .patch(`/projects/${project.id}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ ...project, participants: users_participants });
+    
+         expect(res.statusCode).toBe(200);
 
-    it('should update a project', async () => {
-      const res = await request(app.getHttpServer())
-        .patch(`/projects/`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ ...project, description: 'Updated description'});
-      expect(res.statusCode).toBe(200);
-    });
+        const resPro = await request(app.getHttpServer())
+          .get(`/projects/${project.id}`)
+          .set('Authorization', `Bearer ${token}`);
+
+        expect(resPro.statusCode).toBe(200);
+        expect(resPro.body.participants).toHaveLength(5);
+      });
+    
+    it('should not update project not found', async () => {
+        const res = await request(app.getHttpServer()).patch(`/projects/8888`).set('Authorization', `Bearer ${token}`)
+        .send({ ...project, participants: users_participants });
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toHaveProperty('message', 'Impossible de mettre à jour, projet non trouvé');
+      });
 
     it('should not update project without authentication', async () => {
-      const res = await request(app.getHttpServer()).patch('/projects').send(createProject);
+      const res = await request(app.getHttpServer()).patch(`/projects/${project.id}`).send(createProject);
       expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
       expect(res.body).toHaveProperty('message', 'Token manquant');
     });
 
     it('should not update project with invalid token', async () => {
-      const res = await request(app.getHttpServer()).patch('/projects').set('Authorization', 'Bearer invalid-token');
+      const res = await request(app.getHttpServer()).patch(`/projects/${project.id}`).set('Authorization', 'Bearer invalid-token');
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token invalide');
     });
 
     it('should not update project with malformed token', async () => {
-      const res = await request(app.getHttpServer()).patch('/projects').set('Authorization', 'InvalidTokenFormat');
+      const res = await request(app.getHttpServer()).patch(`/projects/${project.id}`).set('Authorization', 'InvalidTokenFormat');
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token manquant');
@@ -150,44 +183,52 @@ describe('Comments Endpoints (e2e)', () => {
 
   // Récupérer un project par son ID
   describe('GET /projects/', () => {
-    let project;
+    let project : any;
+    const newproject : CreateProjectDto = {
+      user_id: userConnected?.id,
+      name: faker.lorem.words(3),
+      description: faker.lorem.sentence(),
+      createdAt: new Date(),
+      modifiedAt: new Date(),
+    };  
 
     beforeAll(async () => {
-       project = await request(app.getHttpServer())
-      .post('/projects')
-      .set('Authorization', `Bearer ${token}`)
-      .send(createProject);
-    })
+      const resProject = await request(app.getHttpServer())
+        .post('/projects')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newproject);
+  
+      project = resProject.body;
+    });
 
     it('should return a single project', async () => {
-      const res = await request(app.getHttpServer()).get(`/projects/`).set('Authorization', `Bearer ${token}`)
-      .send(project.id);
+      const res = await request(app.getHttpServer()).get(`/projects/${project.id}`).set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('id', project.id);
     });
 
     it('should return 404 when ID does not exist', async () => {
-      const res = await request(app.getHttpServer()).get(`/projects/`).set('Authorization', `Bearer ${token}`).send('46556');
+      const res = await request(app.getHttpServer()).get(`/projects/565`).set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(404);
       expect(res.body).toHaveProperty('message', 'Aucun project trouvé pour cette id');
     });
 
 
     it('should not return project without authentication', async () => {
-      const res = await request(app.getHttpServer()).get(`/projects/`).send(project.id);
+      const res = await request(app.getHttpServer()).get(`/projects/${project.id}`);
       expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
       expect(res.body).toHaveProperty('message', 'Token manquant');
     });
 
     it('should not return project with invalid token', async () => {
-      const res = await request(app.getHttpServer()).get('/projects').set('Authorization', 'Bearer invalid-token').send(project.id);
+      const res = await request(app.getHttpServer()).get(`/projects/${project.id}`).set('Authorization', 'Bearer invalid-token');
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token invalide');
     });
 
     it('should not return project with malformed token', async () => {
-      const res = await request(app.getHttpServer()).get('/projects').set('Authorization', 'InvalidTokenFormat').send(project.id);
+      const res = await request(app.getHttpServer()).get(`/projects/${project.id}`).set('Authorization', 'InvalidTokenFormat');
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token manquant');
@@ -196,56 +237,60 @@ describe('Comments Endpoints (e2e)', () => {
   });
 
   
-  // Supprimer un project par son Id
+
   describe('DELETE /projects/', () => {
 
     let project;
   
+    const newproject : CreateProjectDto = {
+      user_id: userConnected?.id,
+      name: faker.lorem.words(3),
+      description: faker.lorem.sentence(),
+      createdAt: new Date(),
+      modifiedAt: new Date(),
+    };
     beforeAll(async () => {
-      const res = await request(app.getHttpServer())
+      const resProject = await request(app.getHttpServer())
         .post('/projects')
         .set('Authorization', `Bearer ${token}`)
-        .send(createProject);
-  
-      project = res.body;
+        .send(newproject);
+
+      project = resProject.body;
     });
   
 
     it('should delete a projects', async () => {
       const res = await request(app.getHttpServer())
-        .delete(`/projects/`)
-        .set('Authorization', `Bearer ${token}`)
-        .send(project.id);
+        .delete(`/projects/${project.id}`)
+        .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
     });
 
     it('should delete 404 when project ID does not exist', async () => {
-      const res = await request(app.getHttpServer()).delete(`/projects/`).send('66556');
+      const res = await request(app.getHttpServer()).delete(`/projects/6545`).set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(404);
-      expect(res.body).toHaveProperty('message', 'Aucun project trouvé');
+      expect(res.body).toHaveProperty('message', 'Impossible de supprimer, projet non trouvé');
     });
 
 
     it('should not delete project without authentication', async () => {
-      const res = await request(app.getHttpServer()).delete(`/projects/`).send(project.id);
+      const res = await request(app.getHttpServer()).delete(`/projects/${project.id}`);
       expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
       expect(res.body).toHaveProperty('message', 'Token manquant');
     });
 
     it('should not delete project with invalid token', async () => {
-      const res = await request(app.getHttpServer()).delete('/projects/').set('Authorization', 'Bearer invalid-token').send(project.id);
+      const res = await request(app.getHttpServer()).delete(`/projects/${project.id}`).set('Authorization', 'Bearer invalid-token');
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token invalide');
     });
 
     it('should not delete project with malformed token', async () => {
-      const res = await request(app.getHttpServer()).delete('/projects/').set('Authorization', 'InvalidTokenFormat').send(project.id);
+      const res = await request(app.getHttpServer()).delete(`/projects/${project.id}`).set('Authorization', 'InvalidTokenFormat');
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token manquant');
     });
-
-
-  });
+ });
 });

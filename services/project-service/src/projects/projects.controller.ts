@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete , UseGuards , Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete , UseGuards , Headers , Request} from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -8,8 +8,8 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
   
   @Post()
-  create(@Headers('authorization') authHeader: string, @Body() createProjectDto: CreateProjectDto) {
-    return this.projectsService.create(authHeader,createProjectDto);
+  create(@Request() req, @Body() createProjectDto: CreateProjectDto) {
+    return this.projectsService.create(req.user,createProjectDto);
   }
 
   @Get()
@@ -19,8 +19,8 @@ export class ProjectsController {
 
 
   @Get('user')
-  findAllByUserId(@Headers('authorization') authHeader: string) {
-    return this.projectsService.findAll();
+  findAllByUserId(@Request() req) {
+    return this.projectsService.findAllByUserId(req.user);
   }
 
   @Get(':id')
@@ -31,11 +31,6 @@ export class ProjectsController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectsService.update(+id, updateProjectDto);
-  }
-
-  @Patch()
-  updateDrop(string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectsService.updateDrop(updateProjectDto);
   }
 
   @Delete(':id')

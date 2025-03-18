@@ -1,18 +1,16 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { PostsModule } from '../posts/posts.module';
+import { ProjectsModule } from '../projects/projects.module';
 import { jwtConstants } from './constants';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
-import { MediasModule } from '../medias/medias.module';
-import { CommentsModule } from '../comments/comments.module';
+import { ProjectsService } from '../projects/projects.service';
+
 
 @Module({
   imports: [
-    PostsModule, 
-    CommentsModule,
-    MediasModule,
+    ProjectsModule, 
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

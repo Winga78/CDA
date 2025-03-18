@@ -1,8 +1,6 @@
 import * as dotenv from 'dotenv';
 dotenv.config(); 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CommentsModule } from "../src/comments/comments.module";
-import { MediasModule } from "../src/medias/medias.module";
 import { PostsModule } from "../src/posts/posts.module";
 
 export const database  = {
@@ -16,7 +14,5 @@ export const database  = {
 export const jwt_secret = process.env.JWT_SECRET
 export const imports = [
     TypeOrmModule.forRoot(database),
-    CommentsModule,
-    MediasModule,
     PostsModule
 ];

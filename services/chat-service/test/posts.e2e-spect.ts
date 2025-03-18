@@ -109,7 +109,7 @@ describe('Comments Endpoints (e2e)', () => {
         .send(createPost);
         
         for (let i = 0; i < 5; i++) {
-          users_has_voted.push(createUser)
+          users_has_voted.push(faker.string.uuid())
         }
       })
 
