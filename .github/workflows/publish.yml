@@ -17,7 +17,7 @@ jobs:
       - name: Créer le fichier .env
         run: |
           echo "VITE_VOTE_SERVICE_URL=${{ secrets.VITE_PROJECT_SERVICE_URL }}" >> .env
-          echo "VITE_AUTH_SERVICE_URL=${{ secrets.VITE_PROJECT_SERVICE_URL }}" >> .env
+          echo "VITE_AUTH_SERVICE_URL=${{ secrets.VITE_AUTH_SERVICE_URL }}" >> .env
           echo "VITE_CHAT_SERVICE_URL=${{ secrets.VITE_CHAT_SERVICE_URL }}" >> .env
           echo "DB_TYPE=${{ secrets.DB_TYPE }}" >> .env
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
@@ -25,7 +25,9 @@ jobs:
           echo "DB_DATABASE=${{ secrets.DB_DATABASE_CHAT }}" >> .env
           echo "DB_DATABASE=${{ secrets.DB_DATABASE_PROJECT }}" >> .env
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_USER=${{ secrets.DB_PASSWORD }}" >> .env
           echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
+          echo "DB_USER=${{ secrets.JWT_SECRET }}" >> .env
 
       - name: Start all services
         run: docker compose up -d
