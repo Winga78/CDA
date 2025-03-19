@@ -14,7 +14,7 @@ services:
      volumes:
        - ./frontend:/app
      environment: 
-          VITE_VOTE_SERVICE_URL: ${VITE_VOTE_SERVICE_URL}
+          VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
           VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
           VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
      healthcheck:
@@ -49,8 +49,11 @@ services:
       DB_PORT: ${DB_PORT}
       DB_TYPE: ${DB_TYPE}
       DB_HOST: ${DB_HOST}
-      DB_DATABASE: ${DB_DATABASE}
+      DB_DATABASE_PROJECT: ${DB_DATABASE_PROJECT}
       DB_USER: ${DB_USER}
+      MONGODB_URI : ${MONGODB_URI}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
     ports: 
       - 3002:3002
     networks:
@@ -73,8 +76,11 @@ services:
       DB_PORT: ${DB_PORT}
       DB_TYPE: ${DB_TYPE}
       DB_HOST: ${DB_HOST}
-      DB_DATABASE: ${DB_DATABASE}
+      DB_DATABASE_CHAT: ${DB_DATABASE_CHAT}
+      DB_PASSWORD: ${DB_PASSWORD}
       DB_USER: ${DB_USER}
+      MONGODB_URI : ${MONGODB_URI}
+      JWT_SECRET: ${JWT_SECRET}
     ports: 
       - 3001:3001
     networks:

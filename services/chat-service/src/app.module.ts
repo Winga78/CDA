@@ -40,7 +40,7 @@ import { JwtModule } from '@nestjs/jwt';
         port: parseInt(process.env.DB_PORT || '3306' , 10),
         username: process.env.DB_USER || 'db_user',
         password: process.env.DB_PASSWORD || 'db_password',
-        database: process.env.DB_DATABASE || 'db_database',
+        database: process.env.DB_DATABASE_CHAT || 'db_database',
         autoLoadEntities: true,
         synchronize: true,
       })

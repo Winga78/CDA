@@ -11,7 +11,7 @@ export const database  = {
     port : process.env.DB_PORT || "3306",
     username : process.env.DB_USER || "db_user",
     password : process.env.DB_PASSWORD || "db_password",
-    database : process.env.DB_DATABASE || "db_database",
+    database : process.env.DB_DATABASE_CHAT || "db_database",
     entities: [Post]
 }
 export const jwt_secret = process.env.JWT_SECRET
