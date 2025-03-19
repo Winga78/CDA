@@ -3,7 +3,6 @@ dotenv.config();
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectsModule } from "../src/projects/projects.module";
 import { Project } from '../src/projects/entities/project.entity'
-import { AuthModule } from "../src/guard/auth.module";
 import { AppModule } from '../src/app.module';
 
 export const database  = {

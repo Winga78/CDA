@@ -217,7 +217,7 @@ describe('User Endpoints (e2e)', () => {
      });
 
      it('should not delete user without authentication', async () => {
-      const res = await request(app.getHttpServer()).delete(`/users/${user_connected.id}`).send(updateUser);
+      const res = await request(app.getHttpServer()).delete(`/users/${user_connected.id}`);
       expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
       expect(res.body).toHaveProperty('message', 'Token manquant');
     });
