@@ -101,8 +101,9 @@ services:
     container_name: mysql-service
     restart: always
     environment:
-       DB_USER: ${DB_USER}
-       DB_PASSWORD: ${DB_PASSWORD}
+       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+       MYSQL_USER: ${MYSQL_USER}  # Utilisateur non-root
+       MYSQL_PASSWORD: ${MYSQL_PASSWORD}  # Mot de passe pour cet utilisateur
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
