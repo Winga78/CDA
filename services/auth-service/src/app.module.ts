@@ -9,6 +9,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { jwtConstants } from './auth/constants';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { APP_GUARD } from '@nestjs/core';
       inject: [ConfigService],
     }),
     UsersModule,
+    AuthModule
     //base de donnée en mode production ici
   ],
   controllers: [AppController],

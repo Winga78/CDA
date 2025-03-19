@@ -18,5 +18,5 @@ export const jwt_secret = process.env.JWT_SECRET
 export const imports = [
     TypeOrmModule.forRoot(database),
     PostsModule,
-    AppModule
+    AppModule,
 ];
