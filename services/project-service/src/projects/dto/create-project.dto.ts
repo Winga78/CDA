@@ -10,7 +10,7 @@ export class CreateProjectDto {
   
     @IsArray()
     @IsString({ each: true })
-    readonly participants?: { email: string }[];;  
+    readonly participants?: { email: string }[]; 
   
     @IsString()
     readonly name: string;  

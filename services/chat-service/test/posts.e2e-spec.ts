@@ -1,0 +1,220 @@
+import { INestApplication, HttpStatus, Body } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';
+import { DataSource } from 'typeorm';
+import { database, imports} from './constants';
+import { faker } from '@faker-js/faker';
+import { CreatePostDto } from 'src/posts/dto/create-post.dto';
+import { Post } from '../src/posts/entities/post.entity'
+import axios from 'axios';
+import { cp } from 'fs';
+
+let dataSource: DataSource;
+let app: INestApplication;
+
+beforeAll(async () => {
+  dataSource = new DataSource({
+    type: 'mysql',
+    host: database.host,
+    port: parseInt(database.port),
+    username: database.username,
+    password: database.password,
+    database: database.database,
+    entities: [Post],
+    synchronize: true,
+    dropSchema: true,
+  });
+
+  await dataSource.initialize();
+});
+
+afterAll(async () => {
+  await dataSource.destroy();
+});
+
+
+describe('Comments Endpoints (e2e)', () => {
+  let token:any;
+  let userConnected:any;
+  let project:any;
+  let createPost : CreatePostDto;
+
+  const createProject = {
+    user_id: userConnected?.id,
+    name: faker.lorem.words(3),
+    description: faker.lorem.sentence(),
+    createdAt: new Date(),
+    modifiedAt: new Date(),
+  };
+
+  const createUser = {
+    firstname: faker.person.firstName(),
+    lastname: faker.person.lastName(),
+    password: faker.internet.password(),
+    email: faker.internet.email(),
+    birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
+    role: 'user',
+    createdAt: faker.date.soon({ refDate: '2023-01-01T00:00:00.000Z' }),
+  };
+
+ 
+
+  beforeAll(async()=>{
+
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports,
+    }).compile();
+  
+    app = moduleFixture.createNestApplication();
+    await app.init();
+
+    const createUserResponse = await axios.post('http://localhost:3000/users', createUser);
+    const loginRes = await axios.post('http://localhost:3000/auth/login', {email : createUserResponse.data.email , password : createUser.password});
+
+    token = loginRes.data.access_token;
+
+    const userProfile = await request(app.getHttpServer()).get('/authChat/profile').set('Authorization', `Bearer ${token}`);
+    userConnected = userProfile.body;
+    const projectResponse = await axios.post('http://localhost:3002/projects/', createProject, {
+      headers: {
+          'Authorization': `Bearer ${token} `,
+          'Content-Type': 'application/json'
+      }
+    });
+    project = projectResponse.data
+
+      createPost  = {
+      user_id: userConnected?.id,
+      project_id: project.id,
+      titre: faker.lorem.words(3),
+      description: faker.lorem.sentence(),
+      createdAt: new Date(),
+      modifiedAt: new Date(),
+    };
+  })
+
+  
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  describe('POST /posts', () => {
+    it('should create a posts', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/posts')
+        .set('Authorization', `Bearer ${token}`)
+        .send(createPost);
+      expect(res.statusCode).toBe(HttpStatus.CREATED);
+      expect(res.body).toHaveProperty('user_id');
+      expect(res.body).toHaveProperty('project_id');
+      expect(res.body).toHaveProperty('titre');
+      expect(res.body).toHaveProperty('description');
+    });
+
+    it('should not create post without authentication', async () => {
+      const res = await request(app.getHttpServer()).post('/posts').send(createPost);
+      expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+      expect(res.body).toHaveProperty('message', 'Token manquant');
+    });
+
+  });
+
+  describe('PATCH /posts/', () => {
+         let onepost;
+         let users_has_voted;
+
+      beforeAll(async () => {
+        const resPost = await request(app.getHttpServer())
+        .post('/posts')
+        .set('Authorization', `Bearer ${token}`)
+        .send(createPost);
+        onepost = resPost.body
+        users_has_voted = Array.from({ length: 5 }, () => ({
+          id: faker.string.uuid(),
+        }));
+      })
+
+    it('should update a post', async () => {
+      const res = await request(app.getHttpServer())
+        .patch(`/posts/${onepost.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ participants_has_voted: users_has_voted})
+        expect(res.statusCode).toBe(200);
+
+        const tesr = await request(app.getHttpServer())
+            .get(`/posts/${onepost.id}`)
+            .set('Authorization', `Bearer ${token}`);
+    });
+
+    it('should not update post without authentication', async () => {
+      const res = await request(app.getHttpServer()).patch(`/posts/${onepost.id}`).send(createPost);
+      expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+      expect(res.body).toHaveProperty('message', 'Token manquant');
+    });
+
+    it('should not update post with invalid token', async () => {
+      const res = await request(app.getHttpServer()).patch(`/posts/${onepost.id}`).set('Authorization', 'Bearer invalid-token');
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty('message', 'Token invalide');
+    });
+  });
+
+  describe('GET /posts', () => {
+    it('should return all posts', async () => {
+      const res = await request(app.getHttpServer()).get('/posts').set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+  });
+
+  // // Récupérer un post par son ID
+  describe('GET /posts/', () => {
+    let post;
+
+    beforeAll(async () => {
+        const res = await request(app.getHttpServer())
+            .post('/posts')
+            .set('Authorization', `Bearer ${token}`)
+            .send(createPost);
+        post = res.body;
+    });
+
+    it('should return a single post', async () => {
+        const res = await request(app.getHttpServer())
+            .get(`/posts/${post.id}`)
+            .set('Authorization', `Bearer ${token}`);
+        
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('id', post.id);
+    });
+
+    it('should return 404 when ID does not exist', async () => {
+        const res = await request(app.getHttpServer())
+            .get('/posts/664')
+            .set('Authorization', `Bearer ${token}`);
+        
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toHaveProperty('message', 'Aucun post trouvé pour cet ID');
+    });
+
+    it('should not return post without authentication', async () => {
+        const res = await request(app.getHttpServer())
+            .get(`/posts/${post.id}`);
+        
+        expect(res.statusCode).toBe(401);
+        expect(res.body).toHaveProperty('message', 'Token manquant');
+    });
+
+    it('should not return post with invalid token', async () => {
+        const res = await request(app.getHttpServer())
+            .get(`/posts/${post.id}`)
+            .set('Authorization', 'Bearer invalid-token');
+
+        expect(res.statusCode).toBe(401);
+        expect(res.body).toHaveProperty('message', 'Token invalide');
+    });
+});
+
+});

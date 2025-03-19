@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete ,Headers} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete ,Request} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -8,8 +8,8 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  create(@Headers('authorization') authHeader: string,@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(authHeader,createPostDto);
+  create(@Request() req,@Body() createPostDto: CreatePostDto) {
+    return this.postsService.create(req.user,createPostDto);
   }
 
   @Get()
@@ -21,6 +21,12 @@ export class PostsController {
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(+id);
   }
+
+  @Get('project/:id')
+  findOneByProjectId(@Param('id') id: string) {
+    return this.postsService.findOneByProjectId(+id);
+  }
+  
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {

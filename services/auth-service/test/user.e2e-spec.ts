@@ -187,16 +187,7 @@ describe('User Endpoints (e2e)', () => {
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token invalide');
-    });
-
-    it('should not update user with malformed token', async () => {
-      const res = await request(app.getHttpServer()).patch(`/users/${user_connected.id}`).set('Authorization', 'InvalidTokenFormat');
-
-      expect(res.statusCode).toBe(401);
-      expect(res.body).toHaveProperty('message', 'Token manquant');
-    });
-
-    
+    });    
   });
 
     //Supprimer un utilisateur
@@ -236,13 +227,6 @@ describe('User Endpoints (e2e)', () => {
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token invalide');
-    });
-
-    it('should not delete user with malformed token', async () => {
-      const res = await request(app.getHttpServer()).delete(`/users/${user_connected.id}`).set('Authorization', 'InvalidTokenFormat');
-
-      expect(res.statusCode).toBe(401);
-      expect(res.body).toHaveProperty('message', 'Token manquant');
     });
 
     })

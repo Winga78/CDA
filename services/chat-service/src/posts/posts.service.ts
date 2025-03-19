@@ -5,19 +5,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
-import { userProfile } from '../profils.utils';
+
 @Injectable()
 export class PostsService {
 
   constructor(
     @InjectRepository(Post)
     private readonly postRepo: Repository<Post>,
-       private readonly httpService: HttpService
   ) { }
 
-  async create(authHeader : string, createPostDto: CreatePostDto) : Promise<Post> {
-
-        const user = await userProfile(this.httpService,authHeader);
+  async create(user:any, createPostDto: CreatePostDto) : Promise<Post> {
     
         const createPost : CreatePostDto = {
           user_id : user.id,
@@ -38,10 +35,17 @@ export class PostsService {
   async findOne(id: number) : Promise<Post | null>{
     const post = await this.postRepo.findOneBy({id : id});
     if(!post)
-      throw new NotFoundException('poste non trouvé')
+      throw new NotFoundException('Aucun post trouvé pour cet ID')
     return post
   }
 
+
+  async findOneByProjectId(id: number) : Promise<Post | null>{
+    const post = await this.postRepo.findOneBy({project_id : id});
+    if(!post)
+      throw new NotFoundException('Aucun post trouvé pour cet ID')
+    return post
+  }
   //Update des participants qui ont voté pour le poste
   async update(id: number, updatePostDto: UpdatePostDto) : Promise<UpdateResult> {
     const updatePost = await this.postRepo.update(id, updatePostDto);

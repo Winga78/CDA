@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectsModule } from "../src/projects/projects.module";
 import { Project } from '../src/projects/entities/project.entity'
 import { AuthModule } from "../src/guard/auth.module";
+import { AppModule } from '../src/app.module';
 
 export const database  = {
     type :(process.env.DB_TYPE as any)|| "mysql",
@@ -18,5 +19,5 @@ export const jwt_secret = process.env.JWT_SECRET
 export const imports = [
     TypeOrmModule.forRoot(database),
     ProjectsModule,
-    AuthModule,
+    AppModule,
 ];

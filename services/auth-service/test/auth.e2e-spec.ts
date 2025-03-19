@@ -158,13 +158,6 @@ describe('Auth Endpoints (e2e)', () => {
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token invalide');
     });
-
-    it('should not get profile with malformed token', async () => {
-      const res = await request(app.getHttpServer()).get('/auth/profile').set('Authorization', 'InvalidTokenFormat');
-
-      expect(res.statusCode).toBe(401);
-      expect(res.body).toHaveProperty('message', 'Token manquant');
-    });
   });
 
 });

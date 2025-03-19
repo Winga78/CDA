@@ -11,7 +11,7 @@ export class Post {
   project_id: number;
 
   @Column({ type: 'json', nullable: true })
-  participants_has_voted: string[];
+  participants_has_voted: { id: string }[];
 
   @Column()
   titre: string;

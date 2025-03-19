@@ -6,9 +6,18 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { CONFIG_DATABASE } from './config/database.config';
 import { ProjectsModule } from './projects/projects.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './guard/auth.guard';
+import { jwtConstants } from './guard/constants';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+     JwtModule.register({
+          global: true,
+          secret: jwtConstants.secret,
+          signOptions: { expiresIn: '3600s' },
+      }),
     ConfigModule.forRoot({
       isGlobal: true,  
       envFilePath: '.env',
@@ -40,7 +49,13 @@ import { ProjectsModule } from './projects/projects.module';
     //base de donnée en mode production ici
   ],
   controllers: [AppController],
-  providers: [AppService], 
+  providers: [
+    AppService ,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    }
+  ], 
 })
 export class AppModule {}
 
