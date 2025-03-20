@@ -59,7 +59,9 @@ services:
     networks:
       - cda-networks
     depends_on:
-       mysql:
+      - auth-service: 
+         condition: service_healthy
+      - mysql:
          condition: service_healthy
     restart: always
     healthcheck:
@@ -86,7 +88,11 @@ services:
     networks:
       - cda-networks
     depends_on:
-       mysql:
+       - auth-service:
+         condition: service_healthy
+       - project-service:
+          condition: service_healthy
+       - mysql:
          condition: service_healthy
     restart: always
     healthcheck:
