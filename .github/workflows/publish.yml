@@ -32,16 +32,13 @@ jobs:
       - name: Start all services
         run: docker compose up -d
 
-      - name: Afficher les logs auth
-        run: docker compose logs auth-service
-
-        
-      - name: Afficher les logs de vote
-        run: docker compose logs project-service
-        
-      - name: Afficher les logs de chat 
-        run: docker compose logs chat-service
-      
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for services to be ready..."
+          until curl -s http://localhost:3001 > /dev/null; do echo "Waiting for chat-service..."; sleep 5; done
+          until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
+          until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
+          echo "All services are up!"
      
       - name: Vérifier l’installation de vitest
         run: |
