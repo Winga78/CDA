@@ -17,10 +17,6 @@ beforeAll(async () => {
   }
 });
 
-afterAll(async () => {
-  await mongoose.disconnect();
-});
-
 describe('User Endpoints (e2e)', () => {
   let app: INestApplication;
   let token;
@@ -47,9 +43,8 @@ describe('User Endpoints (e2e)', () => {
     user_connected = user_profile.body
  });
 
- 
- afterAll(async () => {
-  await app.close();
+afterAll(async () => {
+  await Promise.all([mongoose.disconnect(), app.close()]);
 });
 
  const createUser : CreateUserDto = {

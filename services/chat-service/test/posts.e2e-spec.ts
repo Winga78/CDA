@@ -28,11 +28,6 @@ beforeAll(async () => {
   await dataSource.initialize();
 });
 
-afterAll(async () => {
-  await dataSource.destroy();
-});
-
-
 describe('Comments Endpoints (e2e)', () => {
   let token:any;
   let userConnected:any;
@@ -94,11 +89,10 @@ describe('Comments Endpoints (e2e)', () => {
   })
 
   
-
   afterAll(async () => {
-    await app.close();
+    await Promise.all([dataSource.destroy(), app.close()]);
   });
-
+  
   describe('POST /posts', () => {
     it('should create a posts', async () => {
       const res = await request(app.getHttpServer())

@@ -32,8 +32,14 @@ describe('Auth Endpoints (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     jwtService = moduleFixture.get<JwtService>(JwtService);
+
+
  });
 
+
+afterAll(async () => {
+  await Promise.all([mongoose.disconnect(), app.close()]);
+});
 
  const createUser : CreateUserDto = {
   firstname: faker.person.firstName(),

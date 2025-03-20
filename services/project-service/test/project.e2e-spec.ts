@@ -21,7 +21,6 @@ const createUser = {
   createdAt: faker.date.soon({ refDate: '2023-01-01T00:00:00.000Z' }),
 };
 
-
 beforeAll(async () => {
   // Database setup
   dataSource = new DataSource({
@@ -39,11 +38,6 @@ beforeAll(async () => {
   await dataSource.initialize();
 });
 
-afterAll(async () => {
-  await dataSource.destroy();
-});
-
-
 describe('Projects Endpoints (e2e)', () => {
   let token:any;
   let userConnected:any;
@@ -56,7 +50,6 @@ describe('Projects Endpoints (e2e)', () => {
   };
 
   beforeAll(async()=>{
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports,
     }).compile();
@@ -74,9 +67,9 @@ describe('Projects Endpoints (e2e)', () => {
   })
 
   afterAll(async () => {
-    await app.close();
+    await Promise.all([dataSource.destroy(), app.close()]);
   });
-
+  
   describe('POST /projects', () => {
     it('should create a projects', async () => {
       const res = await request(app.getHttpServer())
@@ -220,9 +213,7 @@ describe('Projects Endpoints (e2e)', () => {
   
 
   describe('DELETE /projects/', () => {
-
     let project;
-  
     const newproject : CreateProjectDto = {
       user_id: userConnected?.id,
       name: faker.lorem.words(3),
@@ -239,7 +230,6 @@ describe('Projects Endpoints (e2e)', () => {
       project = resProject.body;
     });
   
-
     it('should delete a projects', async () => {
       const res = await request(app.getHttpServer())
         .delete(`/projects/${project.id}`)
