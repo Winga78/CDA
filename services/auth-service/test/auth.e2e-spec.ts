@@ -1,11 +1,14 @@
-import { INestApplication , HttpStatus} from '@nestjs/common';
+import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import mongoose from 'mongoose';
-import { database, imports , jwt_secret } from "./constants";
-import { CreateUserDto } from "../src/users/dto/create-user.dto";
-import { faker} from '@faker-js/faker';
+import { database, imports, jwt_secret } from './constants';
+import { CreateUserDto } from '../src/users/dto/create-user.dto';
+import { faker } from '@faker-js/faker';
 import { JwtService } from '@nestjs/jwt';
+
+let app: INestApplication;
+let jwtService: JwtService;
 
 beforeAll(async () => {
   await mongoose.connect(database);
@@ -13,79 +16,69 @@ beforeAll(async () => {
   if (mongoose.connection.db) {
     await mongoose.connection.db.dropDatabase();
   } else {
-    throw new Error("La connexion à MongoDB n'est pas encore établie.");
+    throw new Error('La connexion à MongoDB n\'est pas encore établie.');
   }
+
+  const moduleFixture: TestingModule = await Test.createTestingModule({
+    imports,
+  }).compile();
+
+  app = moduleFixture.createNestApplication();
+  await app.init();
+  jwtService = moduleFixture.get<JwtService>(JwtService);
 });
 
 afterAll(async () => {
+  await app.close();
   await mongoose.disconnect();
 });
 
-describe('Auth Endpoints (e2e)', () => {
-  let app: INestApplication;
-  let jwtService: JwtService;
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-        imports,
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-    jwtService = moduleFixture.get<JwtService>(JwtService);
-
-
- });
-
-
-afterAll(async () => {
-  await Promise.all([mongoose.disconnect(), app.close()]);
-});
-
- const createUser : CreateUserDto = {
+const createUser: CreateUserDto = {
   firstname: faker.person.firstName(),
   lastname: faker.person.lastName(),
   password: faker.internet.password(),
   email: faker.internet.email(),
-  birthday: faker.date.birthdate({ min: 18, max: 65, mode: "age" }),
+  birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
   role: 'user',
   createdAt: faker.date.soon({ refDate: '2023-01-01T00:00:00.000Z' }),
- }
+};
 
-   describe('POST /auth/', () => {
-      it('/users/ (POST) 201', () => {
-         return request(app.getHttpServer())
-            .post('/users/')
-            .set('Accept', 'application/json')
-            .send(createUser)
-            .expect(({ body }) => {
-                expect(body.firstname).toEqual(createUser.firstname);
-                expect(body.lastname).toEqual(createUser.lastname);
-                expect(body.email).toEqual(createUser.email);
-                expect(new Date(body.birthday)).toEqual(createUser.birthday);
-                expect(body.role).toEqual(createUser.role);
-            })
-            .expect(HttpStatus.CREATED);
-       });
+describe('Auth Endpoints (e2e)', () => {
+  describe('POST /users/', () => {
+    it('should create a new user', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/users/')
+        .set('Accept', 'application/json')
+        .send(createUser)
+        .expect(HttpStatus.CREATED);
 
-
-      it('should not create duplicate user', async () => {
-        const res = await request(app.getHttpServer()).post('/users/').send(createUser);
-        expect(res.statusCode).toBe(409);
-        expect(res.body).toHaveProperty('message','Un utilisateur avec cet email exite déjà');
-      });
-
-      it('should not create user with invalid email', async () => {
-        const res = await request(app.getHttpServer()).post('/users/').send({
-          ...createUser,
-          email: 'invalid-email',
-        });
-          expect(res.statusCode).toBe(400);
-          expect(res.body).toHaveProperty('message','Email invalide');
-       });
-
+      expect(res.body.firstname).toEqual(createUser.firstname);
+      expect(res.body.lastname).toEqual(createUser.lastname);
+      expect(res.body.email).toEqual(createUser.email);
+      expect(new Date(res.body.birthday)).toEqual(createUser.birthday);
+      expect(res.body.role).toEqual(createUser.role);
     });
 
-    describe('POST /auth/login', () => {
+    it('should not create a duplicate user', async () => {
+      await request(app.getHttpServer()).post('/users/').send(createUser);
+      const res = await request(app.getHttpServer()).post('/users/').send(createUser);
+      
+      expect(res.statusCode).toBe(409);
+      expect(res.body).toHaveProperty('message', 'Un utilisateur avec cet email existe déjà');
+    });
+
+    it('should not create user with invalid email', async () => {
+      const res = await request(app.getHttpServer()).post('/users/').send({
+        ...createUser,
+        email: 'invalid-email',
+      });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty('message', 'Email invalide');
+    });
+  });
+
+  describe('POST /auth/login', () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).post('/users/').send(createUser);
     });
@@ -98,14 +91,8 @@ afterAll(async () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('access_token');
-      
 
-      const decoded = await jwtService.verifyAsync(
-              res.body.access_token,
-              {
-                secret: jwt_secret
-              }
-            );
+      const decoded = await jwtService.verifyAsync(res.body.access_token, { secret: jwt_secret });
       expect(decoded).toHaveProperty('email', createUser.email);
       expect(decoded).toHaveProperty('role', createUser.role);
     });
@@ -132,7 +119,8 @@ afterAll(async () => {
   });
 
   describe('GET /auth/profile', () => {
-    let token;
+    let token: string;
+
     beforeAll(async () => {
       await request(app.getHttpServer()).post('/users/').send(createUser);
       const loginRes = await request(app.getHttpServer()).post('/auth/login').send({
@@ -143,7 +131,9 @@ afterAll(async () => {
     });
 
     it('should get user profile with valid token', async () => {
-      const res = await request(app.getHttpServer()).get('/auth/profile').set('Authorization', `Bearer ${token}`);
+      const res = await request(app.getHttpServer())
+        .get('/auth/profile')
+        .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('id');
@@ -153,17 +143,17 @@ afterAll(async () => {
 
     it('should not get profile without token', async () => {
       const res = await request(app.getHttpServer()).get('/auth/profile');
-
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token manquant');
     });
 
     it('should not get profile with invalid token', async () => {
-      const res = await request(app.getHttpServer()).get('/auth/profile').set('Authorization', 'Bearer invalid-token');
+      const res = await request(app.getHttpServer())
+        .get('/auth/profile')
+        .set('Authorization', 'Bearer invalid-token');
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token invalide');
     });
   });
-
 });

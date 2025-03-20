@@ -14,7 +14,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) : Promise<Omit<User, "password">> {
     const existingUser = await this.userModel.findOne({email : createUserDto.email}).exec();
     if(existingUser){
-      throw new ConflictException('Un utilisateur avec cet email exite déjà')
+      throw new ConflictException('Un utilisateur avec cet email existe déjà')
     }
 
     
