@@ -9,8 +9,8 @@ export const database  = {
     type :(process.env.DB_TYPE as any)|| "mysql",
     host : process.env.DB_HOST || "host",
     port : process.env.DB_PORT || "3306",
-    username : process.env.DB_USER || "db_user",
-    password : process.env.DB_PASSWORD || "db_password",
+    username : process.env.MYSQL_USER || "db_user",
+    password : process.env.MYSQL_PASSWORD || "db_password",
     database : process.env.DB_DATABASE_PROJECT || "db_database",
     entities: [Project]
 }

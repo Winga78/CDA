@@ -24,9 +24,7 @@ jobs:
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
           echo "DB_DATABASE_CHAT=${{ secrets.DB_DATABASE_CHAT }}" >> .env
           echo "DB_DATABASE_PROJECT=${{ secrets.DB_DATABASE_PROJECT }}" >> .env
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
           echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
