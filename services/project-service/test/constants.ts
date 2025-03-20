@@ -14,7 +14,9 @@ export const database  = {
     database : process.env.DB_DATABASE_PROJECT || "db_database",
     entities: [Project]
 }
-export const jwt_secret = process.env.JWT_SECRET
+
+export const api_auth = process.env.VITE_AUTH_SERVICE_URL
+
 export const imports = [
     TypeOrmModule.forRoot(database),
     ProjectsModule,

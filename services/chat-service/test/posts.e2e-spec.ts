@@ -2,7 +2,7 @@ import { INestApplication, HttpStatus, Body } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { database, imports } from './constants';
+import { database, imports , api_auth, api_project } from './constants';
 import { faker } from '@faker-js/faker';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { Post } from '../src/posts/entities/post.entity';
@@ -59,11 +59,13 @@ const createProject = {
   createdAt: new Date(),
   modifiedAt: new Date(),
 };
+const apiUrl = api_auth || 'http://localhost:3000';
+const apiUrl2 = api_project || 'http://localhost:3002'
 
 describe('Comments Endpoints (e2e)', () => {
   beforeAll(async () => {
-    await axios.post('http://localhost:3000/users', createUser);
-    const loginRes = await axios.post('http://localhost:3000/auth/login', {
+    await axios.post(`${apiUrl}/users`, createUser);
+    const loginRes = await axios.post(`${apiUrl}/auth/login`, {
       email: createUser.email,
       password: createUser.password,
     });
@@ -74,7 +76,7 @@ describe('Comments Endpoints (e2e)', () => {
       .set('Authorization', `Bearer ${token}`);
     userConnected = userProfile.body;
 
-    const projectResponse = await axios.post('http://localhost:3002/projects/', createProject, {
+    const projectResponse = await axios.post(`${apiUrl2}/projects/`, createProject, {
       headers: {
         Authorization: `Bearer ${token} `,
         'Content-Type': 'application/json',
