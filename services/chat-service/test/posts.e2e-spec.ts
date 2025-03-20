@@ -64,8 +64,8 @@ const apiUrl2 = api_project || 'http://localhost:3002'
 
 describe('Comments Endpoints (e2e)', () => {
   beforeAll(async () => {
-    await axios.post(`${apiUrl}/users`, createUser);
-    const loginRes = await axios.post(`${apiUrl}/auth/login`, {
+    await axios.post(`http://auth-service:3000/users`, createUser);
+    const loginRes = await axios.post(`http://auth-service:3000/auth/login`, {
       email: createUser.email,
       password: createUser.password,
     });
@@ -76,7 +76,7 @@ describe('Comments Endpoints (e2e)', () => {
       .set('Authorization', `Bearer ${token}`);
     userConnected = userProfile.body;
 
-    const projectResponse = await axios.post(`${apiUrl2}/projects/`, createProject, {
+    const projectResponse = await axios.post(`http://project-service:3002/projects/`, createProject, {
       headers: {
         Authorization: `Bearer ${token} `,
         'Content-Type': 'application/json',
