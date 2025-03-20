@@ -50,9 +50,9 @@ services:
       DB_TYPE: ${DB_TYPE}
       DB_HOST: ${DB_HOST}
       DB_DATABASE_PROJECT: ${DB_DATABASE_PROJECT}
-      DB_USER: ${DB_USER}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MONGODB_URI : ${MONGODB_URI}
-      DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
     ports: 
       - 3002:3002
@@ -77,8 +77,8 @@ services:
       DB_TYPE: ${DB_TYPE}
       DB_HOST: ${DB_HOST}
       DB_DATABASE_CHAT: ${DB_DATABASE_CHAT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_USER: ${DB_USER}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MONGODB_URI : ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
     ports: 
@@ -102,15 +102,9 @@ services:
     restart: always
     environment:
        MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-       DB_DATABASE_PROJECT: ${DB_DATABASE_PROJECT}
-       DB_DATABASE_CHAT: ${DB_DATABASE_CHAT}
-       MYSQL_USER: ${MYSQL_USER}
-       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./scripts/generate-init.sh:/app/generate-init.sh
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    command: ["/bin/sh", "-c", "chmod +x /app/generate-init.sh && /app/generate-init.sh"]
     ports:
       - "3306:3306"
     networks:
@@ -120,6 +114,5 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-
 volumes:
   mysql_data:
