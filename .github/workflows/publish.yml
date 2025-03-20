@@ -28,7 +28,6 @@ jobs:
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
           echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "${{secrets.MYSQL_INIT_SQL}} > ./db/init.sql
 
       - name: Start all services
         run: docker compose up -d
