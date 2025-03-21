@@ -97,6 +97,7 @@ describe('Comments Endpoints (e2e)', () => {
 
   describe('POST /posts', () => {
     it('should create a post', async () => {
+      console.log(token)
       const res = await request(app.getHttpServer())
         .post('/posts')
         .set('Authorization', `Bearer ${token}`)
