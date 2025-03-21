@@ -2,7 +2,7 @@ import { Body, Controller, Post,Get,HttpCode, HttpStatus , Request,UseGuards} fr
 import { AuthGuard } from './auth.guard';
 import { Public } from './auth.decorator';
 
-@Controller('auth')
+@Controller('authProject')
 export class AuthController {
   @Get('profile')
   getProfile(@Request() req) {

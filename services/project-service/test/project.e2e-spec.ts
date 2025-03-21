@@ -66,7 +66,7 @@ describe('Projects Endpoints (e2e)', () => {
 
     token = loginRes.data.access_token;
 
-    const userProfile = await request(app.getHttpServer()).get('/auth/profile').set('Authorization', `Bearer ${token}`);
+    const userProfile = await request(app.getHttpServer()).get('/authProject/profile').set('Authorization', `Bearer ${token}`);
     userConnected = userProfile.body;
   });
 
