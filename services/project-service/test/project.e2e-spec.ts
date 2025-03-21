@@ -56,8 +56,6 @@ const createProject: CreateProjectDto = {
   modifiedAt: new Date(),
 };
 
-const apiUrl = api_auth || 'http://localhost:3000';
-
 
 describe('Projects Endpoints (e2e)', () => {
   beforeAll(async () => {

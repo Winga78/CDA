@@ -70,7 +70,6 @@ describe('Comments Endpoints (e2e)', () => {
       password: createUser.password,
     });
     token = loginRes.data.access_token;
-    console.log(token)
     const userProfile = await request(app.getHttpServer())
       .get('/authChat/profile')
       .set('Authorization', `Bearer ${token}`);
@@ -82,7 +81,6 @@ describe('Comments Endpoints (e2e)', () => {
         'Content-Type': 'application/json',
       },
     });
-    console.log(projectResponse.data)
     project = projectResponse.data;
     
     createPost = {
