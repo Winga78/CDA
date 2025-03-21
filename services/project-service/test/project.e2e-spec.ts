@@ -61,8 +61,8 @@ const apiUrl = api_auth || 'http://localhost:3000';
 
 describe('Projects Endpoints (e2e)', () => {
   beforeAll(async () => {
-    const createUserResponse = await axios.post(`http://localhost:3000/users`, createUser);
-    const loginRes = await axios.post(`http://localhost:3000/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
+    const createUserResponse = await axios.post(`http://auth-service:3000/users`, createUser);
+    const loginRes = await axios.post(`http://auth-service:3000/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
 
     token = loginRes.data.access_token;
 

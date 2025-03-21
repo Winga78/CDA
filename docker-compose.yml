@@ -59,8 +59,8 @@ services:
     networks:
       - cda-networks
     depends_on:
-      - auth-service
-      - mysql
+      mysql:
+         condition: service_healthy
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3002/ || exit 1"]
@@ -86,9 +86,8 @@ services:
     networks:
       - cda-networks
     depends_on:
-       - auth-service
-       - project-service
-       - mysql
+       mysql:
+         condition: service_healthy
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/ || exit 1"]
