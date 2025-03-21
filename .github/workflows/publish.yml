@@ -52,18 +52,19 @@ jobs:
           test-container: "auth-service"
           test-command: "npm run test:e2e"
 
+
+      - name: Run tests for Project service
+        uses: adambirds/docker-compose-action@v1.5.0
+        with:
+            compose-file: "docker-compose.yml"
+            test-container: "project-service"
+            test-command: "npm run test:e2e"
+
       - name: Run tests for Chat service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
           compose-file: "docker-compose.yml"
           test-container: "chat-service"
-          test-command: "npm run test:e2e"
-
-      - name: Run tests for Project service
-        uses: adambirds/docker-compose-action@v1.5.0
-        with:
-          compose-file: "docker-compose.yml"
-          test-container: "project-service"
           test-command: "npm run test:e2e"
       
       - name: Run tests for Frontend service

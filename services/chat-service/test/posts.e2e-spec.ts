@@ -82,6 +82,7 @@ describe('Comments Endpoints (e2e)', () => {
         'Content-Type': 'application/json',
       },
     });
+    console.log(projectResponse.data)
     project = projectResponse.data;
     
     createPost = {
