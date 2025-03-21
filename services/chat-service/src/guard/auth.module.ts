@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { PostsModule } from '../posts/posts.module';
 import { jwtConstants } from './constants';
