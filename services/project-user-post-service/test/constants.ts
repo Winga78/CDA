@@ -2,7 +2,6 @@ import * as dotenv from 'dotenv';
 dotenv.config(); 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectUserModule } from "../src/project-user/project-user.module";
-import { PostUserModule } from '../src/post-user/post-user.module';
 import { AppModule } from '../src/app.module';
 
 export const database  = {
@@ -17,6 +16,5 @@ export const database  = {
 export const imports = [
     TypeOrmModule.forRoot(database),
     AppModule,
-    PostUserModule,
     ProjectUserModule,
 ];
