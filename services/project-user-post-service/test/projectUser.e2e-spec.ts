@@ -36,16 +36,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    await app.close();
-  } catch (error) {
-    console.error('Error closing app:', error);
-  }
-  try {
-    await dataSource.destroy();
-  } catch (error) {
-    console.error('Error closing database:', error);
-  }
+  await Promise.all([dataSource.destroy(), app.close()]);
 });
 
 const createUser = {

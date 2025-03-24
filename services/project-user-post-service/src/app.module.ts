@@ -42,7 +42,7 @@ TypeOrmModule.forRootAsync({
     port: parseInt(process.env.DB_PORT || '3306' , 10),
     username: process.env.MYSQL_USER || 'db_username',
     password: process.env.MYSQL_PASSWORD || 'db_password',
-    database: process.env.DB_DATABASE_RELATION,
+    database: process.env.DB_DATABASE_RELATION || 'dev_cda_project_user_post',
     autoLoadEntities: true,
     synchronize: true,
   })
