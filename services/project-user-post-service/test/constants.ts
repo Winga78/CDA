@@ -14,8 +14,6 @@ export const database  = {
     database : process.env.DB_DATABASE_RELATION || "db_database",
 }
 
-export const api_auth = process.env.VITE_AUTH_SERVICE_URL
-
 export const imports = [
     TypeOrmModule.forRoot(database),
     ProjectUserModule,
