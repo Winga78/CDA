@@ -3,6 +3,7 @@ dotenv.config();
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectUserModule } from "../src/project-user/project-user.module";
 import { AppModule } from '../src/app.module';
+import { ProjectUser } from '../src/project-user/entities/project-user.entity';
 
 export const database  = {
     type :(process.env.DB_TYPE as any)|| "mysql",
@@ -11,6 +12,7 @@ export const database  = {
     username : process.env.MYSQL_USER || "db_user",
     password : process.env.MYSQL_PASSWORD || "db_password",
     database : process.env.DB_DATABASE_RELATION || "dev_cda_project_user_post",
+    entities: [ProjectUser]
 }
 
 export const imports = [

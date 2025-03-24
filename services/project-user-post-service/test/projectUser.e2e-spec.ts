@@ -4,7 +4,6 @@ import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { database, imports } from './constants';
 import { faker } from '@faker-js/faker';
-import { CreateProjectUserDto } from '../src/project-user/dto/create-project-user.dto'
 import { ProjectUser } from '../src/project-user/entities/project-user.entity';
 import axios from 'axios';
 
