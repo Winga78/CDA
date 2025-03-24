@@ -11,7 +11,7 @@ export const database  = {
     port : process.env.DB_PORT || "3306",
     username : process.env.MYSQL_USER || "db_user",
     password : process.env.MYSQL_PASSWORD || "db_password",
-    database : process.env.DB_DATABASE_RELATION || "dev_cda_project_user_post",
+    database : process.env.DB_DATABASE_RELATION || "db_database",
     entities: [ProjectUser]
 }
 
