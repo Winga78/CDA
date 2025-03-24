@@ -2,7 +2,7 @@ import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { database, imports , api_auth } from './constants';
+import { database, imports } from './constants';
 import { faker } from '@faker-js/faker';
 import { CreateProjectDto } from '../src/projects/dto/create-project.dto';
 import { Project } from '../src/projects/entities/project.entity';
@@ -154,6 +154,12 @@ describe('Projects Endpoints (e2e)', () => {
   describe('GET /projects', () => {
     it('should return all projects', async () => {
       const res = await request(app.getHttpServer()).get('/projects').set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+
+    it('should return all last projects', async () => {
+      const res = await request(app.getHttpServer()).get('/projects/last').set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
     });

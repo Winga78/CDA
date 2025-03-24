@@ -1,6 +1,4 @@
-import { Body, Controller, Post,Get,HttpCode, HttpStatus , Request,UseGuards} from '@nestjs/common';
-import { AuthGuard } from './auth.guard';
-import { Public } from './auth.decorator';
+import { Controller,Get , Request} from '@nestjs/common';
 
 @Controller('authProject')
 export class AuthController {

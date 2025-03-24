@@ -4,14 +4,12 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
-import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(Project)
     private projectsRepository: Repository<Project>,
-    private readonly httpService: HttpService,
 
   ) {}
 
@@ -36,6 +34,13 @@ export class ProjectsService {
     return await this.projectsRepository.find();
   }
 
+  async findRecentProjects(): Promise<Project[]> {
+     return await this.projectsRepository.createQueryBuilder('project')
+    .orderBy('project.modifiedAt', 'DESC')
+    .limit(3)
+    .getMany();
+  }
+
   async findOne(id: number): Promise<Project> {
     const project = await this.projectsRepository.findOneBy({ id });
 
@@ -55,7 +60,6 @@ export class ProjectsService {
     }
 
     const updateProject : UpdateProjectDto = {
-      participants : updateProjectDto.participants,
       name : updateProjectDto.name,
       description : updateProjectDto.description,
       modifiedAt : new Date()
@@ -81,5 +85,5 @@ export class ProjectsService {
   
     return await this.projectsRepository.findBy({user_id : user.id});
   }
-  
+
 }

@@ -17,7 +17,7 @@ export default defineConfig({
         target: process.env.VITE_AUTH_SERVICE_URL || 'http://auth-service:3000',
         changeOrigin: true,
       },
-      '/api/vote': {
+      '/api/projects': {
         target: process.env.VITE_PROJECT_SERVICE_URL || 'http://project-service:3002',
         changeOrigin: true,
       },

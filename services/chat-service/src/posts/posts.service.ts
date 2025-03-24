@@ -46,7 +46,7 @@ export class PostsService {
       throw new NotFoundException('Aucun post trouvé pour cet ID')
     return post
   }
-  //Update des participants qui ont voté pour le poste
+  
   async update(id: number, updatePostDto: UpdatePostDto) : Promise<UpdateResult> {
     const updatePost = await this.postRepo.update(id, updatePostDto);
     if (!updatePost)

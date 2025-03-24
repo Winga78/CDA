@@ -1,16 +1,13 @@
 
 import { Entity, Column ,PrimaryGeneratedColumn} from 'typeorm';
 
-@Entity('Project')
+@Entity()
 export class Project {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ nullable: false })
   user_id: string;
-
-  @Column({ type: 'json', nullable: true })
-  participants: { email: string }[];
 
   @Column()
   name: string;

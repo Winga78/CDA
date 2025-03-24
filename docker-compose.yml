@@ -95,6 +95,34 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+
+
+  project_user_post-service:
+    build: ./services/project-user-post-service
+    container_name: project_user_post-service
+    environment:
+      DB_PORT: ${DB_PORT}
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_HOST}
+      MYSQL_DATABASE : ${DB_DATABASE_RELATION}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MONGODB_URI : ${MONGODB_URI}
+      JWT_SECRET: ${JWT_SECRET}
+    ports: 
+      - "3003:3003"
+    networks:
+      - cda-networks
+    depends_on:
+       mysql:
+         condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
   
   mysql:
     image: mysql:latest

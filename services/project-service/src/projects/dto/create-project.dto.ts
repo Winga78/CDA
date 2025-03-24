@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsOptional, IsArray, IsDateString } from 'class-validator';
+import { IsString, IsInt, IsDateString } from 'class-validator';
 
 export class CreateProjectDto {
 
@@ -7,10 +7,6 @@ export class CreateProjectDto {
 
     @IsString()
     readonly user_id: string;  
-  
-    @IsArray()
-    @IsString({ each: true })
-    readonly participants?: { email: string }[]; 
   
     @IsString()
     readonly name: string;  

@@ -26,6 +26,7 @@ jobs:
           echo "DB_DATABASE_PROJECT=${{ secrets.DB_DATABASE_PROJECT }}" >> .env
           echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+          echo "DB_DATABASE_RELATION=${{ secrets.DB_DATABASE_RELATION }}" >> .env
           echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
 
