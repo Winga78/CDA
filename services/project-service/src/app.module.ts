@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guard/auth.guard';
 import { jwtConstants } from './guard/constants';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './guard/auth.module';
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { JwtModule } from '@nestjs/jwt';
         synchronize: true,
       })
     }),
-    ProjectsModule
+    ProjectsModule,
+    AuthModule
     //base de donnée en mode production ici
   ],
   controllers: [AppController],

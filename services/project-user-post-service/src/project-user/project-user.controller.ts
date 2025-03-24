@@ -7,23 +7,22 @@ export class ProjectUserController {
   constructor(private readonly projectUserService: ProjectUserService) {}
 
   @Post()
-  create(@Body() createProjectUserDto: CreateProjectUserDto) {
+  create(@Body() createProjectUserDto: CreateProjectUserDto){
     return this.projectUserService.create(createProjectUserDto);
   }
 
-  @Get(':id')
-  findAllUserByIdProject(@Param('id') id: string) {
-    return this.projectUserService.findAllUserByIdProject(+id);
+  @Get('users/:id')
+  async findAllUserByIdProject(@Param('id') id: string) {
+    return await this.projectUserService.findAllUserByIdProject(+id);
   }
 
-  @Get()
+  @Get('projects')
   findProjectsByUserEmail(@Request() req) {
-    return this.projectUserService.findAllUserByIdProject(req.user.email);
+    return this.projectUserService.findProjectsByUserEmail(req.user.email);
   }
 
- 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectUserService.removeUserParticipation(+id);
+  remove(@Param('id') id: string, @Body() body: { email: string }) {
+    return this.projectUserService.removeUserParticipation(+id, body.email);
   }
 }

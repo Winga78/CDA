@@ -11,13 +11,13 @@ export class PostUserController {
     return this.postUserService.create(createPostUserDto);
   }
 
-  @Get(':id')
-  findAll(@Body() id: string) {
-    return this.postUserService.findAllVoteByPostId(+id);
+  @Get()
+  findAll(@Body() body:{ id: number}) {
+    return this.postUserService.findAllVoteByPostId(body.id);
   }
 
   @Delete()
-  remove(@Body() id: string ,@Request() req) {
-    return this.postUserService.remove(+id, req.user.id);
+  remove(@Body() body:{ id: number} ,@Request() req) {
+    return this.postUserService.remove(body.id, req.user.id);
   }
 }

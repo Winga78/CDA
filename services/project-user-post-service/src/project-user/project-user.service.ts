@@ -1,4 +1,4 @@
-import { Injectable , NotFoundException } from '@nestjs/common';
+import { Injectable , NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateProjectUserDto } from './dto/create-project-user.dto';
 import { ProjectUser } from './entities/project-user.entity';
 import { InjectRepository } from '@nestjs/typeorm'
@@ -11,35 +11,42 @@ export class ProjectUserService {
     private projectsUsersRepository: Repository<ProjectUser>,
   ) {}
 
-  async create(createProjectUserDto: CreateProjectUserDto) {
+  async create(createProjectUserDto: CreateProjectUserDto): Promise<ProjectUser> {
+    const existingProjectUser = await this.projectsUsersRepository.findOneBy({project_id : createProjectUserDto.project_id , participant_email : createProjectUserDto.participant_email })
+    if(existingProjectUser){
+      throw new ConflictException('Utilisateur déjà ajouté');
+    }
     return this.projectsUsersRepository.save(createProjectUserDto);
   }
 
-  async findAllUserByIdProject(id: number) {
-    const project = await this.projectsUsersRepository.findOneBy({project_id: id });
-    if (!project) {
-      throw new NotFoundException('Aucun project trouvé pour cette id');
+  async findAllUserByIdProject(id: number) : Promise<ProjectUser[]>{
+    const project = await this.projectsUsersRepository.findBy({project_id: id });
+    
+    if (project.length == 0) {
+      throw new NotFoundException('Aucun project trouvé pour cet id');
     }
     return project;
   }
 
-  async findProjectsByUserEmail(email: string) {
-    const project = await this.projectsUsersRepository.findOneBy({participant_email: email });
+  async findProjectsByUserEmail(email: string): Promise<ProjectUser[]>{
+    const project = await this.projectsUsersRepository.findBy({participant_email: email });
     if (!project) {
       throw new NotFoundException('Aucun project trouvé pour cette email');
     }
     return project;
   }
 
-  async removeUserParticipation(id: number) {
-    const project = await this.projectsUsersRepository.findOneBy({ project_id :id });
-
+  async removeUserParticipation(id: number, email: string) {
+    const project = await this.projectsUsersRepository.findOneBy({
+      project_id: id,
+      participant_email: email
+    });
+  
     if (!project) {
-      throw new NotFoundException('Impossible de supprimer, projet non trouvé');
+      throw new NotFoundException('Impossible de supprimer, participant non trouvé');
     }
-
-    await this.projectsUsersRepository.delete(id);
-
-    return { message: 'Projet supprimé avec succès' };
+    await this.projectsUsersRepository.delete(project);
+  
+    return { message: 'Utilisateur supprimé du projet avec succès' };
   }
 }

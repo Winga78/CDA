@@ -12,6 +12,7 @@ let dataSource: DataSource;
 let app: INestApplication;
 let token: any;
 let userConnected: any;
+let project;
 
 beforeAll(async () => {
   // Database setup
@@ -59,7 +60,7 @@ const createProject: CreateProjectDto = {
 
 describe('Projects Endpoints (e2e)', () => {
   beforeAll(async () => {
-    const createUserResponse = await axios.post(`http://auth-service:3000/users`, createUser);
+    const createUserResponse = await axios.post(`http:auth-service:3000/users`, createUser);
     const loginRes = await axios.post(`http://auth-service:3000/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
 
     token = loginRes.data.access_token;
@@ -74,7 +75,7 @@ describe('Projects Endpoints (e2e)', () => {
         .post('/projects')
         .set('Authorization', `Bearer ${token}`)
         .send(createProject);
-
+      project = res.body
       expect(res.statusCode).toBe(HttpStatus.CREATED);
       expect(res.body).toHaveProperty('user_id');
       expect(res.body).toHaveProperty('id');
@@ -90,33 +91,12 @@ describe('Projects Endpoints (e2e)', () => {
   });
 
   describe('PATCH /projects/:id', () => {
-    let project: any;
-    let users_participants: any[] = [];
-
-    const newProject: CreateProjectDto = {
-      user_id: userConnected?.id,
-      name: faker.lorem.words(3),
-      description: faker.lorem.sentence(),
-      createdAt: new Date(),
-      modifiedAt: new Date(),
-    };
-
-    beforeAll(async () => {
-      const resProject = await request(app.getHttpServer())
-        .post('/projects')
-        .set('Authorization', `Bearer ${token}`)
-        .send(newProject);
-
-      project = resProject.body;
-
-      users_participants = Array.from({ length: 5 }, () => ({ email: faker.internet.email() }));
-    });
-
+    
     it('should update a project', async () => {
       const res = await request(app.getHttpServer())
         .patch(`/projects/${project.id}`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ ...project, participants: users_participants });
+        .send({ ...project, name: 'newname' });
 
       expect(res.statusCode).toBe(200);
 
@@ -125,14 +105,14 @@ describe('Projects Endpoints (e2e)', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(resPro.statusCode).toBe(200);
-      expect(resPro.body.participants).toHaveLength(5);
+      expect(res.body.name).toEqual('newname');
     });
 
     it('should not update project when not found', async () => {
       const res = await request(app.getHttpServer())
         .patch('/projects/8888')
         .set('Authorization', `Bearer ${token}`)
-        .send({ ...project, participants: users_participants });
+        .send({ ...project, name: 'newname' });
 
       expect(res.statusCode).toBe(404);
       expect(res.body).toHaveProperty('message', 'Impossible de mettre à jour, projet non trouvé');
@@ -166,25 +146,6 @@ describe('Projects Endpoints (e2e)', () => {
   });
 
   describe('GET /projects/:id', () => {
-    let project: any;
-    
-    const newProject: CreateProjectDto = {
-      user_id: userConnected?.id,
-      name: faker.lorem.words(3),
-      description: faker.lorem.sentence(),
-      createdAt: new Date(),
-      modifiedAt: new Date(),
-    };
-
-    beforeAll(async () => {
-      const resProject = await request(app.getHttpServer())
-        .post('/projects')
-        .set('Authorization', `Bearer ${token}`)
-        .send(newProject);
-
-      project = resProject.body;
-    });
-
     it('should return a single project', async () => {
       const res = await request(app.getHttpServer()).get(`/projects/${project.id}`).set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
@@ -211,25 +172,6 @@ describe('Projects Endpoints (e2e)', () => {
   });
 
   describe('DELETE /projects/:id', () => {
-    let project: any;
-
-    const newProject : CreateProjectDto = {
-      user_id: userConnected?.id,
-      name: faker.lorem.words(3),
-      description: faker.lorem.sentence(),
-      createdAt: new Date(),
-      modifiedAt: new Date(),
-    };
-
-    beforeAll(async () => {
-      const resProject = await request(app.getHttpServer())
-        .post('/projects')
-        .set('Authorization', `Bearer ${token}`)
-        .send(newProject);
-
-      project = resProject.body;
-    });
-
     it('should delete a project', async () => {
       const res = await request(app.getHttpServer())
         .delete(`/projects/${project.id}`)

@@ -49,6 +49,7 @@ TypeOrmModule.forRootAsync({
 }),
 PostUserModule,
 ProjectUserModule,
+AuthModule
 ],
   controllers: [AppController],
   providers: [AppService,

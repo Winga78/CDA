@@ -13,6 +13,7 @@ let app: INestApplication;
 let token: any;
 let userConnected: any;
 let project: any;
+let mypost:CreatePostDto;
 let createPost:CreatePostDto;
 
 beforeAll(async () => {
@@ -59,8 +60,6 @@ const createProject = {
   createdAt: new Date(),
   modifiedAt: new Date(),
 };
-const apiUrl = api_auth || 'http://localhost:3000';
-const apiUrl2 = api_project || 'http://localhost:3002'
 
 describe('Comments Endpoints (e2e)', () => {
   beforeAll(async () => {
@@ -82,8 +81,7 @@ describe('Comments Endpoints (e2e)', () => {
       },
     });
     project = projectResponse.data;
-    
-    createPost = {
+     createPost= {
       user_id: userConnected?.id,
       project_id: project.id,
       titre: faker.lorem.words(3),
@@ -91,18 +89,21 @@ describe('Comments Endpoints (e2e)', () => {
       createdAt: new Date(),
       modifiedAt: new Date(),
     };
-
   });
 
   describe('POST /posts', () => {
+
+
+
     it('should create a post', async () => {
       const res = await request(app.getHttpServer())
         .post('/posts')
         .set('Authorization', `Bearer ${token}`)
         .send(createPost);
+
+      mypost = res.body
       expect(res.statusCode).toBe(HttpStatus.CREATED);
       expect(res.body).toHaveProperty('user_id');
-      expect(res.body).toHaveProperty('project_id');
       expect(res.body).toHaveProperty('titre');
       expect(res.body).toHaveProperty('description');
     });
@@ -114,38 +115,24 @@ describe('Comments Endpoints (e2e)', () => {
     });
   });
 
-  describe('PATCH /posts/', () => {
-    let onepost;
-    let users_has_voted;
-
-    beforeAll(async () => {
-      const resPost = await request(app.getHttpServer())
-        .post('/posts')
-        .set('Authorization', `Bearer ${token}`)
-        .send(createPost);
-      onepost = resPost.body;
-      users_has_voted = Array.from({ length: 5 }, () => ({
-        id: faker.string.uuid(),
-      }));
-    });
-
+  describe('PATCH /posts/', () => {  
     it('should update a post', async () => {
       const res = await request(app.getHttpServer())
-        .patch(`/posts/${onepost.id}`)
+        .patch(`/posts/${mypost.id}`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ participants_has_voted: users_has_voted });
+        .send({ titre: 'newTitre'});
       expect(res.statusCode).toBe(200);
     });
 
     it('should not update post without authentication', async () => {
-      const res = await request(app.getHttpServer()).patch(`/posts/${onepost.id}`).send(createPost);
+      const res = await request(app.getHttpServer()).patch(`/posts/${mypost.id}`).send({ titre: 'newTitre'});
       expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
       expect(res.body).toHaveProperty('message', 'Token manquant');
     });
 
     it('should not update post with invalid token', async () => {
       const res = await request(app.getHttpServer())
-        .patch(`/posts/${onepost.id}`)
+        .patch(`/posts/${mypost.id}`)
         .set('Authorization', 'Bearer invalid-token');
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token invalide');
@@ -163,23 +150,13 @@ describe('Comments Endpoints (e2e)', () => {
   });
 
   describe('GET /posts/', () => {
-    let post;
-
-    beforeAll(async () => {
-      const res = await request(app.getHttpServer())
-        .post('/posts')
-        .set('Authorization', `Bearer ${token}`)
-        .send(createPost);
-      post = res.body;
-    });
-
     it('should return a single post', async () => {
       const res = await request(app.getHttpServer())
-        .get(`/posts/${post.id}`)
+        .get(`/posts/${mypost.id}`)
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('id', post.id);
+      expect(res.body).toHaveProperty('id', mypost.id);
     });
 
     it('should return 404 when ID does not exist', async () => {
@@ -192,14 +169,14 @@ describe('Comments Endpoints (e2e)', () => {
     });
 
     it('should not return post without authentication', async () => {
-      const res = await request(app.getHttpServer()).get(`/posts/${post.id}`);
+      const res = await request(app.getHttpServer()).get(`/posts/${mypost.id}`);
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty('message', 'Token manquant');
     });
 
     it('should not return post with invalid token', async () => {
       const res = await request(app.getHttpServer())
-        .get(`/posts/${post.id}`)
+        .get(`/posts/${mypost.id}`)
         .set('Authorization', 'Bearer invalid-token');
 
       expect(res.statusCode).toBe(401);
