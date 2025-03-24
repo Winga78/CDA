@@ -5,7 +5,6 @@ import { DataSource } from 'typeorm';
 import { database, imports } from './constants';
 import { faker } from '@faker-js/faker';
 import { PostUser } from '../src/post-user/entities/post-user.entity';
-import { CreatePostUserDto } from 'src/post-user/dto/create-post-user.dto';
 import axios from 'axios';
 
 let dataSource: DataSource;
