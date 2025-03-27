@@ -36,6 +36,16 @@ export class ProjectUserService {
     return project;
   }
 
+  
+  async findRecentProjects(email: string): Promise<ProjectUser[]> {
+    const projects = await this.projectsUsersRepository.createQueryBuilder('project_user')
+      .where('participant_email = :email', { email })
+      .limit(3)
+      .getMany();
+    return projects;
+  }
+
+
   async removeUserParticipation(id: number, email: string) {
     const project = await this.projectsUsersRepository.findOneBy({
       project_id: id,

@@ -17,6 +17,7 @@ services:
           VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
           VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
           VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
+          VITE_PROJECT_USER_POST_SERVICE_URL: ${VITE_PROJECT_USER_POST_SERVICE_URL}
      healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4000/"]
       interval: 30s

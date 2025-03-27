@@ -21,6 +21,11 @@ export class ProjectUserController {
     return this.projectUserService.findProjectsByUserEmail(req.user.email);
   }
 
+  @Get('/last')
+  findLastProject(@Request() req) {
+    return this.projectUserService.findRecentProjects(req.user.email);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string, @Body() body: { email: string }) {
     return this.projectUserService.removeUserParticipation(+id, body.email);

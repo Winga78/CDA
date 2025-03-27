@@ -17,11 +17,6 @@ export class ProjectsController {
     return this.projectsService.findAll();
   }
 
-  @Get('/last')
-  findLastProject() {
-    return this.projectsService.findRecentProjects();
-  }
-
   @Get('user')
   findAllByUserId(@Request() req) {
     return this.projectsService.findAllByUserId(req.user);

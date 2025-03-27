@@ -15,9 +15,6 @@ export const database  = {
     entities: [Post]
 }
 
-export const api_auth = process.env.VITE_AUTH_SERVICE_URL
-export const api_project = process.env.VITE_PROJECT_SERVICE_URL
-
 export const imports = [
     TypeOrmModule.forRoot(database),
     PostsModule,

@@ -27,9 +27,6 @@ export class User {
   @Prop({ required: false })
   avatar?: string;
 
-  @Prop({ required: true, enum: ['user', 'admin'], default: 'user' })
-  role: string;
-
   @Prop({ type: Date })
   createdAt: Date;
 }

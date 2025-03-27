@@ -34,13 +34,6 @@ export class ProjectsService {
     return await this.projectsRepository.find();
   }
 
-  async findRecentProjects(): Promise<Project[]> {
-     return await this.projectsRepository.createQueryBuilder('project')
-    .orderBy('project.modifiedAt', 'DESC')
-    .limit(3)
-    .getMany();
-  }
-
   async findOne(id: number): Promise<Project> {
     const project = await this.projectsRepository.findOneBy({ id });
 

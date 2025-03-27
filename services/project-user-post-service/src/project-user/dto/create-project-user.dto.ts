@@ -1,4 +1,5 @@
-import { IsString, IsInt} from 'class-validator';
+import { IsString, IsInt , IsEnum, IsOptional } from 'class-validator';
+import { UserRole } from "../entities/UserRoleEnum";
 export class CreateProjectUserDto {
     @IsInt()
     readonly id?: number;
@@ -8,4 +9,8 @@ export class CreateProjectUserDto {
 
     @IsString()
     readonly participant_email: string;   
+
+    @IsEnum(UserRole)
+    @IsOptional()
+    role?: UserRole;
 } 

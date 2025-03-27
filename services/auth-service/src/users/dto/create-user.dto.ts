@@ -23,9 +23,6 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   readonly avatar?: string;
-
-  @IsEnum(['user', 'admin'])
-  readonly role: string;
   
   @IsDateString()
   readonly createdAt: Date;
