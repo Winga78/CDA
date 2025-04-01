@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { ReactNode } from "react";
 
-const PrivateRoute = ({ children }: { children: ReactNode }) => {
+const PublicRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated, isLoading } = useUser();
 
   console.log("Chargement:", isLoading, " | Authentifié:", isAuthenticated);
@@ -11,7 +11,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     return <div>Chargement...</div>; // Affichage temporaire pour éviter la redirection
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  return isAuthenticated ?  <Navigate to="/accueil" replace /> : children;
 };
 
-export default PrivateRoute;
+export default PublicRoute;

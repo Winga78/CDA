@@ -5,7 +5,7 @@ import { getProfile, updateUser, deleteUser } from "../services/authService";
 import { User } from "../models/User";
 
 function ProfilePage() {
-  const { user, setUser } = useUser();
+  const { user, logout} = useUser();
   const [formData, setFormData] = useState<User | null>(null);
 
   useEffect(() => {
@@ -15,6 +15,7 @@ function ProfilePage() {
         setFormData(storedUser || null);
       } catch (error) {
         console.error("Erreur lors de la récupération du profil", error);
+        return;
       }
     };
     loadProfil();
@@ -31,9 +32,7 @@ function ProfilePage() {
     if (!formData) return;
 
     try {
-      const updatedUser = await updateUser(formData);
-      setUser(updatedUser);
-      console.log(updateUser)
+      await updateUser(formData);
     } catch (error: any) {
       console.error("Erreur lors de la mise à jour du profil", error.message);
     }
@@ -42,7 +41,7 @@ function ProfilePage() {
   const handleDelete = async () => {
       try {
         await deleteUser();
-        setUser(null); // ✅ Déconnexion après suppression
+        logout()
       } catch (error: any) {
         console.error("Erreur lors de la suppression du compte", error.message);
       }

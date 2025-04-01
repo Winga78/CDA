@@ -40,7 +40,7 @@ const SectionParticipant = () => {
       <ListGroup>
         {participants.length > 0 ? (
           participants.map((user) => (
-            <ListGroup.Item key={user.id}>
+            <ListGroup.Item key={user._id}>
               {user.firstname} {user.lastname}
             </ListGroup.Item>
           ))

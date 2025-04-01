@@ -53,7 +53,7 @@ import { SocketGateway } from './socket.gateway';
   controllers: [AppController],
   providers: [
     AppService,
-    // SocketGateway,
+    SocketGateway,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

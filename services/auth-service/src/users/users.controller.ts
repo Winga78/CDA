@@ -22,19 +22,18 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('/other/:id')
+  @HttpCode(HttpStatus.OK)
+  findOneByEmail(@Param('id') email : string) {
+    return this.usersService.findOneByEmail(email);
+  }
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
   
-  @Post('other')
-  @HttpCode(HttpStatus.OK)
-  findOneByEmail(@Body() body: { email: string }) {
-    const {email} = body
-    return this.usersService.findOneByEmail(email);
-  }
-
   @Patch()
   @HttpCode(HttpStatus.OK)
   update(@Request() req, @Body() updateUserDto: UpdateUserDto) {

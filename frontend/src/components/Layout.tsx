@@ -2,19 +2,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 import { Outlet } from 'react-router-dom';
-import { useEffect, useState } from "react";
-import { getProfile } from "../services/authService";
 import SectionProject from "./SectionProject";
+import { useUser } from "../context/UserContext";
 
 const Layout = () => {
-  const [user, setUser] = useState<any>(null);
-  
-  useEffect(() => {
-    const storedUser = getProfile();
-    if (storedUser) {
-      setUser(storedUser);
-    }
-  }, []);
+  const { user,logout} = useUser();
 
   return (
     <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
@@ -22,11 +14,12 @@ const Layout = () => {
       <Navbar bg="dark" variant="dark" className="px-3 d-flex justify-content-between align-items-center">
         <Navbar.Brand href="/">Mon Logo</Navbar.Brand>
 
-        {user && (
+        {user != null && (
           <Nav className="mx-auto">
             <Nav.Link href="/projects">Projet</Nav.Link>
             <Nav.Link href="/accueil">Accueil</Nav.Link>
             <Nav.Link href="/notifications">Notifications</Nav.Link>
+            <button onClick={logout}>déconnexion</button>
           </Nav>
         )}
 
@@ -34,7 +27,7 @@ const Layout = () => {
           {user ? (
             <Nav.Link href="/profile" className="d-flex align-items-center">
               <img
-                src={"/default-avatar.png"} // Vérifie le chemin de l'image
+                src={"/default-avatar.png"}
                 alt="Avatar"
                 className="rounded-circle"
                 width="40"

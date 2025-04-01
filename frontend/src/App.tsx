@@ -6,32 +6,35 @@ import SignUpPage from "./components/SignUpPage";
 import AccueilPage from "./components/AccueilPage";
 import ProjectPage from "./components/ProjectPage";
 import ProfilePage from "./components/ProfilePage";
-import ChatPage from "./components/ChatPage";
 import NotificationPage from "./components/NotificationPage";
-// import {UserProvider} from "./context/UserContext"; // Import du Guard
-// import PrivateRoute from "./components/";
+import {UserProvider} from "./context/UserContext";
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute";
+import ChatPage from "./components/ChatPage";
 
 function App() {
   return (
+    <UserProvider>
     <Router>
       <Routes>
         {/* Routes publiques */}
-        <Route path="/" element={<Layout/>}>
+        <Route path="/" element={<PublicRoute><Layout/></PublicRoute>}>
           <Route index element={<WelcomePage />} />
           <Route path="/register" element={<SignUpPage />} />
           <Route path="/login" element={<LoginPage />} />
         </Route>
 
         {/* Routes protégées */}
-        <Route path="/" element={<Layout/>}>
+        <Route path="/" element={<PrivateRoute><Layout/></PrivateRoute>}>
           <Route path="/accueil" element={<AccueilPage />} />
           <Route path="/projects" element={<ProjectPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/project/:id" element={<ChatPage />} />
           <Route path="/notifications" element={<NotificationPage />} />
+          <Route path="/project/:id" element={<ChatPage />} />
         </Route>
       </Routes>
     </Router>
+    </UserProvider>
   );
 }
 

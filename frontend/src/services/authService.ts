@@ -41,8 +41,8 @@ export const getProfile= async() : Promise<User | undefined> =>{
   try {
       const response = await authService.get(`/auth/profile`);
      return response.data
-    } catch (error) {
-      console.error("Erreur lors de la récupération du profile :", error);
+    } catch (error : any) {
+      console.error("Erreur lors de la récupération du profile :", error.message);
     }
 }
 
@@ -72,7 +72,17 @@ export const getUser= async(id: string) =>{
   try {
       const response = await authService.get(`/users/${id}`);
      return response.data
-    } catch (error) {
-      console.error("Erreur lors de la récupération du profile :", error);
+    } catch (error : any) {
+      console.error("Erreur lors de la récupération du profile :", error.message);
     }
+}
+
+export const getUserByEmail = async(email : string) : Promise<User | undefined> => {
+  try {
+    const encodedEmail = encodeURIComponent(email);
+    const response = await authService.get(`/users/other/${encodedEmail}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Erreur lors de la récupération du profil :", error.message);
+  }
 }

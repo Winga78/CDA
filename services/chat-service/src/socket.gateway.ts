@@ -27,11 +27,30 @@ import {
     handleDisconnect(client: Socket) {
       console.log(`Client déconnecté: ${client.id}`);
     }
+
+    @SubscribeMessage('joinRoom')
+    handleJoinRoom(socket: Socket, room: string) {
+        socket.join(room);
+        console.log(`Client ${socket.id} a rejoint la room ${room}`);
+    }
+
+    @SubscribeMessage('leaveRoom')
+    handleLeaveRoom(socket: Socket, room: string) {
+        socket.leave(room);
+        console.log(`Client ${socket.id} a quitté la room ${room}`);
+    }
+
+    @SubscribeMessage('disconnectUser')
+    handleDisconnectUser(socket: Socket) {
+    console.log(`Déconnexion forcée du client: ${socket.id}`);
+    socket.disconnect(true); // Déconnecte le client côté serveur
+    }
+
   
     @SubscribeMessage('message')
-    handleMessage(@MessageBody() data: { user: string; message: string }) {
-        console.log(data)
-      this.server.emit('message', data); // Envoi du message à tous les clients
+    handleMessage(socket: Socket, @MessageBody() data: { room : string , user: any; message: string }) {
+      console.log(`Message reçu dans la room ${data.room}: ${data.message}`);
+      this.server.to(data.room).emit('message', {user: data.user , message : data.message}); // Envoi du message à tous les clients
     }
   }
   
