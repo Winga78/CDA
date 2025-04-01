@@ -5,6 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_PROJECT_SERVICE_URL || '/api/projects'
 
 const projectService = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials : true
 });
 
 projectService.interceptors.request.use((config) => {
@@ -66,7 +67,7 @@ export const updateProject = async(id : number , projectUpdate : Project)=>{
   }
 }
 
-export const getProject = async(id : number)=>{
+export const getProject = async(id : string)=>{
   try {
     const response = await projectService.get<Project>(`/projects/${id}`);
     return response.data;

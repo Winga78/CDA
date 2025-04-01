@@ -23,9 +23,8 @@ const SignUpPage: React.FC = () => {
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const data = await signUp(user);
+      await signUp(user);
       setMessage("Inscription réussie !");
-      console.log("Utilisateur créé :", data);
       setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
       setMessage("Erreur lors de l'inscription.");

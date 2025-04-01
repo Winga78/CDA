@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode,HttpStatus,Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, HttpCode,HttpStatus,Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -35,15 +35,15 @@ export class UsersController {
     return this.usersService.findOneByEmail(email);
   }
 
-  @Patch(':id')
+  @Patch()
   @HttpCode(HttpStatus.OK)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(req.user.id, updateUserDto);
   }
 
-  @Delete(':id')
+  @Delete()
   @HttpCode(HttpStatus.OK)
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  remove(@Request() req) {
+    return this.usersService.remove(req.user.id);
   }
 }

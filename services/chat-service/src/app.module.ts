@@ -11,7 +11,7 @@ import { AuthGuard } from './guard/auth.guard';
 import { jwtConstants } from './guard/constants';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './guard/auth.module';
-
+import { SocketGateway } from './socket.gateway';
 @Module({
   imports: [
     JwtModule.register({
@@ -53,6 +53,7 @@ import { AuthModule } from './guard/auth.module';
   controllers: [AppController],
   providers: [
     AppService,
+    // SocketGateway,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

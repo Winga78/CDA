@@ -6,6 +6,7 @@ import { getUserProject } from "../services/projectService";
 import { Project } from "../models/Project";
 import { Button } from "react-bootstrap";
 import { formatModifiedDate } from "../utils/dateUtils";
+import { useUser } from "../context/UserContext";
 
 const ProjectPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -14,6 +15,7 @@ const ProjectPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
+  const { user } = useUser();
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
@@ -56,7 +58,7 @@ const ProjectPage = () => {
   return (
     <div className="d-flex flex-column vh-100">
       <div className="d-flex justify-content-center mt-4">
-        <div className="border p-4 rounded shadow-sm">
+       
           <button
             type="button"
             className="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold"
@@ -64,9 +66,9 @@ const ProjectPage = () => {
           >
             Nouveau
           </button>
-        </div>
+        
       </div>
-      <ProjectModal show={isModalVisible} handleClose={handleCloseModal} />
+      <ProjectModal user = {user} show={isModalVisible} handleClose={handleCloseModal} />
       <div>
         {error ? (
           <div>Error: {error}</div>
@@ -92,6 +94,7 @@ const ProjectPage = () => {
                         Mettre à jour
                       </Button>
                       <UpdateModal
+                        user={user}
                         project_id={project.id}
                         show={showModalUpdate}
                         handleClose={handleCloseModalUpdate}
@@ -103,6 +106,7 @@ const ProjectPage = () => {
                         Supprimer
                       </Button>
                       <DeleteModal
+                        user = {user}
                         project_id={project.id}
                         show={showModalDelete}
                         handleClose={handleCloseModalDelete}

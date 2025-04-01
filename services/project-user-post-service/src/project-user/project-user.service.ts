@@ -12,7 +12,7 @@ export class ProjectUserService {
   ) {}
 
   async create(createProjectUserDto: CreateProjectUserDto): Promise<ProjectUser> {
-    const existingProjectUser = await this.projectsUsersRepository.findOneBy({project_id : createProjectUserDto.project_id , participant_email : createProjectUserDto.participant_email })
+    const existingProjectUser = await this.projectsUsersRepository.findOneBy({project_id : createProjectUserDto.project_id , participant_id : createProjectUserDto.participant_id })
     if(existingProjectUser){
       throw new ConflictException('Utilisateur déjà ajouté');
     }
@@ -28,8 +28,8 @@ export class ProjectUserService {
     return project;
   }
 
-  async findProjectsByUserEmail(email: string): Promise<ProjectUser[]>{
-    const project = await this.projectsUsersRepository.findBy({participant_email: email });
+  async findProjectsByUserEmail(id: string): Promise<ProjectUser[]>{
+    const project = await this.projectsUsersRepository.findBy({participant_id: id });
     if (!project) {
       throw new NotFoundException('Aucun project trouvé pour cette email');
     }
@@ -37,19 +37,19 @@ export class ProjectUserService {
   }
 
   
-  async findRecentProjects(email: string): Promise<ProjectUser[]> {
+  async findRecentProjects(id: string): Promise<ProjectUser[]> {
     const projects = await this.projectsUsersRepository.createQueryBuilder('project_user')
-      .where('participant_email = :email', { email })
+      .where('participant_id = :id', { id })
       .limit(3)
       .getMany();
     return projects;
   }
 
 
-  async removeUserParticipation(id: number, email: string) {
+  async removeUserParticipation(id: number, user_id: string) {
     const project = await this.projectsUsersRepository.findOneBy({
       project_id: id,
-      participant_email: email
+      participant_id: user_id
     });
   
     if (!project) {

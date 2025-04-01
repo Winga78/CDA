@@ -15,10 +15,4 @@ export class CreatePostDto {
 
   @IsString()
   readonly description: string;
-
-  @IsDateString()
-  readonly createdAt: Date;
-
-  @IsDateString()
-  readonly modifiedAt: Date;
 }

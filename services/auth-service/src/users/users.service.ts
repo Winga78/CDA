@@ -28,8 +28,6 @@ export class UsersService {
     const saltOrRounds =  await bcrypt.genSalt();
    
     createdUser.password = await bcrypt.hash(createdUser.password, saltOrRounds);
-    createdUser.role = 'user'
-    createdUser.createdAt = new Date();
 
     const savedUser = await createdUser.save();
 
@@ -66,8 +64,8 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) : Promise<User | null> {
-
-    const existingUser = await this.userModel.findById(id);
+  
+    const existingUser = await this.userModel.findOne({ _id: new Types.ObjectId(id) });
       // const updateUser = this.userModel.findByIdAndUpdate(id, updateUserDto);
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!existingUser)

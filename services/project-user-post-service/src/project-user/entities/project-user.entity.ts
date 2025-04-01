@@ -10,7 +10,7 @@ export class ProjectUser {
     project_id: number;
 
     @Column()
-    participant_email: string;
+    participant_id: string;
 
     @Column({
         type: "enum",

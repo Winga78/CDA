@@ -80,13 +80,13 @@ describe('ChatRoom Endpoints (e2e)', () => {
             const res = await request(app.getHttpServer())
               .post('/project-user')
               .set('Authorization', `Bearer ${token}`)
-              .send({project_id : project.id , participant_email : userConnected.email});
+              .send({project_id : project.id , participant_id : userConnected.id});
             expect(res.statusCode).toBe(HttpStatus.CREATED);
             expect(res.body.project_id).toEqual(project.id);
-            expect(res.body.participant_email).toEqual(userConnected.email);
+            expect(res.body.participant_id).toEqual(userConnected.email);
           });
           it('should not create chatRoom without authentication', async () => {
-            const res = await request(app.getHttpServer()).post('/project-user').send({project_id : project.id , participant_email : userConnected.email});
+            const res = await request(app.getHttpServer()).post('/project-user').send({project_id : project.id , participant_id : userConnected.id});
             expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
             expect(res.body).toHaveProperty('message', 'Token manquant');
           });         

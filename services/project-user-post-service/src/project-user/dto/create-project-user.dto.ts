@@ -8,7 +8,7 @@ export class CreateProjectUserDto {
     readonly project_id: number;
 
     @IsString()
-    readonly participant_email: string;   
+    readonly participant_id: string;   
 
     @IsEnum(UserRole)
     @IsOptional()

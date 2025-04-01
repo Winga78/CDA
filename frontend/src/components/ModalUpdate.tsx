@@ -1,14 +1,13 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form } from "react-bootstrap";
 import { getProject, updateProject } from "../services/projectService";
 import { useState, useEffect } from "react";
-import { useUser } from "../services/AuthGuard";
+import { useUser } from "../context/UserContext";
 
-const UpdateModal = ({ project_id, show, handleClose }: any) => {
+const UpdateModal = ({ user, project_id, show, handleClose }: any) => {
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const { user } = useUser();
-
+ 
   useEffect(() => {
     if (show && project_id) {
       const loadProject = async () => {

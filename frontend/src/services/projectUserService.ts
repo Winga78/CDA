@@ -7,6 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_PROJECT_USER_POST_SERVICE_URL || '/api
 
 const projectService = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials : true
 });
 
 projectService.interceptors.request.use((config) => {
@@ -80,5 +81,15 @@ export const findAllParticipantProject = async()=>{
   } catch (error: any) {
     console.error("Erreur lors de la récupération des projets :", error.response?.data || error.message);
     throw error;
+  }
+}
+
+export const findParticipant = async(id : string)=>{
+  try{
+    const response = await projectService.get<ProjectUser[]>(`/project-user/users/${id}`);
+    if(response.data)
+     return response.data;
+  }catch(error: any){
+    console.error("Erreur lors de la récupération des participants :", error.response?.data || error.message);
   }
 }

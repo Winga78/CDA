@@ -48,6 +48,7 @@ export default defineConfig({
       '/api/chat': {
         target: process.env.VITE_CHAT_SERVICE_URL || 'http://localhost:3001',
         changeOrigin: true,
+        ws: true,
         rewrite: (path) => path.replace(/^\/api\/chat/, ''),
         configure: (proxy) => {
           proxy.on('proxyReq', (proxyReq) => {

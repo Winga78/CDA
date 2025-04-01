@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { createProject} from "../services/projectService";
 import {addParticipant} from "../services/projectUserService"
-import { useUser } from "../services/AuthGuard";
 import { UserRole } from "../models/UserRoleEnum";
 
 interface ProjectModalProps {
   show: boolean;
   handleClose: () => void;
+  user: any;
 }
 
-const ProjectModal: React.FC<ProjectModalProps> = ({ show, handleClose }) => {
-  const { user } = useUser();
+const ProjectModal: React.FC<ProjectModalProps> = ({ user, show, handleClose }) => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectDescription, setProjectDescription] = useState<string>("");
   const [message, setMessage] = useState<string>("");
@@ -19,7 +18,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ show, handleClose }) => {
     e.preventDefault();
     try {
       const data = await createProject({ name: projectName, description: projectDescription, user_id: user!.email });
-      await addParticipant({project_id : data.id !, participant_email : user!.email  , role : UserRole.ADMIN })
+      await addParticipant({project_id : data.id !, participant_id: user!.id  , role : UserRole.ADMIN })
       setMessage('Projet créé avec succès !')
       window.location.reload();
     } catch (error) {

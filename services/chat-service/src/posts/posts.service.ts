@@ -21,8 +21,6 @@ export class PostsService {
           project_id : createPostDto.project_id,
           titre : createPostDto.titre,
           description : createPostDto.description,
-          createdAt : new Date(),
-          modifiedAt : new Date()
         }
 
     return await this.postRepo.save(createPost);

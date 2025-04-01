@@ -12,9 +12,9 @@ const ParticipantModal = ({ project_id, show, handleClose }: any) => {
     e.preventDefault();
     try {
       if(role === "admin")
-       await addParticipant({project_id : Number(project_id) , participant_email : email , role: UserRole.ADMIN});
+       await addParticipant({project_id : Number(project_id) , participant_id : email , role: UserRole.ADMIN});
       else 
-       await addParticipant({project_id : Number(project_id) , participant_email : email , role: UserRole.USER});
+       await addParticipant({project_id : Number(project_id) , participant_id : email , role: UserRole.USER});
       handleClose();
       window.location.reload();
     } catch (error) {

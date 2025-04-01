@@ -107,7 +107,7 @@ describe('Vote Endpoints (e2e)', () => {
             expect(res.body.participant_id).toEqual(userConnected.id);
           });
           it('should not create chatRoom without authentication', async () => {
-            const res = await request(app.getHttpServer()).post('/post-user').send({post_id : post.id , participant_email : userConnected.email});
+            const res = await request(app.getHttpServer()).post('/post-user').send({post_id : post.id , participant_id : userConnected.id});
             expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
             expect(res.body).toHaveProperty('message', 'Token manquant');
           });         

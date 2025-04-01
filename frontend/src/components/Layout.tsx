@@ -2,38 +2,27 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 import { Outlet } from 'react-router-dom';
-import {useEffect , useState} from "react";
-import {findAllParticipantProject} from "../services/projectUserService";
-import { Project } from "../models/Project";
+import { useEffect, useState } from "react";
+import { getProfile } from "../services/authService";
+import SectionProject from "./SectionProject";
 
-type LayoutProps = {
-  // children: React.ReactNode;
-  isAuthenticated: boolean;
-  user?: { id: string; email: string; role: string; firstname : string , lastname : string };
-};
-
-const Layout: React.FC<LayoutProps> = ({isAuthenticated, user }) => {
-    const [projects, setProjects] = useState<Project[]>([]);
-
-    useEffect(() => {
-        const loadProject = async () => {
-          try {
-            const data = await findAllParticipantProject();
-            setProjects(data);
-          } catch (error) {
-            console.log(error)
-          }
-        };
-        loadProject();
-    }, []);
+const Layout = () => {
+  const [user, setUser] = useState<any>(null);
+  
+  useEffect(() => {
+    const storedUser = getProfile();
+    if (storedUser) {
+      setUser(storedUser);
+    }
+  }, []);
 
   return (
-    <div className="d-flex flex-column vh-100">
+    <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
       {/* Header */}
       <Navbar bg="dark" variant="dark" className="px-3 d-flex justify-content-between align-items-center">
         <Navbar.Brand href="/">Mon Logo</Navbar.Brand>
 
-        {isAuthenticated && (
+        {user && (
           <Nav className="mx-auto">
             <Nav.Link href="/projects">Projet</Nav.Link>
             <Nav.Link href="/accueil">Accueil</Nav.Link>
@@ -42,10 +31,10 @@ const Layout: React.FC<LayoutProps> = ({isAuthenticated, user }) => {
         )}
 
         <Nav>
-          {isAuthenticated ? (
+          {user ? (
             <Nav.Link href="/profile" className="d-flex align-items-center">
               <img
-                src={"/default-avatar.png"}
+                src={"/default-avatar.png"} // Vérifie le chemin de l'image
                 alt="Avatar"
                 className="rounded-circle"
                 width="40"
@@ -62,24 +51,11 @@ const Layout: React.FC<LayoutProps> = ({isAuthenticated, user }) => {
         </Nav>
       </Navbar>
       
-      {isAuthenticated && (
-        <div className="d-flex flex-grow-1">
-          {/* Navbar latérale */}
-          <div className="border-end p-3" style={{ width: "250px" }}>
-            <Nav className="flex-column">
-            {projects.map((project) => (
-            <Nav.Link href={`/project/${project.id}`}>{project.name}</Nav.Link>
-            ))}
-            </Nav>
-          </div>
-        </div>
-      )}
+      {user && <SectionProject />}
 
-     <div className="d-flex flex-column vh-100">
-        <Container>
-            <Outlet />
-        </Container>
-      </div>
+      <Container className="flex-grow-1">
+        <Outlet />
+      </Container>
       
       {/* Footer */}
       <footer className="text-center py-3 border-top mt-auto">

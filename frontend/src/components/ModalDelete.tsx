@@ -2,11 +2,10 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "react-bootst
 import { deleteProject } from "../services/projectService";
 import { useState } from "react";
 import {deleteProjectUser} from "../services/projectUserService"
-import { useUser } from "../services/AuthGuard";
 
-const DeleteModal = ({ project_id, show, handleClose}: any) => {
+const DeleteModal = ({ user , project_id, show, handleClose}: any) => {
   const [message, setMessage] = useState("");
-  const { user } = useUser();
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {

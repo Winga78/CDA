@@ -24,8 +24,6 @@ export class ProjectsService {
       user_id : user.id,
       name : createProjectDto.name,
       description : createProjectDto.description,
-      createdAt : new Date(),
-      modifiedAt : new Date()
     }
     return this.projectsRepository.save(createProject);
   }
@@ -55,7 +53,6 @@ export class ProjectsService {
     const updateProject : UpdateProjectDto = {
       name : updateProjectDto.name,
       description : updateProjectDto.description,
-      modifiedAt : new Date()
     }
     await this.projectsRepository.update(id, updateProject);
 

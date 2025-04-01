@@ -5,7 +5,7 @@ export interface ProjectUser {
    
     project_id: number;
 
-    participant_email: string;   
+    participant_id: string;   
 
     role?: UserRole;
 }
