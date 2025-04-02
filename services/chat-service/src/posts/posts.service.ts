@@ -14,13 +14,14 @@ export class PostsService {
     private readonly postRepo: Repository<Post>,
   ) { }
 
-  async create(user:any, createPostDto: CreatePostDto) : Promise<Post> {
+  async create(createPostDto: CreatePostDto) : Promise<Post> {
     
         const createPost : CreatePostDto = {
-          user_id : user.id,
+          user_id : createPostDto.user_id,
           project_id : createPostDto.project_id,
           titre : createPostDto.titre,
           description : createPostDto.description,
+          score : createPostDto.score,
         }
 
     return await this.postRepo.save(createPost);
@@ -38,11 +39,11 @@ export class PostsService {
   }
 
 
-  async findOneByProjectId(id: number) : Promise<Post | null>{
-    const post = await this.postRepo.findOneBy({project_id : id});
-    if(!post)
+  async findByProjectId(id: number) : Promise<Post[] | null>{
+    const posts = await this.postRepo.findBy({project_id : id});
+    if(posts.length === 0)
       throw new NotFoundException('Aucun post trouvé pour cet ID')
-    return post
+    return posts
   }
   
   async update(id: number, updatePostDto: UpdatePostDto) : Promise<UpdateResult> {

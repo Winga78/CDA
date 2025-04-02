@@ -68,7 +68,7 @@ export const deleteUser= async() : Promise<User | undefined> =>{
     }
 }
 
-export const getUser= async(id: string) =>{
+export const getUser= async(id: string) : Promise<User | undefined>=>{
   try {
       const response = await authService.get(`/users/${id}`);
      return response.data

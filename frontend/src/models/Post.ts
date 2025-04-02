@@ -4,6 +4,7 @@ export interface Post {
     project_id: string;
     titre: string;
     description: string;
+    score? : string;
     createdAt?: string;
     modifiedAt?: string;
 }

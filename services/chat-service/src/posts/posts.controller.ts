@@ -8,8 +8,8 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  create(@Request() req,@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(req.user,createPostDto);
+  create(@Body() createPostDto: CreatePostDto) {
+    return this.postsService.create(createPostDto);
   }
 
   @Get()
@@ -24,7 +24,7 @@ export class PostsController {
 
   @Get('project/:id')
   findOneByProjectId(@Param('id') id: string) {
-    return this.postsService.findOneByProjectId(+id);
+    return this.postsService.findByProjectId(+id);
   }
   
 

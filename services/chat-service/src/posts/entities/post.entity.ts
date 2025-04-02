@@ -6,8 +6,10 @@ export class Post {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
   user_id: string;
-
+  
+  @Column()
   project_id: number;
 
   @Column()
@@ -15,6 +17,9 @@ export class Post {
 
   @Column()
   description: string;
+
+  @Column()
+  score: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

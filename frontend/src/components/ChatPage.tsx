@@ -7,18 +7,38 @@ import { Container, Button } from "react-bootstrap";
 import { BsPlus } from "react-icons/bs";
 import { useUser } from "../context/UserContext";
 import { io, Socket } from 'socket.io-client';
-import { User } from "../models/User";
 import ParticipantModal from "../components/ModalAddParticipants";
+import { test } from '../services/postService';
+import SectionVote from './SectionVote';
 
 const ChatPage = () => {
     const { id } = useParams();
     const { user } = useUser();
     const [project, setProject] = useState<Project | null>(null);
     const [showModalAddParticipant, setShowModalAddParticipant] = useState(false);
-    const [messages, setMessages] = useState<{ id: number; room: string; user: User; message: string }[]>([]);
+    const [messages, setMessages] = useState<any[]>([]);
     const [message, setMessage] = useState('');
+    const [titre, setTitre] = useState('');
     const [room, setRoom] = useState('');
-    const socketRef = useRef<Socket | null>(null);  // Ajout du type Socket ou null
+    const socketRef = useRef<Socket | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    if (!id) return null; // Évite d'exécuter du code inutile si l'ID est absent
+
+    // Fonction pour charger les posts
+    const loadPosts = async () => {
+        try {
+            const posts = await test(id);
+            if(posts){
+                setMessages([...posts].sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0)));
+            }
+            
+        } catch (error) {
+            console.error("Erreur lors de la récupération des posts", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (!id) return;
@@ -31,29 +51,38 @@ const ChatPage = () => {
 
         const loadProject = async () => {
             try {
-                const storedProject = await getProject(id!);
+                const storedProject = await getProject(id);
                 setProject(storedProject || null);
             } catch (error) {
                 console.error("Erreur lors de la récupération du projet", error);
             }
         };
+
         loadProject();
+        loadPosts();
 
         socket.on('message', (data) => {
-            setMessages((prev) => [...prev, { id: Date.now(), ...data }]);
+            setMessages((prevMessages) => [...prevMessages, data]);
         });
 
         return () => {
-            socket.off('message');
-            socket.emit('leaveRoom', id);
-            socket.disconnect();
+            if (socketRef.current) {
+                socketRef.current.off('message');
+                socketRef.current.emit('leaveRoom', id);
+                socketRef.current.disconnect();
+            }
         };
-    }, [id]);
+    }, [id]); // Ajout des dépendances minimales
 
+    // Trie les posts par score (du plus haut au plus bas)
+    const sortedPosts = [...messages].sort((a, b) => b.score - a.score);
+
+    // Fonction d'envoi du message
     const sendMessage = () => {
-        if (!message.trim() || !user || !socketRef.current) return;
-        socketRef.current.emit('message', { room, user, message });
+        if (!message.trim() || !titre.trim() || !user || !socketRef.current) return;
+        socketRef.current.emit('message', { room, user, titre, message });
         setMessage('');
+        setTitre('');
     };
 
     return (
@@ -81,13 +110,30 @@ const ChatPage = () => {
 
             <div>
                 <h2>Chat en temps réel</h2>
-                <div>
-                    {messages.map((msg) => (
-                        <p key={msg.id}>
-                            <strong>{msg.user.firstname} {msg.user.lastname}:</strong> {msg.message}
-                        </p>
-                    ))}
-                </div>
+                
+                {/* Gestion du chargement */}
+                {isLoading ? (
+                    <p>Chargement des messages...</p>
+                ) : (
+                    <div>
+                        {sortedPosts.map((msg) => (
+                            <div key={msg.post_id}>
+                                <p>
+                                    <strong>{msg.user.firstname} {msg.user.lastname}:</strong> {msg.titre} {msg.description}
+                                </p>
+                                <SectionVote userId={msg.user._id} postId={msg.post_id} onVoteChange={loadPosts} />
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <input
+                    type="text"
+                    value={titre}
+                    onChange={(e) => setTitre(e.target.value)}
+                    placeholder="Écris un titre..."
+                />
+
                 <input
                     type="text"
                     value={message}

@@ -8,11 +8,17 @@ import {
     OnGatewayDisconnect,
   } from '@nestjs/websockets';
   import { Server, Socket } from 'socket.io';
-  
+  import { PostsService } from './posts/posts.service';
+  import { CreatePostDto } from './posts/dto/create-post.dto';
+
   @WebSocketGateway({ cors: { origin: '*' } }) // Autoriser toutes les origines
   export class SocketGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   {
+    constructor(
+       private readonly postService: PostsService,
+     ) { }
+
     @WebSocketServer()
     server: Server;
   
@@ -48,9 +54,32 @@ import {
 
   
     @SubscribeMessage('message')
-    handleMessage(socket: Socket, @MessageBody() data: { room : string , user: any; message: string }) {
-      console.log(`Message reçu dans la room ${data.room}: ${data.message}`);
-      this.server.to(data.room).emit('message', {user: data.user , message : data.message}); // Envoi du message à tous les clients
+    async handleMessage(socket: Socket, @MessageBody() data: { room: string; user: any; message: string; titre: string }) {
+    console.log(`Message reçu dans la room ${data.room}: ${data.message}`);
+
+      const newPost: CreatePostDto = {
+      user_id: data.user.id,
+      project_id: Number(data.room),
+      titre: data.titre,
+      description: data.message,
+      score : 0
+      };
+
+      try {
+        const createpost = await this.postService.create(newPost);
+      // Envoi du message à tous les clients de la room après l'enregistrement
+        this.server.to(data.room).emit('message', {
+        user: data.user,
+        description: createpost.description,
+        titre: createpost.titre,
+        post_id: createpost.project_id,
+        score : createpost.score
+       });
+      } catch (error) {
+       console.error('Erreur lors de la création du post :', error);
+       socket.emit('error', { message: 'Impossible de sauvegarder le message' });
+      }
     }
-  }
+
+}
   

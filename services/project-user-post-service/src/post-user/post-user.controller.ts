@@ -16,8 +16,14 @@ export class PostUserController {
     return this.postUserService.findAllVoteByPostId(+id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string ,@Request() req) {
-    return this.postUserService.remove(+id,req.user.id);
+  @Get(':id/:user_id')
+  checkVote(@Param('id') id: string, @Param('user_id') user_id: string) {
+    return this.postUserService.findVoteCheck(+id , user_id);
   }
+
+  @Delete(':id/:user_id')
+  remove(@Param('id') id: string, @Param('user_id') user_id: string ) {
+      return this.postUserService.remove(+id, user_id);
+  }
+  
 }

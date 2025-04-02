@@ -15,4 +15,7 @@ export class CreatePostDto {
 
   @IsString()
   readonly description: string;
+
+  @IsInt()
+  readonly score: number;
 }
