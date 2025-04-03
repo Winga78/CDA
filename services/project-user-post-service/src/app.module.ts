@@ -12,6 +12,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PostUserModule } from './post-user/post-user.module';
 import { AuthModule } from './guard/auth.module';
+import { SocketGateway } from './socket.gateway';
 
 @Module({
   imports: [
@@ -52,7 +53,9 @@ ProjectUserModule,
 AuthModule
 ],
   controllers: [AppController],
-  providers: [AppService,
+  providers: [
+    AppService,
+    SocketGateway,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

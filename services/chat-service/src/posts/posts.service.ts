@@ -40,7 +40,11 @@ export class PostsService {
 
 
   async findByProjectId(id: number) : Promise<Post[] | null>{
-    const posts = await this.postRepo.findBy({project_id : id});
+    const posts = await this.postRepo.find({
+      where: { project_id: id },
+      order: { score: "DESC" }
+    });
+    
     if(posts.length === 0)
       throw new NotFoundException('Aucun post trouvé pour cet ID')
     return posts

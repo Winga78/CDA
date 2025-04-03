@@ -45,7 +45,7 @@ export const updatePost = async(post_id : string, updatePost : any) : Promise<Po
   }
 }
 
-export const test = async(project_id : string)=>{
+export const postsList = async(project_id : string)=>{
   const posts = await findByProjectId(project_id)
   let posts_user = []
   if (posts){

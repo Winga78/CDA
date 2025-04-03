@@ -47,7 +47,7 @@ export class PostUserService {
   
       await this.postsUsersRepository.delete({ post_id, participant_id: user_id });
   
-      return { message: "Vote supprimé avec succès" };
+      return `${postUser} a bien été supprimé`;
     }
   
 }

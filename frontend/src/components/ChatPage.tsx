@@ -8,7 +8,7 @@ import { BsPlus } from "react-icons/bs";
 import { useUser } from "../context/UserContext";
 import { io, Socket } from 'socket.io-client';
 import ParticipantModal from "../components/ModalAddParticipants";
-import { test } from '../services/postService';
+import { postsList } from '../services/postService';
 import SectionVote from './SectionVote';
 
 const ChatPage = () => {
@@ -28,11 +28,10 @@ const ChatPage = () => {
     // Fonction pour charger les posts
     const loadPosts = async () => {
         try {
-            const posts = await test(id);
+            const posts = await postsList(id);
             if(posts){
-                setMessages([...posts].sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0)));
-            }
-            
+                setMessages(posts);
+            }  
         } catch (error) {
             console.error("Erreur lors de la récupération des posts", error);
         } finally {
@@ -64,11 +63,12 @@ const ChatPage = () => {
         socket.on('message', (data) => {
             setMessages((prevMessages) => [...prevMessages, data]);
         });
-
+          
         return () => {
             if (socketRef.current) {
-                socketRef.current.off('message');
-                socketRef.current.emit('leaveRoom', id);
+                socketRef.current.off("message");
+                
+                socketRef.current.emit("leaveRoom", id);
                 socketRef.current.disconnect();
             }
         };
@@ -121,7 +121,8 @@ const ChatPage = () => {
                                 <p>
                                     <strong>{msg.user.firstname} {msg.user.lastname}:</strong> {msg.titre} {msg.description}
                                 </p>
-                                <SectionVote userId={msg.user._id} postId={msg.post_id} onVoteChange={loadPosts} />
+ 
+                                <SectionVote userId={user!.id} postId={msg.post_id} onVoteChange={loadPosts} />
                             </div>
                         ))}
                     </div>

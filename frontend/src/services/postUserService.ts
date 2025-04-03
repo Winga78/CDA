@@ -27,7 +27,7 @@ export const createVote = async (postUser : PostUser): Promise<PostUser> => {
 };
 
 
-export const getVote = async (post_id: string): Promise<{ postsUsers: PostUser[], count: number }> => {
+export const getVote = async (post_id: string) => {
     try {
       const response = await voteService.get(`/post-user/${post_id}`);
       return response.data;

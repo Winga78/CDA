@@ -1,15 +1,22 @@
 import { FaArrowUp } from "react-icons/fa"; // Import de l'icône
-import { useState, useEffect } from "react";
+import { useState, useEffect , useRef} from "react";
 import { Button } from "react-bootstrap";
-import { createVote, DeleteVote, checkIfVoted, getVote } from "../services/postUserService";
-import { updatePost } from "../services/postService";
+import { checkIfVoted, getVote } from "../services/postUserService";
+import { io, Socket } from 'socket.io-client';
 
-const SectionVote = ({ userId, postId, onVoteChange }: { userId: string; postId: string; onVoteChange: () => void }) => {
-  const [voted, setVoted] = useState(false); // Suivi du vote
-  const [score, setScore] = useState(0); // Nombre total de votes
+const SectionVote = ({ userId, postId, onVoteChange}: { userId: string; postId: string; onVoteChange: () => void}) => {
+  const [score, setScore] = useState(0);
+  const socketRef = useRef<Socket | null>(null);
+  const [room, setRoom] = useState('');
+  const [voted, setVoted] = useState(false); // Suivi du vote  
 
-  // Vérifie si l'utilisateur a déjà voté et récupère le score des votes
   useEffect(() => {
+    setRoom(postId);
+    socketRef.current = io('http://192.168.58.161:3003/');
+    const socket = socketRef.current;
+
+    socket.emit('joinRoom', postId);
+
     const fetchVoteStatus = async () => {
       try {
         const hasVoted = await checkIfVoted(postId, userId);
@@ -30,41 +37,42 @@ const SectionVote = ({ userId, postId, onVoteChange }: { userId: string; postId:
       }
     };
 
-    fetchVoteStatus();
+    fetchVoteStatus()
     fetchCountVote();
-  }, [userId, postId, voted]); // Ajout de voted pour forcer le rechargement après un vote
 
-  // Fonction pour voter ou annuler le vote
+    const handleVoteUpdate = (data: any) => {
+      setVoted(data.isVoted)
+      setScore(data.score)
+    };
+  
+    socket.on("statusVote", handleVoteUpdate);
+  
+    return () => {
+      socket.off("statusVote");
+      socket.emit("leaveRoom", postId);
+      socket.disconnect();
+    };
+
+  }, [userId, postId ,score]);
+
   const handleVote = async () => {
     try {
       if (voted) {
-        // Annulation du vote
-        const response = await DeleteVote(postId, userId);
-        if (response) {
-          const responseUpdate = await updatePost(postId, {score:score - 1});
-          if (responseUpdate) {
-            setScore((prevScore) => prevScore - 1);
-            setVoted(false);
-            onVoteChange();
-          }
-        }
+        if(!socketRef.current) return;
+         socketRef.current.emit('deleteVote', {room: room, userId: userId});
+         onVoteChange()
+
       } else {
-        // Création du vote
-        const response = await createVote({ participant_id: userId, post_id: postId });
-        if (response) {
-          const responseUpdate = await updatePost(postId, {score:score + 1});
-          if (responseUpdate) {
-            setScore((prevScore) => prevScore + 1);
-            setVoted(true);
-            onVoteChange();
-          }
-        }
+        if(!socketRef.current) return;
+         socketRef.current.emit('createVote', {room: room, userId: userId});
+         onVoteChange()
       }
+      
     } catch (error) {
       console.error("Erreur lors du vote", error);
     }
   };
-
+  
   return (
     <div className="d-flex flex-column align-items-center">
       <Button
@@ -72,7 +80,7 @@ const SectionVote = ({ userId, postId, onVoteChange }: { userId: string; postId:
         onClick={handleVote}
         style={{ width: "40px", height: "40px", borderRadius: "50%" }}
       >
-        <FaArrowUp size={24} color={voted ? "green" : "black"} />
+        <FaArrowUp size={24} color={score ? "green" : "black"} />
       </Button>
       <p>{score} vote{score !== 1 ? "s" : ""}</p>
       <p>{voted ? "Annuler le vote" : "Cliquez pour voter"}</p>

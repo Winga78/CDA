@@ -8,15 +8,15 @@ import {
     OnGatewayDisconnect,
   } from '@nestjs/websockets';
   import { Server, Socket } from 'socket.io';
-  import { PostsService } from './posts/posts.service';
-  import { CreatePostDto } from './posts/dto/create-post.dto';
+  import { PostUserService } from './post-user/post-user.service';
+  import { CreatePostUserDto } from './post-user/dto/create-post-user.dto';
 
   @WebSocketGateway({ cors: { origin: '*' } }) // Autoriser toutes les origines
   export class SocketGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   {
     constructor(
-       private readonly postService: PostsService,
+       private readonly postUserService: PostUserService,
      ) { }
 
     @WebSocketServer()
@@ -53,41 +53,36 @@ import {
     }
 
   
-    @SubscribeMessage('message')
-    async handleMessage(socket: Socket, @MessageBody() data: { room: string; user: any; message: string; titre: string }) {
-    console.log(`Message reçu dans la room ${data.room}: ${data.message}`);
-
-      const newPost: CreatePostDto = {
-      user_id: data.user.id,
-      project_id: Number(data.room),
-      titre: data.titre,
-      description: data.message,
-      score : 0
+    @SubscribeMessage('createVote')
+    async handleCreateVote(socket: Socket, @MessageBody() data: { room: string; userId: string }) {
+       const {userId, room} = data
+      const newPostUser: CreatePostUserDto = {
+        participant_id: userId,
+        post_id: Number(room),
       };
 
       try {
-        const createpost = await this.postService.create(newPost);
+        const createpostUser = await this.postUserService.create(newPostUser);
       // Envoi du message à tous les clients de la room après l'enregistrement
-        this.server.to(data.room).emit('message', {
-        user: data.user,
-        description: createpost.description,
-        titre: createpost.titre,
-        post_id: createpost.project_id,
-        score : createpost.score
+        this.server.to(data.room).emit('createVote', {
+        id: createpostUser.id,
+        participant_id: createpostUser.participant_id,
+        post_id: createpostUser.post_id,
        });
+       const score = await this.postUserService.findAllVoteByPostId(+room);
+       this.server.to(data.room).emit("statusVote", { isVoted : true , score : score});
       } catch (error) {
-       console.error('Erreur lors de la création du post :', error);
-       socket.emit('error', { message: 'Impossible de sauvegarder le message' });
+       console.error('Erreur lors de la création du vote :', error);
+       socket.emit('error', { message: 'Impossible de sauvegarder le vote' });
       }
     }
     
-    @SubscribeMessage('vote')
-    async handleVote(socket: Socket,@MessageBody() data: { postId: string; score: number}) {
-      const { postId, score} = data;
-  
-      await this.postService.update(+postId, { score });
-      // Diffuser la mise à jour du score en temps réel
-      this.server.emit("voteUpdate", { postId, score });
+    @SubscribeMessage('deleteVote')
+    async handleDeleteVote(socket: Socket,@MessageBody() data: { userId: string , room : string}) {
+      const { room, userId} = data;
+      await this.postUserService.remove(+room, userId);
+      const score = await this.postUserService.findAllVoteByPostId(+room);
+      this.server.to(data.room).emit("statusVote", { isVoted : false , score : score });
     }
 }
   

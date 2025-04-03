@@ -65,6 +65,7 @@ export default defineConfig({
       '/api/project-user-post': {
         target: process.env.VITE_PROJECT_USER_POST_SERVICE_URL || 'http://localhost:3003',
         changeOrigin: true,
+        ws: true,
         rewrite: (path) => path.replace(/^\/api\/project-user-post/, ''),
         configure: (proxy) => {
           proxy.on('proxyReq', (proxyReq) => {
