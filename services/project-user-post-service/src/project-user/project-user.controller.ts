@@ -1,12 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
 import { ProjectUserService } from './project-user.service';
 import { CreateProjectUserDto } from './dto/create-project-user.dto';
+import { Roles } from './roles.decorator';
+import { UserRole } from './entities/UserRoleEnum';
+import { RolesGuard } from 'src/guard/roles.guard';
 
 @Controller('project-user')
 export class ProjectUserController {
   constructor(private readonly projectUserService: ProjectUserService) {}
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   create(@Body() createProjectUserDto: CreateProjectUserDto){
     return this.projectUserService.create(createProjectUserDto);
   }
@@ -18,7 +23,7 @@ export class ProjectUserController {
 
   @Get('projects')
   findProjectsByUserEmail(@Request() req) {
-    return this.projectUserService.findProjectsByUserEmail(req.user.id);
+    return this.projectUserService.findProjectsByUserId(req.user.id);
   }
 
   @Get('/last')

@@ -10,7 +10,7 @@ export class ProjectUserService {
     @InjectRepository(ProjectUser)
     private projectsUsersRepository: Repository<ProjectUser>,
   ) {}
-
+  
   async create(createProjectUserDto: CreateProjectUserDto): Promise<ProjectUser> {
     const existingProjectUser = await this.projectsUsersRepository.findOneBy({project_id : createProjectUserDto.project_id , participant_id : createProjectUserDto.participant_id })
     if(existingProjectUser){
@@ -28,7 +28,7 @@ export class ProjectUserService {
     return project;
   }
 
-  async findProjectsByUserEmail(id: string): Promise<ProjectUser[]>{
+  async findProjectsByUserId(id: string): Promise<ProjectUser[]>{
     const project = await this.projectsUsersRepository.findBy({participant_id: id });
     if (!project) {
       throw new NotFoundException('Aucun project trouvé pour cette email');
@@ -44,7 +44,19 @@ export class ProjectUserService {
       .getMany();
     return projects;
   }
-
+ 
+  async findUserByProject(project_id: number, user_id: string) {
+    const projectUser = await this.projectsUsersRepository.createQueryBuilder('project_user')
+      .where('project_user.participant_id = :user_id AND project_user.project_id = :project_id', { user_id, project_id })
+      .getOne();
+    
+    if (!projectUser) {
+      throw new NotFoundException('Aucun participant trouvé pour cet ID dans ce projet');
+    }
+  
+    return projectUser;
+  }
+  
 
   async removeUserParticipation(id: number, user_id: string) {
     const project = await this.projectsUsersRepository.findOneBy({

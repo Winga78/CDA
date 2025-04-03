@@ -5,6 +5,7 @@ export interface User {
     email: string;
     password: string;
     birthday : string;
+    avatar? : string;
 }
 
 export interface UserUpdate {

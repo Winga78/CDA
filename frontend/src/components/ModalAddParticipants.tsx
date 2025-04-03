@@ -8,7 +8,6 @@ const ParticipantModal = ({ project_id, show, handleClose }: any) => {
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("user");
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {

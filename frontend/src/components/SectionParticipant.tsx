@@ -17,7 +17,8 @@ const SectionParticipant = () => {
       try {
         const data: ProjectUser[] = (await findParticipant(id)) || [];
         const users = await Promise.all(data.map(user => getUser(user.participant_id)));
-        setParticipants(users);
+        const filteredUsers = users.filter((user): user is User => user !== undefined);
+        setParticipants(filteredUsers);
       } catch (error) {
         console.error("Erreur lors du chargement des participants :", error);
       }
