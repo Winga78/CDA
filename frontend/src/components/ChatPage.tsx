@@ -72,7 +72,7 @@ const ChatPage = () => {
                 socketRef.current.disconnect();
             }
         };
-    }, [id]); // Ajout des dépendances minimales
+    }, [id]);
 
     // Trie les posts par score (du plus haut au plus bas)
     const sortedPosts = [...messages].sort((a, b) => b.score - a.score);

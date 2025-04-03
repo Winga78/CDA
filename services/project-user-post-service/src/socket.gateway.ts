@@ -19,6 +19,7 @@ import {
        private readonly postUserService: PostUserService,
      ) { }
 
+    
     @WebSocketServer()
     server: Server;
   
@@ -69,6 +70,7 @@ import {
         participant_id: createpostUser.participant_id,
         post_id: createpostUser.post_id,
        });
+      
        const score = await this.postUserService.findAllVoteByPostId(+room);
        this.server.to(data.room).emit("statusVote", { isVoted : true , score : score});
       } catch (error) {

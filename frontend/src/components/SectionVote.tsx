@@ -3,6 +3,7 @@ import { useState, useEffect , useRef} from "react";
 import { Button } from "react-bootstrap";
 import { checkIfVoted, getVote } from "../services/postUserService";
 import { io, Socket } from 'socket.io-client';
+import { updatePost } from "../services/postService";
 
 const SectionVote = ({ userId, postId, onVoteChange}: { userId: string; postId: string; onVoteChange: () => void}) => {
   const [score, setScore] = useState(0);
@@ -10,7 +11,11 @@ const SectionVote = ({ userId, postId, onVoteChange}: { userId: string; postId: 
   const [room, setRoom] = useState('');
   const [voted, setVoted] = useState(false); // Suivi du vote  
 
+  if (!postId) return null;
+
   useEffect(() => {
+    if (!postId) return;
+
     setRoom(postId);
     socketRef.current = io('http://192.168.58.161:3003/');
     const socket = socketRef.current;
@@ -40,11 +45,12 @@ const SectionVote = ({ userId, postId, onVoteChange}: { userId: string; postId: 
     fetchVoteStatus()
     fetchCountVote();
 
-    const handleVoteUpdate = (data: any) => {
+    const handleVoteUpdate = async(data: any) => {
       setVoted(data.isVoted)
       setScore(data.score)
+      await updatePost(postId, { score : data.score})
+      onVoteChange()
     };
-  
     socket.on("statusVote", handleVoteUpdate);
   
     return () => {
@@ -53,19 +59,16 @@ const SectionVote = ({ userId, postId, onVoteChange}: { userId: string; postId: 
       socket.disconnect();
     };
 
-  }, [userId, postId ,score]);
+  }, [postId , userId]);
 
   const handleVote = async () => {
     try {
       if (voted) {
         if(!socketRef.current) return;
          socketRef.current.emit('deleteVote', {room: room, userId: userId});
-         onVoteChange()
-
       } else {
         if(!socketRef.current) return;
          socketRef.current.emit('createVote', {room: room, userId: userId});
-         onVoteChange()
       }
       
     } catch (error) {

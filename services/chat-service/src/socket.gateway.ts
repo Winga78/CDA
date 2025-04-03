@@ -80,14 +80,5 @@ import {
        socket.emit('error', { message: 'Impossible de sauvegarder le message' });
       }
     }
-    
-    @SubscribeMessage('vote')
-    async handleVote(socket: Socket,@MessageBody() data: { postId: string; score: number}) {
-      const { postId, score} = data;
-  
-      await this.postService.update(+postId, { score });
-      // Diffuser la mise à jour du score en temps réel
-      this.server.emit("voteUpdate", { postId, score });
-    }
 }
   
