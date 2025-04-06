@@ -18,4 +18,10 @@ export class CreatePostDto {
 
   @IsInt()
   readonly score: number;
+
+  @IsDateString()
+  readonly createdAt?: Date;
+
+  @IsDateString()
+  readonly modifiedAt?: Date;
 }

@@ -129,8 +129,6 @@ const ChatPage = () => {
   ) : (
     messages.map((msg) => (
       <div key={msg.post_id} className="mb-3 d-flex align-items-center">
-      
-        {/* Message de l'utilisateur */}
         <div>
           <Alert variant="info">
           <img
@@ -150,7 +148,6 @@ const ChatPage = () => {
     ))
   )}
 </div>
-    
             {error && <Alert variant="danger">{error}</Alert>}
     
             <Form>

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { lastProjects } from "../services/projectUserService";
 import { Project } from "../models/Project";
+import NotificationSection from './SectionNotification';
 
 const AccueilPage = () => {
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +57,7 @@ const AccueilPage = () => {
   }
 
   return (
+    <div>
     <div className="container my-5">
       <h2 className="mb-4">Projets récents</h2>
       {message && <div className="alert alert-info">{message}</div>}
@@ -64,12 +66,10 @@ const AccueilPage = () => {
           <div key={project.id} className="col-md-4 mb-4">
             <div 
               className="card shadow-sm h-100"
-              style={{ backgroundColor: randomColor }} // Appliquer la couleur en arrière-plan
+              style={{ backgroundColor: randomColor }}
             >
-              {/* Optionnel : tu peux ajouter une image ici si tu veux */}
-              {/* <img src="image-path.jpg" className="card-img-top" alt="Image" /> */}
               <div className="card-body d-flex flex-column justify-content-between">
-                <h5 className="card-title text-white">{project.name}</h5> {/* Texte en blanc */}
+                <h5 className="card-title text-white">{project.name}</h5>
                 <Link to={`/project/${project.id}`} className="btn btn-outline-light mt-3">
                   Voir le projet
                 </Link>
@@ -78,6 +78,8 @@ const AccueilPage = () => {
           </div>
         ))}
       </div>
+    </div>
+    <NotificationSection></NotificationSection>
     </div>
   );
 

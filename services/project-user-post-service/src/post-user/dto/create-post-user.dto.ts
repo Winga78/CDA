@@ -9,4 +9,10 @@ export class CreatePostUserDto {
     @IsInt()
     readonly post_id: number
 
+    @IsDateString()
+    readonly createdAt?: Date;
+  
+    @IsDateString()
+    readonly modifiedAt?: Date;
+
 }

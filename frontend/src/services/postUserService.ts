@@ -56,3 +56,13 @@ export const checkIfVoted = async (post_id : string, participant_id : string): P
     throw new Error("Impossible de récupérer le status des votes. Veuillez réessayer.");
   }
 };
+
+export const notificationPost= async()=>{
+  try{
+    const response = await voteService.get(`/post-user/notification/posts/details`);
+    return response.data
+  }catch(error : any){
+    console.error("Erreur lors de la récupération des votes :", error.message);
+    throw new Error("Impossible de récupérer des notifications. Veuillez réessayer.");
+  }
+}

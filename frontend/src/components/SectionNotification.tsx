@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, ListGroup, Badge } from "react-bootstrap";
+import { ListGroup, Badge } from "react-bootstrap";
 import { BsBellFill } from "react-icons/bs";
 import { notificationPost } from "../services/postUserService";
 
@@ -10,7 +10,7 @@ interface Notification {
   isRead?: boolean;
 }
 
-function NotificationPage() {
+function NotificationSection() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +24,8 @@ function NotificationPage() {
         if (!data || data.length === 0) {
           setMessage("Aucune notification trouvée");
         } else {
-          const notificationsWithReadFlag = data.map((notif: any, index: number) => ({
+          // Récupérer uniquement les 3 dernières notifications
+          const notificationsWithReadFlag = data.slice(0, 3).map((notif: any, index: number) => ({
             id: index + 1,
             post_id: notif.post?.id || 0,
             message: `${notif.user.firstname} ${notif.user.lastname} a voté dans ${notif.project.name}`,
@@ -42,14 +43,6 @@ function NotificationPage() {
     loadNotifications();
   }, []);
 
-  const markAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((notif) =>
-        notif.id === id ? { ...notif, isRead: true } : notif
-      )
-    );
-  };
-
   if (error) {
     return <div className="alert alert-danger">Erreur : {error}</div>;
   }
@@ -59,20 +52,25 @@ function NotificationPage() {
   }
 
   return (
-    <Container className="mt-4">
-      <h3>
-        <BsBellFill className="me-2" />
-        Notifications
-      </h3>
-      {message && <div className="alert alert-info">{message}</div>}
+    <div
+      style={{
+        position: "fixed",
+        right: "20px", 
+        bottom: "400px",
+        width: "300px",
+        zIndex: 9999,
+      }}
+    >
+      <div className="alert alert-info">
+        <h4>
+          <BsBellFill className="me-2" />
+          Notifications
+        </h4>
+        {message && <div>{message}</div>}
+      </div>
       <ListGroup className="mt-3">
         {notifications.map((notif) => (
-          <ListGroup.Item
-            key={notif.id}
-            action
-            onClick={() => markAsRead(notif.id)}
-            variant={notif.isRead ? "light" : "primary"}
-          >
+          <ListGroup.Item key={notif.id}>
             {notif.message}
             {!notif.isRead && (
               <Badge bg="danger" className="ms-2">
@@ -82,8 +80,8 @@ function NotificationPage() {
           </ListGroup.Item>
         ))}
       </ListGroup>
-    </Container>
+    </div>
   );
 }
 
-export default NotificationPage;
+export default NotificationSection;

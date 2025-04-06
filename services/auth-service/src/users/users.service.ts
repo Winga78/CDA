@@ -41,20 +41,21 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User | null> {
-
     if (!Types.ObjectId.isValid(id)) {
       throw new NotFoundException('ID invalide');
-    } 
-
-    const user = await this.userModel.findOne({ _id: new Types.ObjectId(id) });
-
+    }
+  
+    const user = await this.userModel
+      .findOne({ _id: new Types.ObjectId(id) })
+      .select('-password');
+  
     if (!user) {
       throw new NotFoundException('Utilisateur non trouvé');
     }
-
-    
-   return user;
+  
+    return user;
   }
+  
 
   async findOneByEmail(email: string): Promise<User> {
     const user = await this.userModel.findOne({ email : email }).exec();

@@ -10,4 +10,10 @@ export class PostUser {
 
     @Column()
     post_id : number;
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+  
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    modifiedAt: Date;
 }
