@@ -15,6 +15,10 @@ export const database  = {
     entities: [ProjectUser]
 }
 
+export const api_project_URL = process.env.PROJECT_DOCKER_URL||"http://localhost:3002";
+export const api_auth_URL = process.env.AUTH_DOCKER_URL|| "http://localhost:3000";
+export const api_chat_URL = process.env.CHAT_DOCKER_URL|| "http://localhost:3001";
+
 export const imports = [
     TypeOrmModule.forRoot(database),
     AppModule,

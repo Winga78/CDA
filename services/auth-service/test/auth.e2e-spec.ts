@@ -38,9 +38,7 @@ const createUser: CreateUserDto = {
   lastname: faker.person.lastName(),
   password: faker.internet.password(),
   email: faker.internet.email(),
-  birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
-  role: 'user',
-  createdAt: faker.date.soon({ refDate: '2023-01-01T00:00:00.000Z' }),
+  birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' })
 };
 
 describe('Auth Endpoints (e2e)', () => {
@@ -56,7 +54,6 @@ describe('Auth Endpoints (e2e)', () => {
       expect(res.body.lastname).toEqual(createUser.lastname);
       expect(res.body.email).toEqual(createUser.email);
       expect(new Date(res.body.birthday)).toEqual(createUser.birthday);
-      expect(res.body.role).toEqual(createUser.role);
     });
 
     it('should not create a duplicate user', async () => {
@@ -94,7 +91,6 @@ describe('Auth Endpoints (e2e)', () => {
 
       const decoded = await jwtService.verifyAsync(res.body.access_token, { secret: jwt_secret });
       expect(decoded).toHaveProperty('email', createUser.email);
-      expect(decoded).toHaveProperty('role', createUser.role);
     });
 
     it('should not login with wrong password', async () => {
@@ -138,7 +134,6 @@ describe('Auth Endpoints (e2e)', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('id');
       expect(res.body).toHaveProperty('email', createUser.email);
-      expect(res.body).toHaveProperty('role', createUser.role);
     });
 
     it('should not get profile without token', async () => {

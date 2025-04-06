@@ -24,8 +24,9 @@ export class PostUserService {
       return this.postsUsersRepository.save(createPostUserDto);
     }
   
-    async findAllVoteByPostId(id: number) {
-      return await this.postsUsersRepository.count({ where: { post_id: id } });
+    async findAllVoteByPostId(id: number) : Promise<{count : number}>{
+      const count = await this.postsUsersRepository.count({ where: { post_id: id } });
+      return {count : count}
     }
   
     async findVoteCheck(id: number, participant_id: string) {
@@ -47,7 +48,7 @@ export class PostUserService {
   
       await this.postsUsersRepository.delete({ post_id, participant_id: user_id });
   
-      return `${postUser} a bien été supprimé`;
+      return {message : 'Vote supprimé avec succès'};
     }
   
 }

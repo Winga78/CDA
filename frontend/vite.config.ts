@@ -8,8 +8,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
   },
+
   server: {
-    port: 4000,
+    port: Number(process.env.PORT) || 4000,
     host: '0.0.0.0',
     cors: true,
     proxy: {

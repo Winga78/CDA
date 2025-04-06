@@ -2,7 +2,7 @@ import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { database, imports } from './constants';
+import { database, imports, api_auth_URL, api_project_URL } from './constants';
 import { faker } from '@faker-js/faker';
 import { ProjectUser } from '../src/project-user/entities/project-user.entity';
 import axios from 'axios';
@@ -44,29 +44,25 @@ const createUser = {
     password: faker.internet.password(),
     email: faker.internet.email(),
     birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
-    role: 'user',
-    createdAt: faker.date.soon({ refDate: '2023-01-01T00:00:00.000Z' }),
 };
 
 const createProject = {
     user_id: userConnected?.id,
     name: faker.lorem.words(3),
     description: faker.lorem.sentence(),
-    createdAt: new Date(),
-    modifiedAt: new Date(),
 };
 
 describe('ChatRoom Endpoints (e2e)', () => {
     beforeAll(async () => {
-        const createUserResponse = await axios.post(`http://auth-service:3000/users`, createUser);
-        const loginRes = await axios.post(`http://auth-service:3000/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
+        const createUserResponse = await axios.post(`${api_auth_URL}/users`, createUser);
+        const loginRes = await axios.post(`${api_auth_URL}/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
     
         token = loginRes.data.access_token;
     
         const userProfile = await request(app.getHttpServer()).get('/relation/profile').set('Authorization', `Bearer ${token}`);
         userConnected = userProfile.body;
 
-        const projectResponse = await axios.post(`http://project-service:3002/projects/`, createProject, {
+        const projectResponse = await axios.post(`${api_project_URL}/projects/`, createProject, {
           headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
@@ -83,10 +79,12 @@ describe('ChatRoom Endpoints (e2e)', () => {
               .send({project_id : project.id , participant_id : userConnected.id});
             expect(res.statusCode).toBe(HttpStatus.CREATED);
             expect(res.body.project_id).toEqual(project.id);
-            expect(res.body.participant_id).toEqual(userConnected.email);
+            expect(res.body.participant_id).toEqual(userConnected.id);
           });
           it('should not create chatRoom without authentication', async () => {
-            const res = await request(app.getHttpServer()).post('/project-user').send({project_id : project.id , participant_id : userConnected.id});
+            const res = await request(app.getHttpServer())
+            .post('/project-user')
+            .send({project_id : project.id , participant_id : userConnected.id});
             expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
             expect(res.body).toHaveProperty('message', 'Token manquant');
           });         
@@ -125,19 +123,9 @@ describe('ChatRoom Endpoints (e2e)', () => {
         expect(res.body).toBeDefined();
       });
     
-      it('should return 404 when ID does not exist', async () => {
-        const res = await request(app.getHttpServer())
-          .get(`/project-user/users/444`)
-          .set('Authorization', `Bearer ${token}`);
-    
-        expect(res.statusCode).toBe(404);
-        expect(res.body).toHaveProperty('message', 'Aucun project trouvé pour cet id');
-        expect(res.body).toBeDefined();
-      });
-    
       it('should not return project without authentication', async () => {
-        const res = await request(app.getHttpServer()).get(`/project-user/users/${project.id}`);
-    
+        const res = await request(app.getHttpServer())
+        .get(`/project-user/users/${project.id}`);
         expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
         expect(res.body).toHaveProperty('message', 'Token manquant');
         expect(res.body).toBeDefined();
@@ -159,7 +147,7 @@ describe('ChatRoom Endpoints (e2e)', () => {
       
       it('should delete a project', async () => {
         const res = await request(app.getHttpServer())
-          .delete(`/project-user/${project.id}`)
+          .delete(`/project-user/${project.id}/${userConnected.id}`)
           .send({email : userConnected.email})
           .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toBe(200);
@@ -167,7 +155,8 @@ describe('ChatRoom Endpoints (e2e)', () => {
       });
   
       it('should return 404 when project ID does not exist', async () => {
-        const res = await request(app.getHttpServer()).delete(`/project-user/${project.id}`)
+        const res = await request(app.getHttpServer())
+        .delete(`/project-user/${project.id}/${userConnected.id}`)
         .send(userConnected.email)
         .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toBe(404);
@@ -175,14 +164,16 @@ describe('ChatRoom Endpoints (e2e)', () => {
       });
   
       it('should not delete project without authentication', async () => {
-        const res = await request(app.getHttpServer()).delete(`/project-user/${project.id}`)
+        const res = await request(app.getHttpServer())
+        .delete(`/project-user/${project.id}/${userConnected.id}`)
         .send(userConnected.email);
         expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
         expect(res.body).toHaveProperty('message', 'Token manquant');
       });
   
       it('should not delete project with invalid token', async () => {
-        const res = await request(app.getHttpServer()).delete(`/project-user/${project.id}`)
+        const res = await request(app.getHttpServer())
+        .delete(`/project-user/${project.id}/${userConnected.id}`)
         .send(userConnected.email)
         .set('Authorization', 'Bearer invalid-token');
         expect(res.statusCode).toBe(401);

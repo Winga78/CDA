@@ -26,18 +26,17 @@ export const lastProjects = async (): Promise<Project[]> => {
 
     for (let i = 0; i < projects.data.length; i++) {
       const projectId = projects.data[i].project_id;
-      if (typeof projectId === 'number') { // Vérifier que l'id est bien un nombre
+      if (typeof projectId === 'number') {
         const project = await projectServiceRes(projectId);
         list_last_project.push(project);
       } else {
-        console.warn(`Id invalide pour le projet à l'index ${i}:`, projectId);
+        console.error(`Id invalide pour le projet à l'index ${i}:`, projectId);
       }
     }
-    
     return list_last_project;
   } catch (error: any) {
-    console.error("Erreur lors de la récupération des projets :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de la récupération des projets :", error.message);
+    throw new Error("Impossible de récupérer les projets. Veuillez réessayer.");
   }
 };
 
@@ -46,18 +45,18 @@ export const addParticipant = async(project_user : ProjectUser)=>{
     const response = await projectService.post<ProjectUser>(`/project-user` , project_user);
     return response.data;
   } catch (error :any) {
-    console.error("Erreur lors de création du projet :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de l'ajout des participants :", error.message);
+    throw new Error("Impossible d'ajouter un participant au projet. Veuillez réessayer.");
   }
 }
 
 export const deleteProjectUser = async(id : number , user_email : string)=>{
   try {
-    const response = await projectService.delete<ProjectUser>(`/project-user/${id}`, { data: { email: user_email } });
+    const response = await projectService.delete<ProjectUser>(`/project-user/${id}/${user_email}`);
     return response.data;
   } catch (error :any) {
-    console.error("Erreur lors de création du projet :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de la suppression des participants :", error.message);
+    throw new Error("Impossible de supprimer un participant du projet. Veuillez réessayer.");
   }
 }
 
@@ -69,7 +68,7 @@ export const findAllParticipantProject = async()=>{
 
     for (let i = 0; i < projects.data.length; i++) {
       const projectId = projects.data[i].project_id;
-      if (typeof projectId === 'number') { // Vérifier que l'id est bien un nombre
+      if (typeof projectId === 'number') {
         const project = await projectServiceRes(projectId);
         list_last_project.push(project);
       } else {
@@ -79,8 +78,8 @@ export const findAllParticipantProject = async()=>{
     
     return list_last_project;
   } catch (error: any) {
-    console.error("Erreur lors de la récupération des projets :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de la récupération des participants :", error.message);
+    throw new Error("Impossible d'afficher les participants du projet. Veuillez réessayer.");
   }
 }
 
@@ -90,6 +89,7 @@ export const findParticipant = async(id : string)=>{
     if(response.data)
      return response.data;
   }catch(error: any){
-    console.error("Erreur lors de la récupération des participants :", error.response?.data || error.message);
+    console.error("Erreur lors de la récupération des participants :", error.message);
+    throw new Error("Impossible d'afficher les participants. Veuillez réessayer.");
   }
 }

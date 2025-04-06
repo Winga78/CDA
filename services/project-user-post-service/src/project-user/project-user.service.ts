@@ -3,6 +3,7 @@ import { CreateProjectUserDto } from './dto/create-project-user.dto';
 import { ProjectUser } from './entities/project-user.entity';
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm';
+import axios from 'axios';
 
 @Injectable()
 export class ProjectUserService {
@@ -21,18 +22,11 @@ export class ProjectUserService {
 
   async findAllUserByIdProject(id: number) : Promise<ProjectUser[]>{
     const project = await this.projectsUsersRepository.findBy({project_id: id });
-    
-    if (project.length == 0) {
-      throw new NotFoundException('Aucun project trouvé pour cet id');
-    }
     return project;
   }
 
   async findProjectsByUserId(id: string): Promise<ProjectUser[]>{
     const project = await this.projectsUsersRepository.findBy({participant_id: id });
-    if (!project) {
-      throw new NotFoundException('Aucun project trouvé pour cette email');
-    }
     return project;
   }
 
@@ -49,11 +43,6 @@ export class ProjectUserService {
     const projectUser = await this.projectsUsersRepository.createQueryBuilder('project_user')
       .where('project_user.participant_id = :user_id AND project_user.project_id = :project_id', { user_id, project_id })
       .getOne();
-    
-    if (!projectUser) {
-      throw new NotFoundException('Aucun participant trouvé pour cet ID dans ce projet');
-    }
-  
     return projectUser;
   }
   
@@ -71,4 +60,18 @@ export class ProjectUserService {
   
     return { message: 'Utilisateur supprimé du projet avec succès' };
   }
+
+  
+  async findProject(project_id: number, token: string) {
+    const uri = process.env.PROJECT_DOCKER_URL || "http://localhost:3002";
+  
+    const project = await axios.get(`${uri}/projects/${project_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  
+    return project;
+  }
+
 }

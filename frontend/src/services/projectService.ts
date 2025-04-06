@@ -21,8 +21,8 @@ export const projectServiceRes = async (project_id : number): Promise<Project> =
       const response = await projectService.get<Project>(`/projects/${project_id}`);
       return response.data;
     } catch (error :any) {
-      console.error("Erreur lors de la récupération du projet :", error.response?.data || error.message);
-      throw error;
+      console.error("Erreur lors de la récupération du projet :", error.message);
+      throw new Error("Impossible de récupérer les projets. Veuillez réessayer.");
     }
 };
 
@@ -31,8 +31,8 @@ export const createProject = async(project : Project) : Promise<Project> => {
     const response = await projectService.post<Project>(`/projects/`, project);
     return response.data;
   } catch (error :any) {
-    console.error("Erreur lors de création du projet :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de création du projet :", error.message);
+    throw new Error("Impossible de créer un projet. Veuillez réessayer.");
   }
 }
 
@@ -41,8 +41,8 @@ export const getUserProject = async() : Promise<Project[]> => {
     const response = await projectService.get<Project[]>(`/projects/user`);
     return response.data;
   } catch (error :any) {
-    console.error("Erreur lors de création du projet :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de création du projet :", error.message);
+    throw new Error("Impossible de récupérer les projets . Veuillez réessayer.");
   }
 }
 
@@ -52,8 +52,8 @@ export const deleteProject = async(id : number) => {
     const response = await projectService.delete<Project>(`/projects/${id}`);
     return response.data;
   } catch (error :any) {
-    console.error("Erreur lors de création du projet :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de création du projet :", error.message);
+    throw new Error("Impossible de supprimer un projet. Veuillez réessayer.");
   }
 }
 
@@ -62,8 +62,8 @@ export const updateProject = async(id : number , projectUpdate : Project)=>{
     const response = await projectService.patch<Project>(`/projects/${id}`, projectUpdate);
     return response.data;
   } catch (error :any) {
-    console.error("Erreur lors de création du projet :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de création du projet :", error.message);
+    throw new Error("Impossible de mettre à jour un projet. Veuillez réessayer.");
   }
 }
 
@@ -72,7 +72,7 @@ export const getProject = async(id : string)=>{
     const response = await projectService.get<Project>(`/projects/${id}`);
     return response.data;
   } catch (error :any) {
-    console.error("Erreur lors de création du projet :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de création du projet :", error.message);
+    throw new Error("Impossible de récupérer le projet. Veuillez réessayer.");
   }
 }

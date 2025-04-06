@@ -3,7 +3,7 @@ import { ProjectUserService } from './project-user.service';
 import { CreateProjectUserDto } from './dto/create-project-user.dto';
 import { Roles } from './roles.decorator';
 import { UserRole } from './entities/UserRoleEnum';
-import { RolesGuard } from 'src/guard/roles.guard';
+import { RolesGuard } from '../guard/roles.guard';
 
 @Controller('project-user')
 export class ProjectUserController {
@@ -31,8 +31,8 @@ export class ProjectUserController {
     return this.projectUserService.findRecentProjects(req.user.id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string, @Body() body: { id: string }) {
-    return this.projectUserService.removeUserParticipation(+id, body.id);
+  @Delete(':projectId/:userId')
+  remove(@Param('projectId') id: string, @Param('userId') user_id: string) {
+    return this.projectUserService.removeUserParticipation(+id, user_id);
   }
 }

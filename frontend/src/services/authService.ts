@@ -21,8 +21,8 @@ export const signUp = async (userData : User) : Promise<User>=> {
     const response = await authService.post<User>(`/users/`, userData);
     return response.data;
   } catch (error:any) {
-    console.error("Erreur lors de l'inscription :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors de l'inscription :", error.message);
+    throw new Error("Impossible de s'inscrire. Veuillez réessayer.");
   }
 };
 
@@ -31,9 +31,9 @@ export const login = async (email: string, password: string) => {
     const response = await authService.post(`/auth/login`, { email, password });
     const token = response.data.access_token;
     return token;
-  } catch (error) {
-    console.error("Erreur lors de la connexion :", error);
-    throw error;
+  } catch (error : any) {
+    console.error("Erreur lors de la connexion :", error.message);
+    throw new Error("Impossible de se connecter. Veuillez réessayer.");
   }
 };
 
@@ -43,6 +43,7 @@ export const getProfile= async() : Promise<User | undefined> =>{
      return response.data
     } catch (error : any) {
       console.error("Erreur lors de la récupération du profile :", error.message);
+      throw new Error("Impossible de récupérer le profil. Veuillez réessayer.");
     }
 }
 
@@ -54,7 +55,8 @@ export const updateUser= async(user : User) =>{
       });
      return response.data
     } catch (error:any) {
-      console.error("Erreur lors de la mise à jour du profile :", error);
+      console.error("Erreur lors de la mise à jour du profile :", error.message);
+      throw new Error("Impossible de mettre à jour le profil. Veuillez réessayer.");
     }
 }
 
@@ -65,6 +67,7 @@ export const deleteUser= async() : Promise<User | undefined> =>{
      return response.data
     } catch (error) {
       console.error("Erreur lors de la suppression du profile :", error);
+      throw new Error("Impossible de supprimer le profil. Veuillez réessayer.");
     }
 }
 
@@ -74,6 +77,7 @@ export const getUser= async(id: string) : Promise<User | undefined>=>{
      return response.data
     } catch (error : any) {
       console.error("Erreur lors de la récupération du profile :", error.message);
+      throw new Error("Impossible de récupérer le profil. Veuillez réessayer.");
     }
 }
 
@@ -84,5 +88,6 @@ export const getUserByEmail = async(email : string) : Promise<User | undefined> 
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération du profil :", error.message);
+    throw new Error("Impossible de récupérer le profil. Veuillez réessayer.");
   }
 }

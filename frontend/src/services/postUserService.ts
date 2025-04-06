@@ -21,8 +21,8 @@ export const createVote = async (postUser : PostUser): Promise<PostUser> => {
       const response = await voteService.post<PostUser>(`/post-user/`, postUser);
       return response.data;
     } catch (error :any) {
-      console.error("Erreur lors du vote :", error.response?.data || error.message);
-      throw error;
+      console.error("Erreur lors du vote :", error.message);
+      throw new Error("Impossible de voter. Veuillez réessayer.");
     }
 };
 
@@ -30,10 +30,10 @@ export const createVote = async (postUser : PostUser): Promise<PostUser> => {
 export const getVote = async (post_id: string) => {
     try {
       const response = await voteService.get(`/post-user/${post_id}`);
-      return response.data;
+      return response.data.count;
     } catch (error: any) {
-      console.error("Erreur lors du vote :", error.response?.data || error.message);
-      throw error;
+      console.error("Erreur lors du vote :", error.message);
+      throw new Error("Impossible d'afficher les votes. Veuillez réessayer.");
     }
 };
 
@@ -42,8 +42,8 @@ export const DeleteVote = async (post_id : string, participant_id : string): Pro
       const response = await voteService.delete(`/post-user/${post_id}/${participant_id}`);
       return response.data;
     } catch (error :any) {
-      console.error("Erreur lors du vote :", error.response?.data || error.message);
-      throw error;
+      console.error("Erreur lors du vote :", error.message);
+      throw new Error("Impossible de supprimer les votes. Veuillez réessayer.");
     }
 };
 
@@ -52,7 +52,7 @@ export const checkIfVoted = async (post_id : string, participant_id : string): P
     const response = await voteService.get<PostUser>(`/post-user/${post_id}/${participant_id}`);
     return response.data;
   } catch (error :any) {
-    console.error("Erreur lors du vote :", error.response?.data || error.message);
-    throw error;
+    console.error("Erreur lors du vote :", error.message);
+    throw new Error("Impossible de récupérer le status des votes. Veuillez réessayer.");
   }
 };

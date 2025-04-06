@@ -2,7 +2,7 @@ import { INestApplication, HttpStatus, Body } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { database, imports , api_auth, api_project } from './constants';
+import { database, imports , api_auth_URL , api_project_URL} from './constants';
 import { faker } from '@faker-js/faker';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { Post } from '../src/posts/entities/post.entity';
@@ -49,22 +49,18 @@ const createUser = {
   password: faker.internet.password(),
   email: faker.internet.email(),
   birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
-  role: 'user',
-  createdAt: faker.date.soon({ refDate: '2023-01-01T00:00:00.000Z' }),
 };
 
 const createProject = {
   user_id: userConnected?.id,
   name: faker.lorem.words(3),
   description: faker.lorem.sentence(),
-  createdAt: new Date(),
-  modifiedAt: new Date(),
 };
 
 describe('Comments Endpoints (e2e)', () => {
   beforeAll(async () => {
-    await axios.post(`http://auth-service:3000/users`, createUser);
-    const loginRes = await axios.post(`http://auth-service:3000/auth/login`, {
+    await axios.post(`${api_auth_URL}/users`, createUser);
+    const loginRes = await axios.post(`${api_auth_URL}/auth/login`, {
       email: createUser.email,
       password: createUser.password,
     });
@@ -74,7 +70,7 @@ describe('Comments Endpoints (e2e)', () => {
       .set('Authorization', `Bearer ${token}`);
     userConnected = userProfile.body;
 
-    const projectResponse = await axios.post(`http://project-service:3002/projects/`, createProject, {
+    const projectResponse = await axios.post(`${api_project_URL}/projects/`, createProject, {
       headers: {
         Authorization: `Bearer ${token} `,
         'Content-Type': 'application/json',
@@ -86,8 +82,7 @@ describe('Comments Endpoints (e2e)', () => {
       project_id: project.id,
       titre: faker.lorem.words(3),
       description: faker.lorem.sentence(),
-      createdAt: new Date(),
-      modifiedAt: new Date(),
+      score : 0
     };
   });
 

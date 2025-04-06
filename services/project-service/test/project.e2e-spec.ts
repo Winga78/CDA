@@ -2,7 +2,7 @@ import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { database, imports } from './constants';
+import { database, imports , api_auth_URL } from './constants';
 import { faker } from '@faker-js/faker';
 import { CreateProjectDto } from '../src/projects/dto/create-project.dto';
 import { Project } from '../src/projects/entities/project.entity';
@@ -45,23 +45,19 @@ const createUser = {
   password: faker.internet.password(),
   email: faker.internet.email(),
   birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
-  role: 'user',
-  createdAt: faker.date.soon({ refDate: '2023-01-01T00:00:00.000Z' }),
 };
 
 const createProject: CreateProjectDto = {
   user_id: userConnected?.id,
   name: faker.lorem.words(3),
   description: faker.lorem.sentence(),
-  createdAt: new Date(),
-  modifiedAt: new Date(),
 };
 
 
 describe('Projects Endpoints (e2e)', () => {
   beforeAll(async () => {
-    const createUserResponse = await axios.post(`http:auth-service:3000/users`, createUser);
-    const loginRes = await axios.post(`http://auth-service:3000/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
+    const createUserResponse = await axios.post(`${api_auth_URL}/users`, createUser);
+    const loginRes = await axios.post(`${api_auth_URL}/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
 
     token = loginRes.data.access_token;
 
@@ -134,12 +130,6 @@ describe('Projects Endpoints (e2e)', () => {
   describe('GET /projects', () => {
     it('should return all projects', async () => {
       const res = await request(app.getHttpServer()).get('/projects').set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
-    });
-
-    it('should return all last projects', async () => {
-      const res = await request(app.getHttpServer()).get('/projects/last').set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
     });

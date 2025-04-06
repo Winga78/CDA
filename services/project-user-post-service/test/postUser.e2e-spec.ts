@@ -2,7 +2,7 @@ import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { database, imports } from './constantsPost';
+import { database, imports , api_project_URL, api_chat_URL, api_auth_URL } from './constantsPost';
 import { faker } from '@faker-js/faker';
 import { PostUser } from '../src/post-user/entities/post-user.entity';
 import axios from 'axios';
@@ -46,30 +46,26 @@ const createUser = {
     password: faker.internet.password(),
     email: faker.internet.email(),
     birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
-    role: 'user',
-    createdAt: faker.date.soon({ refDate: '2023-01-01T00:00:00.000Z' }),
 };
 const createProject = {
     user_id: userConnected?.id,
     name: faker.lorem.words(3),
     description: faker.lorem.sentence(),
-    createdAt: new Date(),
-    modifiedAt: new Date(),
   };
 
  
 
 describe('Vote Endpoints (e2e)', () => {
     beforeAll(async () => {
-        const createUserResponse = await axios.post(`http://auth-service:3000/users`, createUser);
-        const loginRes = await axios.post(`http://auth-service:3000/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
+        const createUserResponse = await axios.post(`${api_auth_URL}/users`, createUser);
+        const loginRes = await axios.post(`${api_auth_URL}/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
     
         token = loginRes.data.access_token;
     
         const userProfile = await request(app.getHttpServer()).get('/relation/profile').set('Authorization', `Bearer ${token}`);
         userConnected = userProfile.body;
 
-        const projectResponse = await axios.post(`http://project-service:3002/projects/`, createProject, {
+        const projectResponse = await axios.post(`${api_project_URL}/projects/`, createProject, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -83,11 +79,10 @@ describe('Vote Endpoints (e2e)', () => {
             project_id: project.id,
             titre: faker.lorem.words(3),
             description: faker.lorem.sentence(),
-            createdAt: new Date(),
-            modifiedAt: new Date(),
+            score : 0
         };
 
-        const postResponse = await axios.post(`http://chat-service:3001/posts/`, createPost, {
+        const postResponse = await axios.post(`${api_chat_URL}/posts/`, createPost, {
           headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
@@ -116,24 +111,22 @@ describe('Vote Endpoints (e2e)', () => {
     describe('GET /post-user/', () => {        
         it('should return vote', async () => {
           const res = await request(app.getHttpServer())
-            .get(`/post-user/`)
+            .get(`/post-user/${post.id}`)
             .set('Authorization', `Bearer ${token}`)
-            .send({id :post.id});
           expect(res.statusCode).toBe(200);
-          expect(Array.isArray(res.body)).toBe(true);
+          expect(typeof res.body.count).toBe('number');
+
         });
 
-        it('should not return project without authentication', async () => {
+        it('should not return vote without authentication', async () => {
           const res = await request(app.getHttpServer())
-          .get(`/post-user/`)
-          .send({id :post.id});
+          .get(`/post-user/${post.id}`)
           expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
           expect(res.body).toHaveProperty('message', 'Token manquant');
         });
 
-        it('should not return project with invalid token', async () => {
-          const res = await request(app.getHttpServer()).get(`/post-user/`)
-          .send({id :post.id})
+        it('should not return vote with invalid token', async () => {
+          const res = await request(app.getHttpServer()).get(`/post-user/${post.id}`)
           .set('Authorization', 'Bearer invalid-token');
           expect(res.statusCode).toBe(401);
           expect(res.body).toHaveProperty('message', 'Token invalide');
@@ -142,25 +135,21 @@ describe('Vote Endpoints (e2e)', () => {
 
     describe('DELETE /post-user/', () => {
       
-      it('should delete a project', async () => {
-        const res = await request(app.getHttpServer())
-          .delete(`/post-user/`)
-          .send({id :post.id})
+      it('should delete a vote', async () => {
+        const res = await request(app.getHttpServer()).delete(`/post-user/${post.id}/${post.user_id}`)
           .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('message', 'Vote supprimé avec succès');
       });
     
-      it('should not delete project without authentication', async () => {
-        const res = await request(app.getHttpServer()).delete(`/post-user/`)
-        .send({id :post.id});
+      it('should not delete vote without authentication', async () => {
+        const res = await request(app.getHttpServer()).delete(`/post-user/${post.id}/${post.user_id}`)
         expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
         expect(res.body).toHaveProperty('message', 'Token manquant');
       });
   
-      it('should not delete project with invalid token', async () => {
-        const res = await request(app.getHttpServer()).delete(`/post-user/`)
-        .send({id :post.id})
+      it('should not delete vote with invalid token', async () => {
+        const res = await request(app.getHttpServer()).delete(`/post-user/${post.id}/${post.user_id}`)
         .set('Authorization', 'Bearer invalid-token');
         expect(res.statusCode).toBe(401);
         expect(res.body).toHaveProperty('message', 'Token invalide');
