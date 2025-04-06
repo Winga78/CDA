@@ -57,7 +57,7 @@ export const deleteProject = async(id : number) => {
   }
 }
 
-export const updateProject = async(id : number , projectUpdate : Project)=>{
+export const updateProject = async(id : string , projectUpdate : Project)=>{
   try {
     const response = await projectService.patch<Project>(`/projects/${id}`, projectUpdate);
     return response.data;

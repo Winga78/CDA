@@ -33,7 +33,7 @@ export const findByProjectId = async(project_id : string) : Promise<Post[] | und
    const response = await chatService.get<Post[]>(`/posts/project/${project_id}`);
    return response.data
    }catch(error :any){
-     console.error('erreur lors de la récupération des posts', error.message)
+     console.error('erreur lors de la récupération des posts', error)
      throw new Error("Impossible de récupérer les postes. Veuillez réessayer.");
    }
 }
@@ -43,7 +43,7 @@ export const updatePost = async(post_id : string, updatePost : any) : Promise<Po
   const response = await chatService.patch<Post>(`/posts/${post_id}`, updatePost);
   return response.data
   }catch(error :any){
-    console.error('erreur lors de la récupération des posts', error.message)
+    console.error('erreur lors de la récupération des posts', error)
     throw new Error("Impossible de mettre à jour le poste. Veuillez réessayer.");
   }
 }

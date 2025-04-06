@@ -27,14 +27,9 @@ const ProjectPage = () => {
 
   const handleShowModalDelete = () => setShowModalDelete(true);
   const handleCloseModalDelete = () => setShowModalDelete(false);
-  // const handleDelete = () => {
-  //   setShowModalDelete(false);
-  // };
 
   const handleShowModalUpdate = () => setShowModalUpdate(true);
   const handleCloseModalUpdate = () => setShowModalUpdate(false);
-
-
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -42,13 +37,8 @@ const ProjectPage = () => {
         const data = await getUserProject();
         setIsLoaded(true);
         setProjects(data);
-      } catch (error) {
-        setIsLoaded(true);
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError("Une erreur inconnue est survenue");
-        }
+      } catch (error : any) {
+          setError(error.message ||"Une erreur inconnue est survenue" )
       }
     };
 
@@ -58,22 +48,20 @@ const ProjectPage = () => {
   return (
     <div className="d-flex flex-column vh-100">
       <div className="d-flex justify-content-center mt-4">
-       
-          <button
-            type="button"
-            className="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold"
-            onClick={handleShowModal}
-          >
-            Nouveau
-          </button>
-        
+        <button
+          type="button"
+          className="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold"
+          onClick={handleShowModal}
+        >
+          Nouveau
+        </button>
       </div>
-      <ProjectModal user = {user} show={isModalVisible} handleClose={handleCloseModal} />
+      <ProjectModal user={user} show={isModalVisible} handleClose={handleCloseModal} />
       <div>
         {error ? (
           <div>Error: {error}</div>
         ) : !isLoaded ? (
-          <div>Loading...</div>
+          <div>Chargement...</div>
         ) : (
           <div className="container mt-4">
             <div className="row">
@@ -89,13 +77,18 @@ const ProjectPage = () => {
                     <div className="card-body">
                       <h5 className="card-title">{project.name}</h5>
                       <p className="card-text">{project.description}</p>
-                      <p className="card-text text-muted small">Modifié: {formatModifiedDate(project.modifiedAt!)}</p>
-                      <Button className="btn btn-dark text-light rounded-pill px-4 py-2 m-2 fw-semibold w-50" onClick={handleShowModalUpdate}>
+                      <p className="card-text text-muted small">
+                        Modifié: {formatModifiedDate(project.modifiedAt!)}
+                      </p>
+                      <Button
+                        className="btn btn-dark text-light rounded-pill px-4 py-2 m-2 fw-semibold w-50"
+                        onClick={handleShowModalUpdate}
+                      >
                         Mettre à jour
                       </Button>
                       <UpdateModal
                         user={user}
-                        project_id={project.id}
+                        project_id={(project.id)!.toString()}
                         show={showModalUpdate}
                         handleClose={handleCloseModalUpdate}
                       />
@@ -106,11 +99,10 @@ const ProjectPage = () => {
                         Supprimer
                       </Button>
                       <DeleteModal
-                        user = {user}
-                        project_id={project.id}
+                        user={user!}
+                        project_id={project.id!}
                         show={showModalDelete}
                         handleClose={handleCloseModalDelete}
-                        // handleDelete={handleDelete}
                       />
                     </div>
                   </div>

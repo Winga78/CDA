@@ -18,8 +18,8 @@ const LoginPage: React.FC = () => {
       loginContext(token);
       setMessage("Connexion réussie !");
       navigate("/accueil");
-    } catch (error) {
-      setMessage("Échec de l'authentification.");
+    } catch (error : any) {
+      setMessage(error.message || "Une erreur inconnue est survenue");
     }
   };
 

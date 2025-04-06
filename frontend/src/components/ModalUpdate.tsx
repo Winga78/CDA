@@ -1,13 +1,19 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form } from "react-bootstrap";
 import { getProject, updateProject } from "../services/projectService";
 import { useState, useEffect } from "react";
-import { useUser } from "../context/UserContext";
 
-const UpdateModal = ({ user, project_id, show, handleClose }: any) => {
-  const [message, setMessage] = useState("");
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
- 
+interface UpdateModalProps {
+  user: any;
+  project_id: string;
+  show: boolean;
+  handleClose: () => void;
+}
+
+const UpdateModal: React.FC<UpdateModalProps> = ({ user, project_id, show, handleClose }) => {
+  const [message, setMessage] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+
   useEffect(() => {
     if (show && project_id) {
       const loadProject = async () => {
@@ -15,8 +21,8 @@ const UpdateModal = ({ user, project_id, show, handleClose }: any) => {
           const data = await getProject(project_id);
           setName(data.name);
           setDescription(data.description);
-        } catch (error) {
-          setMessage("Impossible de récupérer les données du projet.");
+        } catch (error: any) {
+          setMessage(error.message || "Une erreur inconnue est survenue");
         }
       };
       loadProject();
@@ -25,12 +31,13 @@ const UpdateModal = ({ user, project_id, show, handleClose }: any) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage("");
     try {
-      await updateProject(project_id, { user_id: user!.id, description, name });
+      await updateProject(project_id, { user_id: user.id, description, name });
       handleClose();
       window.location.reload();
-    } catch (error) {
-      setMessage("Erreur lors de la mise à jour du projet.");
+    } catch (error: any) {
+      setMessage(error.message || "Une erreur inconnue est survenue");
     }
   };
 

@@ -50,9 +50,9 @@ export const addParticipant = async(project_user : ProjectUser)=>{
   }
 }
 
-export const deleteProjectUser = async(id : number , user_email : string)=>{
+export const deleteProjectUser = async(id : number , user_id: string)=>{
   try {
-    const response = await projectService.delete<ProjectUser>(`/project-user/${id}/${user_email}`);
+    const response = await projectService.delete<ProjectUser>(`/project-user/${id}/${user_id}`);
     return response.data;
   } catch (error :any) {
     console.error("Erreur lors de la suppression des participants :", error.message);

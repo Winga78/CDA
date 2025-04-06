@@ -16,8 +16,8 @@ const Layout = () => {
 
         {user != null && (
           <Nav className="mx-auto">
-            <Nav.Link href="/projects">Projet</Nav.Link>
             <Nav.Link href="/accueil">Accueil</Nav.Link>
+            <Nav.Link href="/projects">Projets</Nav.Link>
             <Nav.Link href="/notifications">Notifications</Nav.Link>
             <button onClick={logout}>déconnexion</button>
           </Nav>

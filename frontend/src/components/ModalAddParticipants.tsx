@@ -1,46 +1,55 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form } from "react-bootstrap";
-import {addParticipant} from "../services/projectUserService"
+import { addParticipant } from "../services/projectUserService";
 import { useState } from "react";
 import { UserRole } from "../models/UserRoleEnum";
 import { getUserByEmail } from "../services/authService";
 
-const ParticipantModal = ({ project_id, show, handleClose }: any) => {
-  const [message, setMessage] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("user");
+interface ParticipantModalProps {
+  project_id: string;
+  show: boolean;
+  handleClose: () => void;
+}
+
+const ParticipantModal = ({ project_id, show, handleClose }: ParticipantModalProps) => {
+  const [message, setMessage] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [role, setRole] = useState<string>("user");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage("");
+
     if (!email) {
       setMessage("L'email est requis.");
       return;
     }
-    await getUserByEmail(email).then(async(user)=>{
-        try {
-          if(role === "admin" && user)
-            
-            await addParticipant({project_id : Number(project_id) , participant_id : user._id! , role: UserRole.ADMIN});
-           else if(role === "user" && user)
-            await addParticipant({project_id : Number(project_id) , participant_id : user._id! , role: UserRole.USER});
-           handleClose();
-           window.location.reload();
-         } catch (error) {
-           setMessage("Erreur lors de la mise à jour du projet.");
-         }
-        
-      }).catch((error)=>{
-          console.log(error)
-          setMessage("Utilisateur non trouvé")
-      })
-      
+
+    try {
+      const user = await getUserByEmail(email);
+      if (user) {
+        const participantRole = role === "admin" ? UserRole.ADMIN : UserRole.USER;
+        await addParticipant({
+          project_id: Number(project_id),
+          participant_id: user._id!,
+          role: participantRole,
+        });
+        handleClose();
+        window.location.reload();
+      } else {
+        setMessage("Utilisateur non trouvé");
+      }
+    } catch (error: any) {
+      setMessage(error.message || "Une erreur inconnue est survenue");
+    }
   };
 
   return (
     <Modal show={show} onHide={handleClose}>
       <ModalHeader closeButton>
-        <h5 className="modal-title">Modifier le projet</h5>
+        <h5 className="modal-title">Ajouter un participant au projet</h5>
       </ModalHeader>
       <ModalBody>
-        <Form onSubmit={handleSubmit}>  
+        <Form onSubmit={handleSubmit}>
           {/* Input email */}
           <Form.Group className="mb-3">
             <Form.Label>Adresse Email</Form.Label>
@@ -52,7 +61,7 @@ const ParticipantModal = ({ project_id, show, handleClose }: any) => {
               required
             />
           </Form.Group>
-  
+
           {/* Input role */}
           <Form.Group className="mb-3">
             <Form.Label>Rôle</Form.Label>
@@ -66,7 +75,7 @@ const ParticipantModal = ({ project_id, show, handleClose }: any) => {
               <option value="admin">Admin</option>
             </Form.Control>
           </Form.Group>
-  
+
           <ModalFooter>
             <Button variant="secondary" onClick={handleClose}>
               Annuler

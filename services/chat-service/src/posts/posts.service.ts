@@ -44,9 +44,6 @@ export class PostsService {
       where: { project_id: id },
       order: { score: "DESC" }
     });
-    
-    if(posts.length === 0)
-      throw new NotFoundException('Aucun post trouvé pour cet ID')
     return posts
   }
   

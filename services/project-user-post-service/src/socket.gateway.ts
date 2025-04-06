@@ -71,7 +71,7 @@ import {
         post_id: createpostUser.post_id,
        });
       
-       const score = await this.postUserService.findAllVoteByPostId(+room);
+       const score = (await this.postUserService.findAllVoteByPostId(+room)).count;
        this.server.to(data.room).emit("statusVote", { isVoted : true , score : score});
       } catch (error) {
        console.error('Erreur lors de la création du vote :', error);
@@ -83,7 +83,7 @@ import {
     async handleDeleteVote(socket: Socket,@MessageBody() data: { userId: string , room : string}) {
       const { room, userId} = data;
       await this.postUserService.remove(+room, userId);
-      const score = await this.postUserService.findAllVoteByPostId(+room);
+      const score = (await this.postUserService.findAllVoteByPostId(+room)).count;
       this.server.to(data.room).emit("statusVote", { isVoted : false , score : score });
     }
 }

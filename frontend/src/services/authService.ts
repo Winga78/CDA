@@ -83,8 +83,7 @@ export const getUser= async(id: string) : Promise<User | undefined>=>{
 
 export const getUserByEmail = async(email : string) : Promise<User | undefined> => {
   try {
-    const encodedEmail = encodeURIComponent(email);
-    const response = await authService.get(`/users/other/${encodedEmail}`);
+    const response = await authService.get(`/users/other/${email}`);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération du profil :", error.message);

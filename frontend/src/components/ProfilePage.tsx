@@ -5,20 +5,20 @@ import { getProfile, updateUser, deleteUser } from "../services/authService";
 import { User } from "../models/User";
 
 function ProfilePage() {
-  const { user, logout} = useUser();
+  const { user, logout } = useUser();
   const [formData, setFormData] = useState<User | null>(null);
+  const [error, setError] = useState<string>(""); // Ajout de l'état pour gérer les erreurs
 
   useEffect(() => {
-    const loadProfil = async () => {
+    const loadProfile = async () => {
       try {
         const storedUser = await getProfile();
         setFormData(storedUser || null);
-      } catch (error) {
-        console.error("Erreur lors de la récupération du profil", error);
-        return;
+      } catch (error: any) {
+        setError("Erreur lors de la récupération du profil : " + error.message); // Utilisation de setError
       }
     };
-    loadProfil();
+    loadProfile();
   }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,17 +34,17 @@ function ProfilePage() {
     try {
       await updateUser(formData);
     } catch (error: any) {
-      console.error("Erreur lors de la mise à jour du profil", error.message);
+      setError(error.message || "Une erreur inconnue est survenue");
     }
   };
 
   const handleDelete = async () => {
-      try {
-        await deleteUser();
-        logout()
-      } catch (error: any) {
-        console.error("Erreur lors de la suppression du compte", error.message);
-      }
+    try {
+      await deleteUser();
+      logout();
+    } catch (error: any) {
+      setError(error.message || "Une erreur inconnue est survenue");
+    }
   };
 
   if (!formData) return <p>Chargement du profil...</p>;
@@ -52,6 +52,7 @@ function ProfilePage() {
   return (
     <Container className="mt-4">
       <h2>Profil</h2>
+      {error && <p className="text-danger">{error}</p>}
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
           <Form.Label>Prénom</Form.Label>

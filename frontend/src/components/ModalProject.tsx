@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createProject} from "../services/projectService";
-import {addParticipant} from "../services/projectUserService"
+import { createProject } from "../services/projectService";
+import { addParticipant } from "../services/projectUserService";
 import { UserRole } from "../models/UserRoleEnum";
 
 interface ProjectModalProps {
@@ -13,16 +13,26 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ user, show, handleClose }) 
   const [projectName, setProjectName] = useState<string>("");
   const [projectDescription, setProjectDescription] = useState<string>("");
   const [message, setMessage] = useState<string>("");
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage("");
     try {
-      const data = await createProject({ name: projectName, description: projectDescription, user_id: user!.email });
-      await addParticipant({project_id : data.id !, participant_id: user!.id  , role : UserRole.ADMIN })
-      setMessage('Projet créé avec succès !')
+      const project = await createProject({ name: projectName, description: projectDescription, user_id: user.email });
+      if (project && project.id && project.user_id) {
+        await addParticipant({
+          project_id: project.id,
+          participant_id: project.user_id,
+          role: UserRole.ADMIN
+        });
+      }else {
+        throw new Error("Le projet créé ne contient pas d'id ou d'utilisateur valide.");
+      }
+      setMessage('Projet créé avec succès !');
+      handleClose();
       window.location.reload();
-    } catch (error) {
-      setMessage("Échec de la création du projet");
+    } catch (error: any) {
+      setMessage(error.message || "Une erreur inconnue est survenue");
     }
   };
 
@@ -39,7 +49,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ user, show, handleClose }) 
         <div className="modal-content">
           <div className="modal-header d-flex justify-content-between align-items-center">
             <h5 className="modal-title" id="projectModalLabel">Créer un projet</h5>
-            <button type="button" className="btn btn-outline-dark btn-sm rounded-circle"  onClick={handleClose}>
+            <button
+              type="button"
+              className="btn btn-outline-dark btn-sm rounded-circle"
+              onClick={handleClose}
+            >
               &times;
             </button>
           </div>
@@ -71,7 +85,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ user, show, handleClose }) 
                   required
                 ></textarea>
               </div>
-              <button type="submit"  className="btn btn-outline-dark rounded-pill px-4 py-2 m-2 fw-semibold">
+              <button type="submit" className="btn btn-outline-dark rounded-pill px-4 py-2 m-2 fw-semibold">
                 Soumettre
               </button>
             </form>

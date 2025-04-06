@@ -5,10 +5,8 @@ import { ReactNode } from "react";
 const PublicRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated, isLoading } = useUser();
 
-  console.log("Chargement:", isLoading, " | Authentifié:", isAuthenticated);
-
   if (isLoading) {
-    return <div>Chargement...</div>; // Affichage temporaire pour éviter la redirection
+    return <div>Chargement...</div>;
   }
 
   return isAuthenticated ?  <Navigate to="/accueil" replace /> : children;

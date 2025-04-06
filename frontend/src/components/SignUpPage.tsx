@@ -25,7 +25,7 @@ const SignUpPage: React.FC = () => {
     try {
       await signUp(user);
       setMessage("Inscription réussie !");
-      setTimeout(() => navigate("/login"), 2000);
+      navigate("/login");
     } catch (error) {
       setMessage("Erreur lors de l'inscription.");
     }
