@@ -55,6 +55,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MONGODB_URI : ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
+      AUTH_DOCKER_URL : ${AUTH_DOCKER_URL}
     ports: 
       - "3002:3002"
     networks:
@@ -82,6 +83,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MONGODB_URI : ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
+      AUTH_DOCKER_URL: ${AUTH_DOCKER_URL}
+      PROJECT_DOCKER_URL : ${PROJECT_DOCKER_URL}
     ports: 
       - "3001:3001"
     networks:
@@ -110,6 +113,9 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MONGODB_URI : ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
+      CHAT_DOCKER_URL: ${CHAT_DOCKER_URL}
+      AUTH_DOCKER_URL : ${AUTH_DOCKER_URL}
+      PROJECT_DOCKER_URL : ${PROJECT_DOCKER_URL}
     ports: 
       - "3003:3003"
     networks:
