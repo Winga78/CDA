@@ -8,7 +8,7 @@ import { BsPlus } from "react-icons/bs";
 import { useUser } from "../context/UserContext";
 import { io, Socket } from 'socket.io-client';
 import ParticipantModal from "../components/ModalAddParticipants";
-import { postsList } from '../services/postService';
+import { postsList , api_chat_url} from '../services/postService';
 import SectionVote from './SectionVote';
 
 const ChatPage = () => {
@@ -28,20 +28,16 @@ const ChatPage = () => {
 
     const loadPosts = async () => {
         try {
-          // Appel à l'API pour récupérer les posts
           const posts = await postsList(id);
           
-          // Vérifie si posts est un tableau valide
           if (Array.isArray(posts)) {
             setMessages(posts);  
           } else {
-            setMessages([]);  // Assure-toi que setMessages reçoit toujours un tableau
+            setMessages([]); 
           }
         } catch (error: any) {
-          // Gestion d'erreur améliorée
           setError(error?.message || "Une erreur inconnue est survenue");
         } finally {
-          // Assure que setIsLoading est appelé dans tous les cas
           setIsLoading(false); 
         }
       };
@@ -50,7 +46,7 @@ const ChatPage = () => {
         if (!id) return;
 
         setRoom(id);
-        socketRef.current = io('http://192.168.58.161:3001/');
+        socketRef.current = io(api_chat_url);
         const socket = socketRef.current;
 
         socket.emit('joinRoom', id);
@@ -128,23 +124,32 @@ const ChatPage = () => {
     <p>Aucune discussion</p>
   ) : (
     messages.map((msg) => (
-      <div key={msg.post_id} className="mb-3 d-flex align-items-center">
-        <div>
-          <Alert variant="info">
-          <img
-          src={msg.user.avatarUrl || "https://via.placeholder.com/40"}
-          alt={`${msg.user.firstname} ${msg.user.lastname}`}
-          className="rounded-circle me-2"
-          style={{ width: "40px", height: "40px", objectFit: "cover" }}
-        />
-            <strong>
-              {msg.user.firstname} {msg.user.lastname}:
-            </strong>
-            {msg.titre} {msg.description}
-          </Alert>
-          <SectionVote userId={user!.id} postId={msg.post_id} onVoteChange={loadPosts} />
-        </div>
-      </div>
+      <div key={msg.post_id} className="mb-3 d-flex justify-content-between align-items-start">
+  {/* Colonne message */}
+  <Alert variant="info" className="flex-grow-1 me-3">
+    <div className="d-flex align-items-center mb-2">
+      <img
+        src={msg.user.avatarUrl || "https://via.placeholder.com/40"}
+        alt={`${msg.user.firstname} ${msg.user.lastname}`}
+        className="rounded-circle me-2"
+        style={{ width: "40px", height: "40px", objectFit: "cover" }}
+      />
+      <strong>
+        {msg.user.firstname} {msg.user.lastname}
+      </strong>
+    </div>
+    <div>
+      <strong>{msg.titre}</strong>
+      <p className="mb-0">{msg.description}</p>
+    </div>
+  </Alert>
+
+  {/* Colonne vote */}
+  <div style={{ minWidth: "100px" }}>
+    <SectionVote userId={user!.id} postId={msg.post_id} onVoteChange={loadPosts} />
+  </div>
+</div>
+
     ))
   )}
 </div>

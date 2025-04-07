@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { findAllParticipantProject } from "../services/projectUserService";
 import { Project } from "../models/Project";
 import { Nav, Spinner } from "react-bootstrap";
-import { useLocation } from "react-router-dom"; // Pour gérer l'active link
+import { useLocation } from "react-router-dom";
 
 const SectionProject = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Pour gérer le chargement
-
-  const { pathname } = useLocation(); // Pour identifier le projet actif
+  const [loading, setLoading] = useState<boolean>(true);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const loadProject = async () => {
@@ -34,42 +33,37 @@ const SectionProject = () => {
   }
 
   return (
-    <div className="d-flex flex-grow-1">
-      {/* Navbar latérale */}
-      <div
-        className="border-end p-3"
-        style={{
-          width: "250px",
-          position: "fixed", // Pour positionner la barre latérale de manière fixe
-          top: "0",
-          left: "0",
-          bottom: "0",
-          backgroundColor: "#f8f9fa",
-          boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <h5 className="text-center mb-4">Projets</h5>
-        <Nav className="flex-column">
-          {projects.length > 0 ? (
-            projects.map((project) => (
-              <Nav.Link
-                key={project.id}
-                href={`/project/${project.id}`}
-                active={pathname === `/project/${project.id}`} // Lien actif pour le projet en cours
-                style={{
-                  fontWeight: pathname === `/project/${project.id}` ? "bold" : "normal",
-                  color: pathname === `/project/${project.id}` ? "#007bff" : "inherit",
-                }}
-              >
-                {project.name}
-              </Nav.Link>
-            ))
-          ) : (
-            <Nav.Item>
-              <Nav.Link disabled>Aucun projet trouvé</Nav.Link>
-            </Nav.Item>
-          )}
-        </Nav>
+    <div className="container-fluid mt-3">
+      <div className="row">
+        <nav className="col-12 col-md-3 col-lg-2 bg-light p-3 border rounded mb-3 mb-md-0">
+          <h5 className="text-center mb-3">Projets</h5>
+          <Nav className="flex-column">
+            {projects.length > 0 ? (
+              projects.map((project) => (
+                <Nav.Link
+                  key={project.id}
+                  href={`/project/${project.id}`}
+                  active={pathname === `/project/${project.id}`}
+                  style={{
+                    fontWeight: pathname === `/project/${project.id}` ? "bold" : "normal",
+                    color: pathname === `/project/${project.id}` ? "#007bff" : "inherit",
+                  }}
+                >
+                  {project.name}
+                </Nav.Link>
+              ))
+            ) : (
+              <Nav.Item>
+                <Nav.Link disabled>Aucun projet trouvé</Nav.Link>
+              </Nav.Item>
+            )}
+          </Nav>
+        </nav>
+
+        {/* Contenu principal ici */}
+        <main className="col">
+          {/* Ton contenu à droite peut aller ici */}
+        </main>
       </div>
     </div>
   );

@@ -37,11 +37,13 @@ const SectionParticipant = () => {
       className="mt-3 border p-3 rounded shadow-sm"
       style={{
         maxWidth: "300px",
-        position: "fixed", // Pour positionner la liste à droite
-        right: "0",
-        top: "10%",
+        top: "80px",         // laisse de l'espace sous la navbar horizontale
+        right: "20px",       // marge depuis le bord droit
+        zIndex: 1030,        // au-dessus des autres éléments si besoin
         height: "auto",
-        overflowY: "auto",
+        maxHeight: "80vh",   // limite la hauteur pour éviter que ça déborde
+        overflowY: "auto",   // scroll si trop de contenu
+        backgroundColor: "#fff", // pour ne pas être transparent
       }}
     >
       <h5 className="text-center">Participants</h5>

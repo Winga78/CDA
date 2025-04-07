@@ -2,6 +2,7 @@ import axios from "axios";
 import {PostUser} from "../models/PostUser";
 
 const API_BASE_URL = import.meta.env.VITE_PROJECT_USER_POST_SERVICE_URL || '/api/post-user';
+export const api_project_post_user_url = import.meta.env.PROJECT_USER_POST_DOCKER_URL || "http://192.168.58.161:3003";
 
 const voteService = axios.create({
   baseURL: API_BASE_URL,

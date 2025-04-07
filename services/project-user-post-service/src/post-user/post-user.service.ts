@@ -105,11 +105,6 @@ export class PostUserService {
           }
         })
       );
-    
-      // Affichage final de notif_info
-      console.log(notif_info);
-    
-      // Retourner les notifications fusionnées
       return notif_info;
     }
     

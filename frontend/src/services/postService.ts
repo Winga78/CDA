@@ -4,6 +4,8 @@ import { getUser } from "./authService";
 
 const API_BASE_URL = import.meta.env.VITE_CHAT_SERVICE_URL || '/api/chat';
 
+export const api_chat_url = import.meta.env.CHAT_DOCKER_URL || "http://192.168.58.161:3001";
+
 const chatService = axios.create({
   baseURL: API_BASE_URL,
   withCredentials : true
