@@ -73,7 +73,8 @@ import {
         description: createpost.description,
         titre: createpost.titre,
         post_id: createpost.project_id,
-        score : createpost.score
+        modifiedAt : createpost.modifiedAt,
+        score : createpost.score,
        });
       } catch (error) {
        console.error('Erreur lors de la création du post :', error);

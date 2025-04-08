@@ -18,7 +18,7 @@ const SectionVote = ({
   const [voted, setVoted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
-  const room = postId || ""; // On initialise la room avec postId
+  const room = postId || "";
 
   if (!postId) return null;
 

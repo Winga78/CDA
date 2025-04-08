@@ -1,9 +1,12 @@
-import { Controller, Get, HttpCode,HttpStatus,Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
+import { Controller, Get, HttpCode,HttpStatus,Post, Body, Patch, Param, Delete, Request, ParseFilePipeBuilder,UploadedFile,UseInterceptors} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from './auth.decorator';
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('users')
 export class UsersController {
@@ -34,10 +37,35 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
   
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: './uploads/avatars',
+      filename: (req, file, callback) => {
+        const name = `${Date.now()}${extname(file.originalname)}`;
+        callback(null, name);
+      },
+    }),
+  }))
+
   @Patch()
   @HttpCode(HttpStatus.OK)
-  update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(req.user.id, updateUserDto);
+  async update(
+    @Request() req, 
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .build({
+          fileIsRequired: false,
+        }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    if (file) {
+      const avatarPath = `uploads/avatars/${file.filename}`;
+      updateUserDto.avatar = avatarPath;
+    }
+
+    return await this.usersService.update(req.user.id, updateUserDto);
   }
 
   @Delete()

@@ -111,7 +111,7 @@ describe('Vote Endpoints (e2e)', () => {
     describe('GET /post-user/', () => {        
         it('should return vote', async () => {
           const res = await request(app.getHttpServer())
-            .get(`/post-user/${post.id}`)
+            .get(`/post-user/votes/${post.id}`)
             .set('Authorization', `Bearer ${token}`)
           expect(res.statusCode).toBe(200);
           expect(typeof res.body.count).toBe('number');
@@ -136,7 +136,7 @@ describe('Vote Endpoints (e2e)', () => {
     describe('DELETE /post-user/', () => {
       
       it('should delete a vote', async () => {
-        const res = await request(app.getHttpServer()).delete(`/post-user/${post.id}/${post.user_id}`)
+        const res = await request(app.getHttpServer()).delete(`/post-user/vote/${post.id}/${post.user_id}`)
           .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('message', 'Vote supprimé avec succès');

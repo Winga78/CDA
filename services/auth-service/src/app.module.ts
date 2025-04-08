@@ -10,6 +10,8 @@ import { jwtConstants } from './auth/constants';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -33,7 +35,11 @@ import { AuthModule } from './auth/auth.module';
       inject: [ConfigService],
     }),
     UsersModule,
-    AuthModule
+    AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),  // Répertoire des fichiers téléchargés
+      serveRoot: '/uploads', // URL de base pour accéder aux fichiers
+    }),
     //base de donnée en mode production ici
   ],
   controllers: [AppController],

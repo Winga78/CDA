@@ -1,21 +1,22 @@
 import { useState, useEffect } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 import { useUser } from "../context/UserContext";
-import { getProfile, updateUser, deleteUser } from "../services/authService";
+import { getUser, updateUser, deleteUser } from "../services/authService";
 import { User } from "../models/User";
 
 function ProfilePage() {
-  const { user, logout } = useUser();
+  const { user, logout} = useUser();
   const [formData, setFormData] = useState<User | null>(null);
-  const [error, setError] = useState<string>(""); // Ajout de l'état pour gérer les erreurs
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const storedUser = await getProfile();
+        const storedUser = await getUser(user!.id);
         setFormData(storedUser || null);
       } catch (error: any) {
-        setError("Erreur lors de la récupération du profil : " + error.message); // Utilisation de setError
+        setError("Erreur lors de la récupération du profil : " + error.message);
       }
     };
     loadProfile();
@@ -25,17 +26,40 @@ function ProfilePage() {
     if (formData) {
       setFormData({ ...formData, [e.target.name]: e.target.value });
     }
+    if (e.target.name === 'avatar') {
+      setAvatarFile(e.target.files ? e.target.files[0] : null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formData) return;
+    
+    let data = { ...formData };
 
-    try {
-      await updateUser(formData);
-    } catch (error: any) {
-      setError(error.message || "Une erreur inconnue est survenue");
+    if (!data.password || data.password.trim() === "") {
+      delete data.password;
     }
+
+    if (avatarFile) {
+      const formDataToSend = new FormData();
+      formDataToSend.append('file', avatarFile);
+      formDataToSend.append('firstname', data.firstname);
+      formDataToSend.append('lastname', data.lastname);
+      try {
+        await updateUser(formDataToSend);
+        
+      } catch (error: any) {
+        setError(error.message || "Une erreur inconnue est survenue");
+      }
+    } else {
+      try {
+       await updateUser(data);
+      } catch (error: any) {
+        setError(error.message || "Une erreur inconnue est survenue");
+      }
+    }
+
   };
 
   const handleDelete = async () => {
@@ -93,6 +117,15 @@ function ProfilePage() {
             type="date"
             name="birthday"
             value={formData.birthday || ""}
+            onChange={handleChange}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Avatar</Form.Label>
+          <Form.Control
+            type="file"
+            name="avatar"
+            accept="image/png, image/jpeg"
             onChange={handleChange}
           />
         </Form.Group>

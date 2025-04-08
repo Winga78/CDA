@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { findAllParticipantProject } from "../services/projectUserService";
 import { Project } from "../models/Project";
 import { Nav, Spinner } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 
 const SectionProject = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -33,10 +33,10 @@ const SectionProject = () => {
   }
 
   return (
-    <div className="container-fluid mt-3">
+    <div className="container-fluid mt-0">
       <div className="row">
-        <nav className="col-12 col-md-3 col-lg-2 bg-light p-3 border rounded mb-3 mb-md-0">
-          <h5 className="text-center mb-3">Projets</h5>
+        <aside className="col-md-3 col-lg-2 bg-light border-end d-flex flex-column p-3 min-vh-100">
+          <h5 className="text-center mb-4">Mes projets</h5>
           <Nav className="flex-column">
             {projects.length > 0 ? (
               projects.map((project) => (
@@ -44,10 +44,9 @@ const SectionProject = () => {
                   key={project.id}
                   href={`/project/${project.id}`}
                   active={pathname === `/project/${project.id}`}
-                  style={{
-                    fontWeight: pathname === `/project/${project.id}` ? "bold" : "normal",
-                    color: pathname === `/project/${project.id}` ? "#007bff" : "inherit",
-                  }}
+                  className={`py-2 px-3 rounded ${
+                    pathname === `/project/${project.id}` ? "bg-dark text-white fw-bold" : ""
+                  }`}
                 >
                   {project.name}
                 </Nav.Link>
@@ -58,11 +57,9 @@ const SectionProject = () => {
               </Nav.Item>
             )}
           </Nav>
-        </nav>
-
-        {/* Contenu principal ici */}
-        <main className="col">
-          {/* Ton contenu à droite peut aller ici */}
+        </aside>
+        <main className="col-md-9 col-lg-10 p-4">
+          <Outlet />
         </main>
       </div>
     </div>

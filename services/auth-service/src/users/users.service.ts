@@ -64,28 +64,28 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) : Promise<User | null> {
-  
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
     const existingUser = await this.userModel.findOne({ _id: new Types.ObjectId(id) });
-      // const updateUser = this.userModel.findByIdAndUpdate(id, updateUserDto);
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!existingUser)
-        throw new NotFoundException('Impossible de mettre à jour, utilisateur non trouvé');
-    
-      if (updateUserDto.email && !emailRegex.test(updateUserDto.email)) {
-        throw new BadRequestException("Email invalide");
-      }
-
-      if (updateUserDto.email) {
-        const emailExists = await this.userModel.findOne({ email: updateUserDto.email });
-        if (emailExists && emailExists.id !== id) {
-          throw new ConflictException("Cet email est déjà utilisé");
-        }
-      }
-
-      const updatedUser = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
-      return updatedUser
+  
+    if (!existingUser) {
+      throw new NotFoundException('Impossible de mettre à jour, utilisateur non trouvé');
+    }
+  
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  
+    if (updateUserDto.email && !emailRegex.test(updateUserDto.email)) {
+      throw new BadRequestException("Email invalide");
+    }
+  
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      updateUserDto,
+      { new: true }
+    );
+  
+    return updatedUser;
   }
+  
 
   async remove(id: string) : Promise<{message : string}> {
     if (!Types.ObjectId.isValid(id)) {

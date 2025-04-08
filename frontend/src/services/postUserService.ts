@@ -30,7 +30,7 @@ export const createVote = async (postUser : PostUser): Promise<PostUser> => {
 
 export const getVote = async (post_id: string) => {
     try {
-      const response = await voteService.get(`/post-user/${post_id}`);
+      const response = await voteService.get(`/post-user/votes/${post_id}`);
       return response.data.count;
     } catch (error: any) {
       console.error("Erreur lors du vote :", error.message);
@@ -40,7 +40,7 @@ export const getVote = async (post_id: string) => {
 
 export const DeleteVote = async (post_id : string, participant_id : string): Promise<PostUser> => {
     try {
-      const response = await voteService.delete(`/post-user/${post_id}/${participant_id}`);
+      const response = await voteService.delete(`/post-user/vote/${post_id}/${participant_id}`);
       return response.data;
     } catch (error :any) {
       console.error("Erreur lors du vote :", error.message);
@@ -50,7 +50,7 @@ export const DeleteVote = async (post_id : string, participant_id : string): Pro
 
 export const checkIfVoted = async (post_id : string, participant_id : string): Promise<PostUser> => {
   try {
-    const response = await voteService.get<PostUser>(`/post-user/${post_id}/${participant_id}`);
+    const response = await voteService.get<PostUser>(`/post-user/vote/${post_id}/${participant_id}`);
     return response.data;
   } catch (error :any) {
     console.error("Erreur lors du vote :", error.message);

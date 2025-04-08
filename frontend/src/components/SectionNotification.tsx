@@ -24,7 +24,6 @@ function NotificationSection() {
         if (!data || data.length === 0) {
           setMessage("Aucune notification trouvée");
         } else {
-          // Récupérer uniquement les 3 dernières notifications
           const notificationsWithReadFlag = data.slice(0, 3).map((notif: any, index: number) => ({
             id: index + 1,
             post_id: notif.post?.id || 0,
@@ -54,21 +53,27 @@ function NotificationSection() {
   return (
     <div
       style={{
-        position: "fixed",
-        right: "20px", 
-        bottom: "400px",
+        marginTop : "20px",
+        position: "absolute",
+        top: "56px",
+        right: 0,
         width: "300px",
-        zIndex: 9999,
+        height: "100%",
+        backgroundColor: "#f8f9fa",
+        borderLeft: "1px solid #dee2e6",
+        padding: "1rem",
+        overflowY: "auto",
+        zIndex: 1050,
       }}
     >
-      <div className="alert alert-info">
-        <h4>
-          <BsBellFill className="me-2" />
-          Notifications
-        </h4>
-        {message && <div>{message}</div>}
-      </div>
-      <ListGroup className="mt-3">
+      <h5 className="mb-3">
+        <BsBellFill className="me-2" />
+        Notifications
+      </h5>
+
+      {message && <div className="text-muted">{message}</div>}
+
+      <ListGroup>
         {notifications.map((notif) => (
           <ListGroup.Item key={notif.id}>
             {notif.message}

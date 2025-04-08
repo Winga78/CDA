@@ -6,12 +6,13 @@ type User = {
   firstname: string;
   lastname: string;
   email: string;
+  avatar: string;
 };
 
 type UserContextType = {
   user: User | null;
   isAuthenticated: boolean;
-  isLoading: boolean; // Ajout de l'état de chargement
+  isLoading: boolean;
   login: (token: string) => void;
   logout: () => void;
 };
@@ -19,14 +20,14 @@ type UserContextType = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Commence à true
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const isTokenValid = (token: string) => {
     try {
       const decoded: any = jwtDecode(token);
-      return decoded.exp * 1000 > Date.now(); // Vérifie si la date d'expiration est dépassée
+      return decoded.exp * 1000 > Date.now();
     } catch (error) {
       return false;
     }
@@ -37,18 +38,19 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (token && isTokenValid(token)) {
       try {
         const decoded: any = jwtDecode(token);
-        setUser({
+        setUserState({
           id: decoded.id,
           email: decoded.email,
           firstname: decoded.firstname,
           lastname: decoded.lastname,
+          avatar: decoded.avatar,
         });
         setIsAuthenticated(true);
       } catch (error) {
         console.error("Token invalide :", error);
         logout();
       }
-    }else {
+    } else {
       logout();
     }
     setIsLoading(false); // Le chargement est terminé
@@ -57,11 +59,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = (token: string) => {
     localStorage.setItem("authToken", token);
     const decoded: any = jwtDecode(token);
-    setUser({
+    setUserState({
       id: decoded.id,
       email: decoded.email,
       firstname: decoded.firstname,
       lastname: decoded.lastname,
+      avatar: decoded.avatar,
     });
     setIsAuthenticated(true);
     setIsLoading(false); // S'assurer que l'état de chargement est à jour
@@ -69,7 +72,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     localStorage.removeItem("authToken");
-    setUser(null);
+    setUserState(null);
     setIsAuthenticated(false);
     setIsLoading(false);
   };

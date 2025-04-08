@@ -79,7 +79,8 @@ const AccueilPage = () => {
         ))}
       </div>
     </div>
-    <NotificationSection></NotificationSection>
+    <NotificationSection />
+ 
     </div>
   );
 

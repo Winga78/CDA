@@ -21,7 +21,6 @@ projectService.interceptors.request.use((config) => {
 export const lastProjects = async (): Promise<Project[]> => {
   try {
     const projects = await projectService.get<ProjectUser[]>('/project-user/last');
-    
     let list_last_project: Project[] = [];
 
     for (let i = 0; i < projects.data.length; i++) {

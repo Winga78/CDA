@@ -16,7 +16,7 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('Email ou mot de passe incorrect');
     }
-    const payload = { id: user['_id'] , email: user.email , firstname : user.firstname , lastname : user.lastname , birthday : user.birthday};
+    const payload = { id: user['_id'] , email: user.email , firstname : user.firstname , lastname : user.lastname , avatar : user.avatar};
     const token =  await this.jwtService.signAsync(payload);
     res.cookie('cookieAuth', token, {
       httpOnly: true,

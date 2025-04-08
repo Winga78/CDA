@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete , Request , UnauthorizedException} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Request, UnauthorizedException } from '@nestjs/common';
 import { PostUserService } from './post-user.service';
 import { CreatePostUserDto } from './dto/create-post-user.dto';
 
@@ -11,31 +11,31 @@ export class PostUserController {
     return this.postUserService.create(createPostUserDto);
   }
 
-  @Get('/notification/posts/details/')
+  @Get('notification/posts/details')
   findNotification(@Request() req) {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException('Token manquant ou invalide');
     }
-  
+
     const token = authHeader.split(' ')[1];
     const user_connected = req.user.id;
 
     return this.postUserService.notificationPost(user_connected, token);
   }
 
-  @Get(':id')
-  findAll(@Param('id') id: string) {
-    return this.postUserService.findAllVoteByPostId(+id);
+  @Get('votes/:post_id')
+  findAll(@Param('post_id') postId: string) {
+    return this.postUserService.findAllVoteByPostId(+postId);
   }
 
-  @Get(':id/:user_id')
-  checkVote(@Param('id') id: string, @Param('user_id') user_id: string) {
-    return this.postUserService.findVoteCheck(+id , user_id);
+  @Get('vote/:post_id/:user_id')
+  checkVote(@Param('post_id') postId: string, @Param('user_id') userId: string) {
+    return this.postUserService.findVoteCheck(+postId, userId);
   }
 
-  @Delete(':id/:user_id')
-  remove(@Param('id') id: string, @Param('user_id') user_id: string ) {
-      return this.postUserService.remove(+id, user_id);
-  }  
+  @Delete('vote/:post_id/:user_id')
+  remove(@Param('post_id') postId: string, @Param('user_id') userId: string) {
+    return this.postUserService.remove(+postId, userId);
+  }
 }

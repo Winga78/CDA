@@ -4,22 +4,28 @@ import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 import { Outlet } from 'react-router-dom';
 import SectionProject from "./SectionProject";
 import { useUser } from "../context/UserContext";
+import logo from '../assets/logo.png';
+import { api_auth_url} from "../services/authService";
 
 const Layout = () => {
-  const { user,logout} = useUser();
-
+  const { user, logout } = useUser();
+  const avatarUrl = `${api_auth_url}/${user?.avatar}`;
   return (
     <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
-      {/* Header */}
+      {/* Navbar horizontale */}
       <Navbar bg="dark" variant="dark" className="px-3 d-flex justify-content-between align-items-center">
-        <Navbar.Brand href="/">Mon Logo</Navbar.Brand>
+        <Navbar.Brand href="/"><img 
+          src={logo} 
+          alt="Mon Logo" 
+          // Ajuste la taille si nécessaire
+        /></Navbar.Brand>
 
         {user != null && (
           <Nav className="mx-auto">
             <Nav.Link href="/accueil">Accueil</Nav.Link>
             <Nav.Link href="/projects">Projets</Nav.Link>
             <Nav.Link href="/notifications">Notifications</Nav.Link>
-            <button onClick={logout}>déconnexion</button>
+            <button onClick={logout}>Déconnexion</button>
           </Nav>
         )}
 
@@ -27,7 +33,7 @@ const Layout = () => {
           {user ? (
             <Nav.Link href="/profile" className="d-flex align-items-center">
               <img
-                src={"/default-avatar.png"}
+                src={avatarUrl}
                 alt="Avatar"
                 className="rounded-circle"
                 width="40"
@@ -43,14 +49,17 @@ const Layout = () => {
           )}
         </Nav>
       </Navbar>
-      
-      {user && <SectionProject />}
 
-      <Container className="flex-grow-1">
-        <Outlet />
-      </Container>
-      
-      {/* Footer */}
+      {user ? (
+        <>
+          <SectionProject />
+        </>
+      ) : (
+        <Container className="flex-grow-1 mt-3">
+          <Outlet />
+        </Container>
+      )}
+
       <footer className="text-center py-3 border-top mt-auto">
         <div className="mb-2">
           <FaFacebook size={24} className="mx-2" />

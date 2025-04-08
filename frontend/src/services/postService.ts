@@ -63,6 +63,7 @@ export const postsList = async (project_id: string) => {
           titre: posts[i].titre,
           description: posts[i].description,
           post_id: posts[i].id,
+          modifiedAt : posts[i].modifiedAt,
           score: posts[i].score
         });
       }
