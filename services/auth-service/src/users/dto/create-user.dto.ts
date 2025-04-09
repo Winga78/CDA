@@ -23,7 +23,4 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   readonly avatar?: string;
-  
-  @IsDateString()
-  readonly createdAt?: Date;
 }

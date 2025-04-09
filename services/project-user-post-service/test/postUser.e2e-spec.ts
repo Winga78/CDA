@@ -120,13 +120,13 @@ describe('Vote Endpoints (e2e)', () => {
 
         it('should not return vote without authentication', async () => {
           const res = await request(app.getHttpServer())
-          .get(`/post-user/${post.id}`)
+          .get(`/post-user/votes/${post.id}`)
           expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
           expect(res.body).toHaveProperty('message', 'Token manquant');
         });
 
         it('should not return vote with invalid token', async () => {
-          const res = await request(app.getHttpServer()).get(`/post-user/${post.id}`)
+          const res = await request(app.getHttpServer()).get(`/post-user/votes/${post.id}`)
           .set('Authorization', 'Bearer invalid-token');
           expect(res.statusCode).toBe(401);
           expect(res.body).toHaveProperty('message', 'Token invalide');
@@ -143,13 +143,13 @@ describe('Vote Endpoints (e2e)', () => {
       });
     
       it('should not delete vote without authentication', async () => {
-        const res = await request(app.getHttpServer()).delete(`/post-user/${post.id}/${post.user_id}`)
+        const res = await request(app.getHttpServer()).delete(`/post-user/vote/${post.id}/${post.user_id}`)
         expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED);
         expect(res.body).toHaveProperty('message', 'Token manquant');
       });
   
       it('should not delete vote with invalid token', async () => {
-        const res = await request(app.getHttpServer()).delete(`/post-user/${post.id}/${post.user_id}`)
+        const res = await request(app.getHttpServer()).delete(`/post-user/vote/${post.id}/${post.user_id}`)
         .set('Authorization', 'Bearer invalid-token');
         expect(res.statusCode).toBe(401);
         expect(res.body).toHaveProperty('message', 'Token invalide');

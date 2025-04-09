@@ -8,6 +8,8 @@ import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { Post } from '../src/posts/entities/post.entity';
 import axios from 'axios';
 
+const AUTH_URL = api_auth_URL;
+const PROJECT_URL = api_project_URL;
 let dataSource: DataSource;
 let app: INestApplication;
 let token: any;
@@ -48,7 +50,7 @@ const createUser = {
   lastname: faker.person.lastName(),
   password: faker.internet.password(),
   email: faker.internet.email(),
-  birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
+ birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString(),
 };
 
 const createProject = {
@@ -59,8 +61,8 @@ const createProject = {
 
 describe('Comments Endpoints (e2e)', () => {
   beforeAll(async () => {
-    await axios.post(`${api_auth_URL}/users`, createUser);
-    const loginRes = await axios.post(`${api_auth_URL}/auth/login`, {
+     await axios.post(`${AUTH_URL}/users`, createUser);
+    const loginRes = await axios.post(`${AUTH_URL}/auth/login`, {
       email: createUser.email,
       password: createUser.password,
     });
@@ -70,7 +72,7 @@ describe('Comments Endpoints (e2e)', () => {
       .set('Authorization', `Bearer ${token}`);
     userConnected = userProfile.body;
 
-    const projectResponse = await axios.post(`${api_project_URL}/projects/`, createProject, {
+    const projectResponse = await axios.post(`${PROJECT_URL}/projects/`, createProject, {
       headers: {
         Authorization: `Bearer ${token} `,
         'Content-Type': 'application/json',

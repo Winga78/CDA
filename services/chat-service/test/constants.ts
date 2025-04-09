@@ -7,7 +7,7 @@ import { AppModule } from '../src/app.module';
 
 export const database  = {
     type : (process.env.DB_TYPE as any)|| "mysql",
-    host : process.env.DB_HOST || "localhos",
+    host : process.env.DB_HOST || "localhost",
     port : process.env.DB_PORT || "3306",
     username : process.env.MYSQL_USER || "db_user",
     password : process.env.MYSQL_PASSWORD || "db_password",

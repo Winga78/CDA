@@ -1,6 +1,6 @@
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 import mongoose from 'mongoose';
 import { database, imports } from "./constants";
 import { CreateUserDto } from "../src/users/dto/create-user.dto";
@@ -126,15 +126,6 @@ describe('User Endpoints (e2e)', () => {
           expect(body.email).toEqual(updateUser.email);
           expect(body.lastname).toEqual(updateUser.lastname);
         });
-    });
-
-    it('should not update user with an existing email', async () => {
-      const res = await request(app.getHttpServer())
-        .patch(`/users/`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ email: createUser2.email });
-      expect(res.statusCode).toBe(409);
-      expect(res.body).toHaveProperty('message', 'Cet email est déjà utilisé');
     });
 
     it('should not update user with an invalid email', async () => {

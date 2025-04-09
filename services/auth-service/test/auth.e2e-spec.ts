@@ -1,6 +1,6 @@
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 import mongoose from 'mongoose';
 import { database, imports, jwt_secret } from './constants';
 import { CreateUserDto } from '../src/users/dto/create-user.dto';
