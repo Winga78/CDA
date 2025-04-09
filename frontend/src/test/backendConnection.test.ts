@@ -25,7 +25,7 @@ describe("Project-service Connection", () => {
 
 describe("project_user_post-service Connection", () => {
   it("doit répondre avec un statut 200", async () => {
-    const response = await fetch(process.env.PROJECT_USER_POST_DOCKER_URL||"http://localhost:3003");
+    const response = await fetch(process.env.PROJECT_USER_POST_DOCKER_URL||"api/project-user-post");
     expect(response.status).toBe(200);
   });
 });
