@@ -15,7 +15,7 @@ describe("Chat-service Connection", () => {
 });
 
 
-describe("Vote-service Connection", () => {
+describe("Project-service Connection", () => {
     it("doit répondre avec un statut 200", async () => {
       const response = await fetch(process.env.VITE_PROJECT_SERVICE_URL||"http://project-service:3002");
       expect(response.status).toBe(200);
