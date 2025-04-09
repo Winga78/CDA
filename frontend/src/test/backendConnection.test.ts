@@ -2,14 +2,14 @@ import { describe, it, expect } from "vitest";
 
 describe("Auth-service Connection", () => {
   it("doit répondre avec un statut 200", async () => {
-    const response = await fetch(process.env.VITE_AUTH_SERVICE_URL || "http://auth-service:3000");
+    const response = await fetch(process.env.AUTH_DOCKER_URL || "http://localhost:3000");
     expect(response.status).toBe(200);
   });
 });
 
 describe("Chat-service Connection", () => {
     it("doit répondre avec un statut 200", async () => {
-      const response = await fetch(process.env.VITE_VOTE_SERVICE_URL||"http://chat-service:3001/");
+      const response = await fetch(process.env.VITE_VOTE_SERVICE_URL||"http://localhost:3001/");
       expect(response.status).toBe(200);
     });
 });
@@ -17,7 +17,7 @@ describe("Chat-service Connection", () => {
 
 describe("Project-service Connection", () => {
     it("doit répondre avec un statut 200", async () => {
-      const response = await fetch(process.env.VITE_PROJECT_SERVICE_URL||"http://project-service:3002");
+      const response = await fetch(process.env.PROJECT_DOCKER_URL||"http://localhost:3002");
       expect(response.status).toBe(200);
     });
 });
@@ -25,7 +25,7 @@ describe("Project-service Connection", () => {
 
 describe("project_user_post-service Connection", () => {
   it("doit répondre avec un statut 200", async () => {
-    const response = await fetch(process.env.VITE_PROJECT_USER_POST_SERVICE_URL||"http://project_user_post-service:3003");
+    const response = await fetch(process.env.PROJECT_USER_POST_DOCKER_URL||"http://localhost:3003");
     expect(response.status).toBe(200);
   });
 });
