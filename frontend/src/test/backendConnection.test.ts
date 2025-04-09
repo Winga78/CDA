@@ -2,14 +2,14 @@ import { describe, it, expect } from "vitest";
 //test
 describe("Auth-service Connection", () => {
   it("doit répondre avec un statut 200", async () => {
-    const response = await fetch("http://auth-service:3000");
+    const response = await fetch(process.env.AUTH_DOCKER_URL || "api/auth");
     expect(response.status).toBe(200);
   });
 });
 
 describe("Chat-service Connection", () => {
     it("doit répondre avec un statut 200", async () => {
-      const response = await fetch(process.env.VITE_VOTE_SERVICE_URL||"http://localhost:3001/");
+      const response = await fetch(process.env.CHAT_DOCKER_URL ||"api/chat");
       expect(response.status).toBe(200);
     });
 });
@@ -17,7 +17,7 @@ describe("Chat-service Connection", () => {
 
 describe("Project-service Connection", () => {
     it("doit répondre avec un statut 200", async () => {
-      const response = await fetch("http://localhost:3002");
+      const response = await fetch(process.env.PROJECT_DOCKER_URL || "api/projects") ;
       expect(response.status).toBe(200);
     });
 });
