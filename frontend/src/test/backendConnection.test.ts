@@ -21,3 +21,11 @@ describe("Vote-service Connection", () => {
       expect(response.status).toBe(200);
     });
 });
+
+
+describe("project_user_post-service Connection", () => {
+  it("doit répondre avec un statut 200", async () => {
+    const response = await fetch(process.env.VITE_PROJECT_USER_POST_SERVICE_URL||"http://project_user_post-service:3003");
+    expect(response.status).toBe(200);
+  });
+});
