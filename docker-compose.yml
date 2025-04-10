@@ -137,10 +137,10 @@ services:
     container_name: mysql-service
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
+       MYSQL_ALLOW_EMPTY_PASSWORD: "${MYSQL_ADMIN_PASSWORD}"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./db/script.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./db/script.sh:/docker-entrypoint-initdb.d/script.sh
     ports:
       - "3306:3306"
     networks:
