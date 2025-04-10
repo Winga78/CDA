@@ -2,7 +2,8 @@ import axios from "axios";
 import {User} from "../models/User"
 
 const API_BASE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || '/api/auth';
-export const api_auth_url = import.meta.env.AUTH_DOCKER_URL || "http://192.168.58.161:3000";
+export const api_auth_url = import.meta.env.AUTH_DOCKER_URL || '/api/auth';
+
 const authService = axios.create({
   baseURL: API_BASE_URL,
   withCredentials : true

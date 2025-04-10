@@ -30,10 +30,12 @@ jobs:
           echo "DB_DATABASE_RELATION=${{ secrets.DB_DATABASE_RELATION }}" >> .env
           echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "AUTH_DOCKER_URL=${{ secrets.AUTH_DOCKER_URL }}" >> .env
-          echo "PROJECT_DOCKER_URL=${{ secrets.PROJECT_DOCKER_URL }}" >> .env
-          echo "CHAT_DOCKER_URL=${{ secrets.CHAT_DOCKER_URL }}" >> .env
-          echo "PROJECT_USER_POST_DOCKER_URL=${{ secrets.PROJECT_USER_POST_DOCKER_URL }}" >> .env
+          echo "MYSQL_ADMIN_PASSWORD=${{ secrets.MYSQL_ADMIN_PASSWORD }}" >> .env
+          echo "MYSQL_ADMIN_USER=${{ secrets.MYSQL_ADMIN_USER }}" >> .env
+         
+          
+          
+          
 
       - name: Start all services
         run: docker compose up -d

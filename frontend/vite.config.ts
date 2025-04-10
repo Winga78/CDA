@@ -15,7 +15,7 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api/auth': {
-        target: process.env.VITE_AUTH_SERVICE_URL || 'http://localhost:3000',
+        target: process.env.VITE_AUTH_SERVICE_URL || '/api/auth',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/auth/, ''),
         configure: (proxy) => {
@@ -31,7 +31,7 @@ export default defineConfig({
         },
       },
       '/api/projects': {
-        target: process.env.VITE_PROJECT_SERVICE_URL || 'http://localhost:3002',
+        target: process.env.VITE_PROJECT_SERVICE_URL || '/api/projects',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/projects/, ''),
         configure: (proxy) => {
@@ -47,24 +47,18 @@ export default defineConfig({
         },
       },
       '/api/chat': {
-        target: process.env.VITE_CHAT_SERVICE_URL || 'http://localhost:3001',
+        target: process.env.VITE_CHAT_SERVICE_URL || '/api/chat',
         changeOrigin: true,
-        ws: true,
         rewrite: (path) => path.replace(/^\/api\/chat/, ''),
-        configure: (proxy) => {
-          proxy.on('proxyReq', (proxyReq) => {
-            console.log(`[VITE PROXY] Proxying request to: ${proxyReq.path}`);
-          });
-          proxy.on('proxyRes', (proxyRes) => {
-            console.log(`[VITE PROXY] Response received with status: ${proxyRes.statusCode}`);
-          });
-          proxy.on('error', (err) => {
-            console.error(`[VITE PROXY] Proxy error: ${err.message}`);
-          });
-        },
+      },
+      '/socket.io': {
+        target: process.env.VITE_CHAT_SERVICE_URL || 'api/chat',
+        ws: true,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/chat/, ''),
       },
       '/api/project-user-post': {
-        target: process.env.VITE_PROJECT_USER_POST_SERVICE_URL || 'http://localhost:3003',
+        target: process.env.VITE_PROJECT_USER_POST_SERVICE_URL || '/api/project-user-post',
         changeOrigin: true,
         ws: true,
         rewrite: (path) => path.replace(/^\/api\/project-user-post/, ''),

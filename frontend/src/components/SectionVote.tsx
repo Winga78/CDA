@@ -1,7 +1,7 @@
 import { FaArrowUp } from "react-icons/fa"; // Import de l'icône
 import { useState, useEffect, useRef } from "react";
 import { Button } from "react-bootstrap";
-import { checkIfVoted, getVote , api_project_post_user_url} from "../services/postUserService";
+import { checkIfVoted, getVote , API_BASE_URL} from "../services/postUserService";
 import { io, Socket } from "socket.io-client";
 import { updatePost } from "../services/postService";
 
@@ -27,7 +27,7 @@ const SectionVote = ({
 
     // Initialisation de la connexion socket
     socketRef.current = io(
-      api_project_post_user_url
+      API_BASE_URL
     );
     const socket = socketRef.current;
 

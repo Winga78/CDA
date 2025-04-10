@@ -8,7 +8,7 @@ import { BsPlus } from "react-icons/bs";
 import { useUser } from "../context/UserContext";
 import { io, Socket } from 'socket.io-client';
 import ParticipantModal from "../components/ModalAddParticipants";
-import { postsList , api_chat_url} from '../services/postService';
+import { postsList , API_BASE_URL} from '../services/postService';
 import SectionVote from './SectionVote';
 import { formatModifiedDate } from "../utils/dateUtils";
 import { api_auth_url} from "../services/authService";
@@ -48,7 +48,7 @@ const ChatPage = () => {
         if (!id) return;
 
         setRoom(id);
-        socketRef.current = io(api_chat_url);
+        socketRef.current = io(API_BASE_URL);
         const socket = socketRef.current;
 
         socket.emit('joinRoom', id);
