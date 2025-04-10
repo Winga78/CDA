@@ -1,44 +1,34 @@
 #!/bin/bash
+set -e
+set -u
 
-source ../.env
+function create_user_and_database() {
+  local database=$1
+  echo "  Creating user and database '$database'"
 
-MYSQL_ADMIN_USER="$MYSQL_ADMIN_USER"
-MYSQL_ADMIN_PASSWORD="$MYSQL_ADMIN_PASSWORD"
-MYSQL_HOST="$DB_HOST"
+  mysql -u root -p"$MYSQL_ROOT_PASSWORD" <<-EOSQL
+    CREATE DATABASE IF NOT EXISTS \`$database\`;
+    CREATE USER IF NOT EXISTS '$database'@'%' IDENTIFIED BY '$database';
+    GRANT ALL PRIVILEGES ON \`$database\`.* TO '$database'@'%';
+    FLUSH PRIVILEGES;
+EOSQL
+}
 
-if [ -z "$MYSQL_ADMIN_USER" ] || [ -z "$MYSQL_ADMIN_PASSWORD" ] || [ -z "$MYSQL_HOST" ] || \
-   [ -z "$MYSQL_USER" ] || [ -z "$MYSQL_PASSWORD" ] || \
-   [ -z "$DB_DATABASE_CHAT" ] || [ -z "$DB_DATABASE_PROJECT" ] || [ -z "$DB_DATABASE_RELATION" ]; then
-    echo "Erreur : Une ou plusieurs variables d'environnement sont manquantes."
-    exit 1
+# Création des bases multiples
+if [ -n "${MYSQL_MULTIPLE_DATABASES:-}" ]; then
+  echo "Multiple database creation requested: $MYSQL_MULTIPLE_DATABASES"
+  for db in $(echo "$MYSQL_MULTIPLE_DATABASES" | tr ',' ' '); do
+    create_user_and_database "$db"
+  done
+  echo "Multiple databases created"
 fi
 
-SQL_COMMANDS=""
-
-SQL_COMMANDS+="
-SELECT 1 FROM mysql.user WHERE user='root' AND host='localhost' AND authentication_string=''; 
-"
-
-SQL_COMMANDS+="
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$MYSQL_ADMIN_PASSWORD';
-FLUSH PRIVILEGES;
-"
-
-SQL_COMMANDS+="
-CREATE DATABASE IF NOT EXISTS $DB_DATABASE_CHAT;
-CREATE DATABASE IF NOT EXISTS $DB_DATABASE_PROJECT;
-CREATE DATABASE IF NOT EXISTS $DB_DATABASE_RELATION;
-CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
-GRANT ALL PRIVILEGES ON $DB_DATABASE_CHAT.* TO '$MYSQL_USER'@'%';
-GRANT ALL PRIVILEGES ON $DB_DATABASE_PROJECT.* TO '$MYSQL_USER'@'%';
-GRANT ALL PRIVILEGES ON $DB_DATABASE_RELATION.* TO '$MYSQL_USER'@'%';
-FLUSH PRIVILEGES;
-"
-
-mysql -u "$MYSQL_ADMIN_USER" -p"$MYSQL_ADMIN_PASSWORD" -h "$MYSQL_HOST" -e "$SQL_COMMANDS"
-
-if [ $? -eq 0 ]; then
-    echo "Les bases de données et l'utilisateur ont été créés avec succès."
-else
-    echo "Une erreur est survenue lors de l'exécution des commandes."
+# Privilèges globaux pour l'utilisateur principal si défini
+if [ -n "${MYSQL_USER:-}" ]; then
+  echo "Granting global privileges to user '$MYSQL_USER'"
+  mysql -u root -p"$MYSQL_ROOT_PASSWORD" <<-EOSQL
+    GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
+EOSQL
+  echo "Global privileges granted to $MYSQL_USER"
 fi

@@ -37,8 +37,8 @@ import { join } from 'path';
     UsersModule,
     AuthModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),  // Répertoire des fichiers téléchargés
-      serveRoot: '/uploads', // URL de base pour accéder aux fichiers
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
     //base de donnée en mode production ici
   ],

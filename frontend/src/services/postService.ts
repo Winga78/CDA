@@ -3,7 +3,7 @@ import { Post } from "../models/Post";
 import { getUser } from "./authService";
 
 const API_BASE_URL = "/api/posts";
-export const url_socket = import.meta.env.VITE_CHAT_SERVICE_URL || 'http://localhost:3001'
+export const url_socket = 'http://localhost:3001'
 const chatService = axios.create({
   baseURL: API_BASE_URL,
 });
