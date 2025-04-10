@@ -9,8 +9,8 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>, @Res({ passthrough: true }) res: Response) {
-    return this.authService.signIn(signInDto.email, signInDto.password, res);
+  signIn(@Body() signInDto: Record<string, any>) {
+    return this.authService.signIn(signInDto.email, signInDto.password);
   }
 
   @Get('profile')

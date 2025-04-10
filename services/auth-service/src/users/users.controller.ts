@@ -39,7 +39,7 @@ export class UsersController {
   
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
-      destination: './uploads/avatars',
+      destination: './uploads/users/avatars',
       filename: (req, file, callback) => {
         const name = `${Date.now()}${extname(file.originalname)}`;
         callback(null, name);
@@ -61,7 +61,7 @@ export class UsersController {
     file?: Express.Multer.File,
   ) {
     if (file) {
-      const avatarPath = `uploads/avatars/${file.filename}`;
+      const avatarPath = `uploads/users/avatars/${file.filename}`;
       updateUserDto.avatar = avatarPath;
     }
 

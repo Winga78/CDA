@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Container, ListGroup, Badge } from "react-bootstrap";
 import { BsBellFill } from "react-icons/bs";
-import { notificationPost } from "../services/postUserService";
+import { getVoteNotifications } from "../services/postUserService";
 
 interface Notification {
   id: number;
@@ -19,7 +19,7 @@ function NotificationPage() {
   useEffect(() => {
     const loadNotifications = async () => {
       try {
-        const data = await notificationPost();
+        const data = await getVoteNotifications();
 
         if (!data || data.length === 0) {
           setMessage("Aucune notification trouvée");

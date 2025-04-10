@@ -1,7 +1,7 @@
 import { FaArrowUp } from "react-icons/fa"; // Import de l'icône
 import { useState, useEffect, useRef } from "react";
 import { Button } from "react-bootstrap";
-import { checkIfVoted, getVote , API_BASE_URL} from "../services/postUserService";
+import { checkIfVoted, getVoteCount, url_socket} from "../services/postUserService";
 import { io, Socket } from "socket.io-client";
 import { updatePost } from "../services/postService";
 
@@ -27,7 +27,7 @@ const SectionVote = ({
 
     // Initialisation de la connexion socket
     socketRef.current = io(
-      API_BASE_URL
+      url_socket
     );
     const socket = socketRef.current;
 
@@ -46,7 +46,7 @@ const SectionVote = ({
     // Fonction pour récupérer le nombre de votes
     const fetchCountVote = async () => {
       try {
-        const count = await getVote(postId);
+        const count = await getVoteCount(postId);
         if (typeof count === "number") {
           setScore(count);
         }

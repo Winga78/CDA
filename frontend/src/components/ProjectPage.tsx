@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import ProjectModal from "../components/ModalProject";
 import DeleteModal from "../components/ModalDelete";
 import UpdateModal from "./ModalUpdate";
-import { getUserProject } from "../services/projectService";
+import { getUserProjects } from "../services/projectService";
 import { Project } from "../models/Project";
 import { Button } from "react-bootstrap";
 import { formatModifiedDate } from "../utils/dateUtils";
@@ -34,7 +34,7 @@ const ProjectPage = () => {
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const data = await getUserProject();
+        const data = await getUserProjects();
         setIsLoaded(true);
         setProjects(data);
       } catch (error : any) {

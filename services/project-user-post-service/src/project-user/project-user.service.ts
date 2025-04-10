@@ -63,7 +63,7 @@ export class ProjectUserService {
 
   
   async findProject(project_id: number, token: string) {
-    const uri = process.env.PROJECT_DOCKER_URL || "http://localhost:3002";
+    const uri = process.env.VITE_PROJECT_SERVICE_URL || "http://localhost:3002";
   
     const project = await axios.get(`${uri}/projects/${project_id}`, {
       headers: {

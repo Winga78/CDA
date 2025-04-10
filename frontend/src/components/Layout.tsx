@@ -5,11 +5,10 @@ import { Outlet } from 'react-router-dom';
 import SectionProject from "./SectionProject";
 import { useUser } from "../context/UserContext";
 import logo from '../assets/logo.png';
-import { api_auth_url} from "../services/authService";
 
 const Layout = () => {
   const { user, logout } = useUser();
-  const avatarUrl = `${api_auth_url}/${user?.avatar}`;
+  const avatarUrl = `/api/uploads/${user?.avatar}`;
   return (
     <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
       {/* Navbar horizontale */}

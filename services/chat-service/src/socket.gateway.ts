@@ -11,7 +11,7 @@ import {
   import { PostsService } from './posts/posts.service';
   import { CreatePostDto } from './posts/dto/create-post.dto';
 
-  @WebSocketGateway({ cors: { origin: '*' } }) // Autoriser toutes les origines
+  @WebSocketGateway({ cors: { origin: '*' } })
   export class SocketGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   {

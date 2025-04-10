@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as multer from 'multer';
 
 @Injectable()
 export class FileValidationMiddleware {

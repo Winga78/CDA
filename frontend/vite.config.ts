@@ -15,64 +15,41 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api/auth': {
-        target: process.env.VITE_AUTH_SERVICE_URL || '/api/auth',
+        target: process.env.VITE_AUTH_SERVICE_URL || 'http://localhost:3000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/auth/, ''),
-        configure: (proxy) => {
-          proxy.on('proxyReq', (proxyReq) => {
-            console.log(`[VITE PROXY] Proxying request to: ${proxyReq.path}`);
-          });
-          proxy.on('proxyRes', (proxyRes) => {
-            console.log(`[VITE PROXY] Response received with status: ${proxyRes.statusCode}`);
-          });
-          proxy.on('error', (err) => {
-            console.error(`[VITE PROXY] Proxy error: ${err.message}`);
-          });
-        },
+        rewrite: (path) => path.replace(/^\/api\/auth/, '/auth'),
+      },
+      '/api/users': {
+        target: process.env.VITE_AUTH_SERVICE_URL || 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/users/, '/users'),
+      },
+      '/api/uploads': {
+        target: process.env.VITE_AUTH_SERVICE_URL || 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/uploads/, ''),
       },
       '/api/projects': {
-        target: process.env.VITE_PROJECT_SERVICE_URL || '/api/projects',
+        target: process.env.VITE_PROJECT_SERVICE_URL || 'http://localhost:3002',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/projects/, ''),
-        configure: (proxy) => {
-          proxy.on('proxyReq', (proxyReq) => {
-            console.log(`[VITE PROXY] Proxying request to: ${proxyReq.path}`);
-          });
-          proxy.on('proxyRes', (proxyRes) => {
-            console.log(`[VITE PROXY] Response received with status: ${proxyRes.statusCode}`);
-          });
-          proxy.on('error', (err) => {
-            console.error(`[VITE PROXY] Proxy error: ${err.message}`);
-          });
-        },
+        rewrite: (path) => path.replace(/^\/api\/projects/, '/projects'),
       },
-      '/api/chat': {
-        target: process.env.VITE_CHAT_SERVICE_URL || '/api/chat',
+      '/api/posts': {
+        target: process.env.VITE_CHAT_SERVICE_URL || 'http://localhost:3001',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/chat/, ''),
-      },
-      '/socket.io': {
-        target: process.env.VITE_CHAT_SERVICE_URL || 'api/chat',
+        rewrite: (path) => path.replace(/^\/api\/posts/, '/posts'),
         ws: true,
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/chat/, ''),
       },
-      '/api/project-user-post': {
-        target: process.env.VITE_PROJECT_USER_POST_SERVICE_URL || '/api/project-user-post',
+      '/api/project-user': {
+        target: process.env.VITE_PROJECT_USER_POST_SERVICE_URL || 'http://localhost:3003',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/project-user/, 'project-user'),
+      },
+      '/api/post-user': {
+        target: process.env.VITE_PROJECT_USER_POST_SERVICE_URL || 'http://localhost:3003',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/post-user/, 'post-user'),
         ws: true,
-        rewrite: (path) => path.replace(/^\/api\/project-user-post/, ''),
-        configure: (proxy) => {
-          proxy.on('proxyReq', (proxyReq) => {
-            console.log(`[VITE PROXY] Proxying request to: ${proxyReq.path}`);
-          });
-          proxy.on('proxyRes', (proxyRes) => {
-            console.log(`[VITE PROXY] Response received with status: ${proxyRes.statusCode}`);
-          });
-          proxy.on('error', (err) => {
-            console.error(`[VITE PROXY] Proxy error: ${err.message}`);
-          });
-        },
       },
     },
   },

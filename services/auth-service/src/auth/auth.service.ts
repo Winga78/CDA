@@ -10,7 +10,7 @@ export class AuthService {
         private jwtService: JwtService
       ) {}
 
-  async signIn(email: string, pass: string ,res :any): Promise<{ access_token: string }> {
+  async signIn(email: string, pass: string): Promise<{ access_token: string }> {
     const user = await this.usersService.findOneByEmail(email);
     const isMatch = await bcrypt.compare(pass, user?.password);
     if (!isMatch) {
@@ -18,12 +18,6 @@ export class AuthService {
     }
     const payload = { id: user['_id'] , email: user.email , firstname : user.firstname , lastname : user.lastname , avatar : user.avatar};
     const token =  await this.jwtService.signAsync(payload);
-    res.cookie('cookieAuth', token, {
-      httpOnly: true,
-      maxAge: 3600000,
-      //secure: process.env.NODE_ENV === 'production',
-      // sameSite: 'lax',
-    })
     return {
       access_token: token
     };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ListGroup, Container } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { User } from "../models/User";
 import { findParticipant } from "../services/projectUserService";
@@ -33,9 +33,10 @@ const SectionParticipant = () => {
   }
 
   return (
-    <Container
-      className="mt-3 border p-3 rounded shadow-sm"
-    >
+    <aside
+    className="position-sticky  top-0 end-0 mt-3 me-3 border p-3 rounded shadow-sm"
+    style={{ width: "250px", maxHeight: "calc(100vh - 20px)", overflowY: "auto" }}
+  >
       <h5 className="text-center">Participants</h5>
 
       <ListGroup>
@@ -49,7 +50,7 @@ const SectionParticipant = () => {
           <ListGroup.Item>Aucun participant</ListGroup.Item>
         )}
       </ListGroup>
-    </Container>
+      </aside>
   );
 };
 

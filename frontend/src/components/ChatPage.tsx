@@ -8,10 +8,9 @@ import { BsPlus } from "react-icons/bs";
 import { useUser } from "../context/UserContext";
 import { io, Socket } from 'socket.io-client';
 import ParticipantModal from "../components/ModalAddParticipants";
-import { postsList , API_BASE_URL} from '../services/postService';
+import { getPostsWithUserInfo , url_socket} from '../services/postService';
 import SectionVote from './SectionVote';
 import { formatModifiedDate } from "../utils/dateUtils";
-import { api_auth_url} from "../services/authService";
 
 const ChatPage = () => {
     const { id } = useParams();
@@ -25,13 +24,13 @@ const ChatPage = () => {
     const socketRef = useRef<Socket | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const avatarUrl = `${api_auth_url}`;
+    const avatarUrl = `/api/uploads`;
 
     if (!id) return null;
 
     const loadPosts = async () => {
         try {
-          const posts = await postsList(id);
+          const posts = await getPostsWithUserInfo(id);
           if (Array.isArray(posts)) {
             setMessages(posts);  
           } else {
@@ -48,7 +47,7 @@ const ChatPage = () => {
         if (!id) return;
 
         setRoom(id);
-        socketRef.current = io(API_BASE_URL);
+        socketRef.current = io(url_socket);
         const socket = socketRef.current;
 
         socket.emit('joinRoom', id);
@@ -126,11 +125,10 @@ const ChatPage = () => {
   ) : (
     messages.map((msg) => (
       <div key={msg.post_id} className="mb-3 d-flex justify-content-between align-items-start">
-  {/* Colonne message */}
   <Alert variant="light" className="flex-grow-1 me-3">
     <div className="d-flex align-items-center mb-2">
       <img
-        src={`${avatarUrl}/${msg.user.avatar}` || "https://via.placeholder.com/40"}
+        src={`${avatarUrl}/${msg.user.avatar}`}
         alt={`${msg.user.firstname} ${msg.user.lastname}`}
         className="rounded-circle me-2"
         style={{ width: "40px", height: "40px", objectFit: "cover" }}
@@ -148,7 +146,6 @@ const ChatPage = () => {
     </div>
   </Alert>
 
-  {/* Colonne vote */}
   <div style={{ minWidth: "100px" }}>
     <SectionVote userId={user!.id} postId={msg.post_id} onVoteChange={loadPosts} />
   </div>
@@ -156,7 +153,6 @@ const ChatPage = () => {
     ))
   )}
 </div>
-
             {error && <Alert variant="danger">{error}</Alert>}
     
             <Form>
