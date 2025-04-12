@@ -14,3 +14,7 @@ variable "autoscaling_group_arn" {
 variable "aws_lb_target_group_arn"{
   type        = string
 }
+
+variable "ecs_task_definition" {
+  type = list(string)
+}

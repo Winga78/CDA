@@ -27,10 +27,11 @@ resource "aws_ecs_cluster_capacity_providers" "example" {
 
 
 resource "aws_ecs_service" "ecs_service" {
- name            = "my-ecs-service"
+ count           = length(local.tasks)
+ name            = "${local.tasks[count.index].name}-service"
  cluster         = aws_ecs_cluster.ecs_cluster.id
- task_definition = aws_ecs_task_definition.ecs_task_definition.arn
- desired_count   = 2
+ task_definition = aws_ecs_task_definition.ecs_task_definition[count.index].arn
+ desired_count   = 1
 
  network_configuration {
    subnets         = var.subnet_ids

@@ -1,9 +1,18 @@
 resource "aws_ecs_cluster" "ecs_cluster" {
- name = "my-ecs-cluster"
+ name = "my-cda-ecs-cluster"
+}
+
+locals {
+  tasks = concat(
+    [for i in range(length(var.ecs_task_definition)) : {
+      name      = var.ecs_task_definition[i]
+    }],
+  )
 }
 
 resource "aws_ecs_task_definition" "ecs_task_definition" {
- family             = "my-ecs-task"
+ count = length(local.tasks)
+ family             = local.tasks[count.index].name
  network_mode       = "awsvpc"
  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
  cpu                = 256

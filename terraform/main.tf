@@ -7,7 +7,7 @@ module "vpc" {
 
 module "ecr" {
   source            = "./modules/ecr"
-  repository_name   = "mon-super-repo"
+  repository_name   = ["frontend-repo", "project-repo", "project_user_post-repo" , "aut-repo" , "chat-repo"]
 }
 
 module "ec2" {
@@ -16,10 +16,12 @@ module "ec2" {
   subnet_ids              = module.vpc.subnet_ids
   security_group_id       = module.vpc.security_group_id
   aws_iam_role_name       = module.ecs.aws_iam_role_name
+  port_listenned          = 80
 }
 
 module "ecs" {
   source = "./modules/ecs"
+  ecs_task_definition     = ["auth_task","chat_task","project_task","project_user_post_task","frontend_task"]
   subnet_ids              = module.vpc.subnet_ids
   security_group_id       = module.vpc.security_group_id
   autoscaling_group_arn   = module.ec2.autoscaling_group_arn

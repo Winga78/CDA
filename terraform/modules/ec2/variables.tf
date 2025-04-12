@@ -13,3 +13,7 @@ variable "security_group_id" {
 variable "aws_iam_role_name" {
   type = string
 }
+
+variable "port_listenned" {
+  type = string
+}
