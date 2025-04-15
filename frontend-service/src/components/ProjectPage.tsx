@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import ProjectModal from "../components/ModalProject";
-import DeleteModal from "../components/ModalDelete";
+import ProjectModal from "./ModalProject";
+import DeleteModal from "./ModalDelete";
 import UpdateModal from "./ModalUpdate";
 import { getUserProjects } from "../services/projectService";
 import { Project } from "../models/Project";

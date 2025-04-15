@@ -4,7 +4,7 @@ networks:
 
 services:
   frontend-service:
-     build: ./frontend
+     build: ./frontend-service
      container_name : frontend-service
      restart : always
      ports:

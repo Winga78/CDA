@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Project } from "../models/Project";
 import { ProjectUser } from "../models/ProjectUser";
-import { projectServiceRes } from "../services/projectService";
+import { projectServiceRes } from "./projectService";
 
 const API_BASE_URL = "/api/project-user";
 

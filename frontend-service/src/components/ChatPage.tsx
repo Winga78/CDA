@@ -7,7 +7,7 @@ import { Container, Button, Form, Alert } from "react-bootstrap";
 import { BsPlus } from "react-icons/bs";
 import { useUser } from "../context/UserContext";
 import { io, Socket } from 'socket.io-client';
-import ParticipantModal from "../components/ModalAddParticipants";
+import ParticipantModal from "./ModalAddParticipants";
 import { getPostsWithUserInfo} from '../services/postService';
 import SectionVote from './SectionVote';
 import { formatModifiedDate } from "../utils/dateUtils";

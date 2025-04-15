@@ -3,7 +3,6 @@ name: CI - Docker Compose Tests
 on: 
   push:
     branches:
-      - main
       - dev
 
 jobs:

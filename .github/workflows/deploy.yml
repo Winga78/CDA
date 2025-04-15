@@ -8,25 +8,21 @@ on:
 env:
   AWS_REGION: eu-west-3  
 
-  ECR_FRONTEND_REPOSITORY: frontend-repo
-  ECR_PROJECT_REPOSITORY: project-repo
-  ECR_PROJECT_POST_USER_REPOSITORY: project_user_post-repo
-  ECR_AUTH_REPOSITORY: aut-repo
-  ECR_CHAT_REPOSITORY: chat-repo
 
-  ECS_AUTH_SERVICE: auth_task-service
-  ECS_CHAT_SERVICE: chat_task-service 
-  ECS_PROJECT_SERVICE: project_task-service 
-  ECS_PROJECT_USER_POST_SERVICE: project_user_post_task-service 
-  ECS_FRONTEND_SERVICE: frontend_task-service 
 
-  ECS_CLUSTER: my-cda-ecs-cluster
+  # ECS_AUTH_SERVICE: auth_task-service
+  # ECS_CHAT_SERVICE: chat_task-service 
+  # ECS_PROJECT_SERVICE: project_task-service 
+  # ECS_PROJECT_USER_POST_SERVICE: project_user_post_task-service 
+  # ECS_FRONTEND_SERVICE: frontend_task-service 
 
-  ECS_TASK_AUTH_DEFINITION: auth_task
-  ECS_TASK_CHAT_DEFINITION: chat_task
-  ECS_TASK_PROJECT_DEFINITION: project_task
-  ECS_TASK_PROJECT_USER_POST_TASK_DEFINITION: project_user_post_task
-  ECS_TASK_FRONTEND_DEFINITION: frontend_task
+  # ECS_CLUSTER: my-cda-ecs-cluster
+
+  # ECS_TASK_AUTH_DEFINITION: auth_task
+  # ECS_TASK_CHAT_DEFINITION: chat_task
+  # ECS_TASK_PROJECT_DEFINITION: project_task
+  # ECS_TASK_PROJECT_USER_POST_TASK_DEFINITION: project_user_post_task
+  # ECS_TASK_FRONTEND_DEFINITION: frontend_task
                                       
   CONTAINER_PROJECT: project-service  
   CONTAINER_CHAT: chat-service
@@ -54,55 +50,29 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
 
-      - name: Build, tag, and push images to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+      - name: Build, tag Docker image
+        env: 
+          ECR_FRONTEND_REPOSITORY: frontend-repo
+          ECR_PROJECT_REPOSITORY: project-repo
+          ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
+          ECR_AUTH_REPOSITORY: auth-repo
+          ECR_CHAT_REPOSITORY: chat-repo
         run: |
-          # List of services to build and push
-          services=("auth" "project" "chat" "project_user_post" "frontend")
-          for service in "${services[@]}"; do
-            echo "Building and pushing Docker image for $service..."
-            REPOSITORY_VAR="ECR_${service^^}_REPOSITORY"  # Dynamically reference repository names
-            REPOSITORY_NAME="${!REPOSITORY_VAR}"
-            docker build -t $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG ../services/$service-service
-            docker push $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG
-            echo "image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
-          done
+             declare -A REPO_MAP=(
+             [auth]=$ECR_AUTH_REPOSITORY
+             [project]=$ECR_PROJECT_REPOSITORY
+             [chat]=$ECR_CHAT_REPOSITORY
+             [project-user-post]=$ECR_PROJECT_USER_POST_REPOSITORY
+             [frontend]=$ECR_FRONTEND_REPOSITORY
+             )
 
-      - name: Fill in the new image ID in the Amazon ECS task definitions and deploy
-        run: |
-          declare -A service_map
-          service_map=(["auth"]=$ECS_AUTH_SERVICE ["project"]=$ECS_PROJECT_SERVICE ["chat"]=$ECS_CHAT_SERVICE ["project_user_post"]=$ECS_PROJECT_USER_POST_SERVICE ["frontend"]=$ECS_FRONTEND_SERVICE)
+             for service in "${!REPO_MAP[@]}"; do
+             REPOSITORY_NAME="${REPO_MAP[$service]}"
 
-          services=("auth" "project" "chat" "project_user_post" "frontend")
-          for service in "${services[@]}"; do
-            echo "Processing $service..."
-
-            # Set task definition and container name dynamically
-            TASK_DEF_VAR="ECS_TASK_${service^^}_DEFINITION"
-            CONTAINER_VAR="CONTAINER_${service^^}"
-
-            TASK_DEFINITION="${!TASK_DEF_VAR}"
-            CONTAINER_NAME="${!CONTAINER_VAR}"
-            ECS_SERVICE="${service_map[$service]}"
-
-            # Fill in the image ID in the ECS task definition
-            echo "Updating task definition for $service..."
-            task_def_output=$(aws ecs register-task-definition \
-              --family $TASK_DEFINITION \
-              --container-definitions "[{\"name\":\"$CONTAINER_NAME\",\"image\":\"${{ steps.build-image.outputs.image }}\",\"essential\":true}]" \
-              --query "taskDefinition.taskDefinitionArn" \
-              --output text)
-
-            echo "$service task definition updated: $task_def_output"
-
-            # Deploy the updated task definition to ECS
-            echo "Deploying $service task definition to ECS..."
-            aws ecs update-service \
-              --cluster ${{ env.ECS_CLUSTER }} \
-              --service $ECS_SERVICE \
-              --task-definition $task_def_output \
-              --force-new-deployment
-          done
+               docker build \
+              -f ./services/$service-service/Dockerfile.prod \
+              -t $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG \
+              ./services/$service-service
+              docker push $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG
+              echo "image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
+             done
