@@ -57,6 +57,7 @@ jobs:
           ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
           ECR_AUTH_REPOSITORY: auth-repo
           ECR_CHAT_REPOSITORY: chat-repo
+          IMAGE_TAG: latest
         run: |
              declare -A REPO_MAP=(
              [auth]=$ECR_AUTH_REPOSITORY
