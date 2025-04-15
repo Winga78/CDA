@@ -7,9 +7,6 @@ on:
 
 env:
   AWS_REGION: eu-west-3  
-
-
-
   # ECS_AUTH_SERVICE: auth_task-service
   # ECS_CHAT_SERVICE: chat_task-service 
   # ECS_PROJECT_SERVICE: project_task-service 
@@ -22,8 +19,7 @@ env:
   # ECS_TASK_CHAT_DEFINITION: chat_task
   # ECS_TASK_PROJECT_DEFINITION: project_task
   # ECS_TASK_PROJECT_USER_POST_TASK_DEFINITION: project_user_post_task
-  # ECS_TASK_FRONTEND_DEFINITION: frontend_task
-                                      
+  # ECS_TASK_FRONTEND_DEFINITION: frontend_task                               
   CONTAINER_PROJECT: project-service  
   CONTAINER_CHAT: chat-service
   CONTAINER_PROJECT_USER_POST: project_user_post-service
@@ -60,7 +56,7 @@ jobs:
           IMAGE_TAG: latest
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
-       run: |
+        run: |
             declare -A REPO_MAP=(
             [auth]=$ECR_AUTH_REPOSITORY
             [project]=$ECR_PROJECT_REPOSITORY
