@@ -2,7 +2,7 @@ import axios from "axios";
 import { PostUser } from "../models/PostUser";
 
 const API_BASE_URL = "/api/post-user";
-export const url_socket = 'http://localhost:3003';
+
 const voteService = axios.create({
   baseURL: API_BASE_URL,
 });

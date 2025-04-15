@@ -1,7 +1,7 @@
 import { FaArrowUp } from "react-icons/fa"; // Import de l'icône
 import { useState, useEffect, useRef } from "react";
 import { Button } from "react-bootstrap";
-import { checkIfVoted, getVoteCount, url_socket} from "../services/postUserService";
+import { checkIfVoted, getVoteCount} from "../services/postUserService";
 import { io, Socket } from "socket.io-client";
 import { updatePost } from "../services/postService";
 
@@ -26,9 +26,9 @@ const SectionVote = ({
     if (!postId) return;
 
     // Initialisation de la connexion socket
-    socketRef.current = io(
-      url_socket
-    );
+    socketRef.current = io('', {
+      path: '/vote/socket.io',
+    });
     const socket = socketRef.current;
 
     socket.emit("joinRoom", postId);

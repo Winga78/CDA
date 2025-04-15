@@ -43,14 +43,26 @@ export default defineConfig({
       '/api/project-user': {
         target: process.env.VITE_PROJECT_USER_POST_SERVICE_URL || 'http://localhost:3003',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/project-user/, 'project-user'),
+        rewrite: (path) => path.replace(/^\/api\/project-user/, '/project-user'),
       },
       '/api/post-user': {
         target: process.env.VITE_PROJECT_USER_POST_SERVICE_URL || 'http://localhost:3003',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/post-user/, 'post-user'),
+        rewrite: (path) => path.replace(/^\/api\/post-user/, '/post-user'),
         ws: true,
       },
+     '/chat/socket.io': {
+       target: process.env.VITE_CHAT_SERVICE_URL || 'http://localhost:3001',
+       rewrite: (path) => path.replace(/^\/chat\/socket.io/, '/socket.io'),
+       changeOrigin: true,
+       ws: true,
+      },
+    '/vote/socket.io': {
+      target: process.env.VITE_PROJECT_USER_POST_SERVICE_URL || 'http://localhost:3003',
+      rewrite: (path) => path.replace(/^\/vote\/socket.io/, '/socket.io'),
+      changeOrigin: true,
+      ws: true,
+    }
     },
   },
 });

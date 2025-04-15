@@ -78,8 +78,8 @@ export class PostUserService {
         .orderBy('post_user.createdAt', 'DESC')
         .getRawMany();
     
-      const project_uri = this.configService.get(CONFIG_DATABASE).api_project_URL;
-      const user_uri = this.configService.get(CONFIG_DATABASE).api_auth_URL;
+      const project_uri = process.env.VITE_PROJECT_SERVICE_URL || "http://localhost:3002";
+      const user_uri = process.env.VITE_AUTH_SERVICE_URL || "http://localhost:3000";
     
       // Utiliser Promise.all pour gérer plusieurs appels asynchrones
       const notifications = await Promise.all(
