@@ -57,23 +57,24 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
         run: |
-            declare -A REPO_MAP=(
-            [auth]=$ECR_AUTH_REPOSITORY
-            [project]=$ECR_PROJECT_REPOSITORY
-            [chat]=$ECR_CHAT_REPOSITORY
-            [project-user-post]=$ECR_PROJECT_POST_USER_REPOSITORY
-            [frontend]=$ECR_FRONTEND_REPOSITORY
-            )
+         declare -A REPO_MAP=(
+           [auth]=$ECR_AUTH_REPOSITORY
+           [project]=$ECR_PROJECT_REPOSITORY
+           [chat]=$ECR_CHAT_REPOSITORY
+           [project-user-post]=$ECR_PROJECT_POST_USER_REPOSITORY
+         )
 
-            for service in "${!REPO_MAP[@]}"; do
-              REPOSITORY_NAME="${REPO_MAP[$service]}"
+          build_and_push() {
+            REPOSITORY_NAME=$1
+            SERVICE_PATH=$2
+            docker build -f $SERVICE_PATH/Dockerfile.prod -t $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG $SERVICE_PATH
+            docker push $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG
+            echo "image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          }
 
-              docker build \
-              -f ./services/$service-service/Dockerfile.prod \
-              -t $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG \
-             ./services/$service-service
+           for service in "${!REPO_MAP[@]}"; do
+            REPOSITORY_NAME="${REPO_MAP[$service]}"
+            build_and_push $REPOSITORY_NAME ./services/$service-service
+          done
 
-              docker push $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG
-
-              echo "image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
-            done
+            build_and_push $ECR_FRONTEND_REPOSITORY ./frontend-service
