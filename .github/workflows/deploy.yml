@@ -58,22 +58,26 @@ jobs:
           ECR_AUTH_REPOSITORY: auth-repo
           ECR_CHAT_REPOSITORY: chat-repo
           IMAGE_TAG: latest
-        run: |
-             declare -A REPO_MAP=(
-             [auth]=$ECR_AUTH_REPOSITORY
-             [project]=$ECR_PROJECT_REPOSITORY
-             [chat]=$ECR_CHAT_REPOSITORY
-             [project-user-post]=$ECR_PROJECT_USER_POST_REPOSITORY
-             [frontend]=$ECR_FRONTEND_REPOSITORY
-             )
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
-             for service in "${!REPO_MAP[@]}"; do
-             REPOSITORY_NAME="${REPO_MAP[$service]}"
+       run: |
+            declare -A REPO_MAP=(
+            [auth]=$ECR_AUTH_REPOSITORY
+            [project]=$ECR_PROJECT_REPOSITORY
+            [chat]=$ECR_CHAT_REPOSITORY
+            [project-user-post]=$ECR_PROJECT_POST_USER_REPOSITORY
+            [frontend]=$ECR_FRONTEND_REPOSITORY
+            )
 
-               docker build \
+            for service in "${!REPO_MAP[@]}"; do
+              REPOSITORY_NAME="${REPO_MAP[$service]}"
+
+              docker build \
               -f ./services/$service-service/Dockerfile.prod \
               -t $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG \
-              ./services/$service-service
+             ./services/$service-service
+
               docker push $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG
+
               echo "image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
-             done
+            done
