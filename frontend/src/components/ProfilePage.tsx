@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 import { useUser } from "../context/UserContext";
 import { getUser, updateUser, deleteUser } from "../services/authService";
-import { User } from "../models/User";
 
 function ProfilePage() {
   const { user, logout} = useUser();
-  const [formData, setFormData] = useState<User | null>(null);
+  const [formData, setFormData] = useState<any>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
 

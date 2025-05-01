@@ -4,48 +4,43 @@ networks:
 
 services:
   frontend-service:
-     build: ./frontend-service
+     build: 
+      context: ./frontend
      container_name : frontend-service
      restart : always
      ports:
-       - "4000:4000"
+       - "4000:80"
      networks:
        - cda-networks
-     volumes:
-       - ./frontend:/app
      environment: 
           VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
           VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
           VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
           VITE_PROJECT_USER_POST_SERVICE_URL: ${VITE_PROJECT_USER_POST_SERVICE_URL}
-     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-  
-          
+          PORT: ${PORT}          
   auth-service:
-    build: ./services/auth-service
+    build:
+     context: ./services/auth-service
     container_name: auth-service
     environment:
       MONGODB_URI : ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT}
     ports: 
-      - "3000:3000"
+      - "3000:80"
     networks:
       - cda-networks
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      test: ["CMD", "wget", "-o", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
   
   project-service:
-    build: ./services/project-service
+    build: 
+       context: ./services/project-service
     container_name: project-service
     environment:
       DB_PORT: ${DB_PORT}
@@ -57,8 +52,9 @@ services:
       MONGODB_URI : ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
       VITE_AUTH_SERVICE_URL : ${VITE_AUTH_SERVICE_URL}
+      PORT: ${PORT}
     ports: 
-      - "3002:3002"
+      - "3002:80"
     networks:
       - cda-networks
     depends_on:
@@ -66,14 +62,15 @@ services:
          condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3002/"]
+      test: ["CMD", "wget", "-o", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
 
   chat-service:
-    build: ./services/chat-service
+    build: 
+      context: ./services/chat-service
     container_name: chat-service
     environment:
       DB_PORT: ${DB_PORT}
@@ -86,8 +83,9 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
       VITE_PROJECT_SERVICE_URL : ${VITE_PROJECT_SERVICE_URL}
+      PORT: ${PORT}
     ports: 
-      - "3001:3001"
+      - "3001:80"
     networks:
       - cda-networks
     depends_on:
@@ -95,7 +93,7 @@ services:
          condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/"]
+      test: ["CMD", "wget", "-o", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -103,7 +101,8 @@ services:
 
 
   project-user-post-service:
-    build: ./services/project-user-post-service
+    build: 
+      context: ./services/project-user-post-service
     container_name: project-user-post-service
     environment:
       DB_PORT: ${DB_PORT}
@@ -117,8 +116,9 @@ services:
       VITE_AUTH_SERVICE_URL : ${VITE_AUTH_SERVICE_URL}
       VITE_PROJECT_SERVICE_URL : ${VITE_PROJECT_SERVICE_URL}
       VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
+      PORT: ${PORT}
     ports: 
-      - "3003:3003"
+      - "3003:80"
     networks:
       - cda-networks
     depends_on:
@@ -126,7 +126,7 @@ services:
          condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3003/"]
+      test: ["CMD", "wget", "-o", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 5

@@ -53,7 +53,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       logout();
     }
-    setIsLoading(false); // Le chargement est terminé
+    setIsLoading(false);
   }, []);
 
   const login = (token: string) => {

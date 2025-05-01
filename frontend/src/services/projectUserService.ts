@@ -70,7 +70,7 @@ export const findAllParticipantProject = async (): Promise<Project[]> => {
     const response = await projectUserService.get<ProjectUser[]>("/projects");
     return await mapProjectUsersToProjects(response.data);
   } catch (error: any) {
-    console.error("Erreur lors de la récupération des projets participants :", error.message);
+    console.error("Erreur lors de la récupération des projets participants :", error);
     throw new Error("Impossible d'afficher les participants du projet. Veuillez réessayer.");
   }
 };

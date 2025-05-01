@@ -26,6 +26,7 @@ userService.interceptors.request.use(attachToken);
 export const login = async (email: string, password: string) => {
   try {
     const response = await authService.post("/login", { email, password });
+    console.log(response)
     return response.data.access_token;
   } catch (error: any) {
     console.error("Erreur lors de la connexion :", error);
@@ -53,7 +54,7 @@ export const signUp = async (userData: User): Promise<User> => {
   }
 };
 
-export const updateUser = async (user: Partial<User>) => {
+export const updateUser = async (user: any) => {
   try {
     const response = await userService.patch("/", user);
     return response.data;

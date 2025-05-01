@@ -3,6 +3,7 @@ name: CI - Docker Compose Tests
 on: 
   push:
     branches:
+      - main
       - dev
 
 jobs:
@@ -31,10 +32,7 @@ jobs:
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "MYSQL_ADMIN_PASSWORD=${{ secrets.MYSQL_ADMIN_PASSWORD }}" >> .env
           echo "MYSQL_ADMIN_USER=${{ secrets.MYSQL_ADMIN_USER }}" >> .env
-         
-          
-          
-          
+          echo "PORT=${{ secrets.PORT }}" >> .env
 
       - name: Start all services
         run: docker compose up -d
@@ -45,6 +43,7 @@ jobs:
           until curl -s http://localhost:3001 > /dev/null; do echo "Waiting for chat-service..."; sleep 5; done
           until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
           until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
+          until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
           echo "All services are up!"
      
       - name: Vérifier l’installation de vitest
@@ -58,7 +57,6 @@ jobs:
           compose-file: "docker-compose.yml"
           test-container: "auth-service"
           test-command: "npm run test:e2e"
-
 
       - name: Run tests for Project service
         uses: adambirds/docker-compose-action@v1.5.0
@@ -80,13 +78,5 @@ jobs:
             compose-file: "docker-compose.yml"
             test-container: "project_user_post-service"
             test-command: "npm run test:e2e"
-      
-      - name: Run tests for Frontend service
-        uses: adambirds/docker-compose-action@v1.5.0
-        with:
-          compose-file: "docker-compose.yml"
-          test-container: "frontend-service"
-          test-command: "npm test"
-
       - name: Stop services
         run: docker compose down

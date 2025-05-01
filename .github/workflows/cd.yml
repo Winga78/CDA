@@ -53,7 +53,7 @@ jobs:
           ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
           ECR_AUTH_REPOSITORY: auth-repo
           ECR_CHAT_REPOSITORY: chat-repo
-          IMAGE_TAG: latest
+          IMAGE_TAG: ${{ github.sha }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
         run: |
@@ -67,7 +67,7 @@ jobs:
           build_and_push() {
             REPOSITORY_NAME=$1
             SERVICE_PATH=$2
-            docker build -f $SERVICE_PATH/Dockerfile.prod -t $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG $SERVICE_PATH
+            docker build -f $SERVICE_PATH/Dockerfile -t $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG $SERVICE_PATH
             docker push $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG
             echo "image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
           }
@@ -77,4 +77,4 @@ jobs:
             build_and_push $REPOSITORY_NAME ./services/$service-service
           done
 
-            build_and_push $ECR_FRONTEND_REPOSITORY ./frontend-service
+            build_and_push $ECR_FRONTEND_REPOSITORY ./frontend
