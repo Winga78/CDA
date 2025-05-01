@@ -13,13 +13,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Créer le fichier .env
         run: |
           echo "VITE_PROJECT_SERVICE_URL=${{ secrets.VITE_PROJECT_SERVICE_URL }}" >> .env
           echo "VITE_AUTH_SERVICE_URL=${{ secrets.VITE_AUTH_SERVICE_URL }}" >> .env
           echo "VITE_CHAT_SERVICE_URL=${{ secrets.VITE_CHAT_SERVICE_URL }}" >> .env
-           echo "VITE_PROJECT_USER_POST_SERVICE_URL=${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}" >> .env
+          echo "VITE_PROJECT_USER_POST_SERVICE_URL=${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}" >> .env
           echo "DB_TYPE=${{ secrets.DB_TYPE }}" >> .env
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
@@ -44,13 +44,13 @@ jobs:
           until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
           until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
           until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
-          until curl -s http://localhost:4000> /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
+          until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
           echo "All services are up!"
-     
+
       - name: Vérifier l’installation de vitest
         run: |
           cd frontend
-          npm install      
+          npm install
 
       - name: Run tests for Auth service
         uses: adambirds/docker-compose-action@v1.5.0
@@ -79,5 +79,6 @@ jobs:
             compose-file: "docker-compose.yml"
             test-container: "project_user_post-service"
             test-command: "npm run test:e2e"
+
       - name: Stop services
         run: docker compose down
