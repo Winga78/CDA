@@ -1,29 +1,36 @@
-networks:
+networks: 
   cda-networks:
     driver: bridge
 
 services:
   frontend-service:
-     build: 
+    build: 
       context: ./frontend
-     container_name : frontend-service
-     restart : always
-     ports:
-       - "4000:80"
-     networks:
-       - cda-networks
-     environment: 
-          VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
-          VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
-          VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
-          VITE_PROJECT_USER_POST_SERVICE_URL: ${VITE_PROJECT_USER_POST_SERVICE_URL}
-          PORT: ${PORT}          
+    container_name: frontend-service
+    restart: always
+    ports:
+      - "4000:80"
+    networks:
+      - cda-networks
+    environment: 
+      VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
+      VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+      VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
+      VITE_PROJECT_USER_POST_SERVICE_URL: ${VITE_PROJECT_USER_POST_SERVICE_URL}
+      PORT: ${PORT}          
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
   auth-service:
     build:
-     context: ./services/auth-service
+      context: ./services/auth-service
     container_name: auth-service
     environment:
-      MONGODB_URI : ${MONGODB_URI}
+      MONGODB_URI: ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
       PORT: ${PORT}
     ports: 
@@ -32,15 +39,15 @@ services:
       - cda-networks
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-o", "http://localhost"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-  
+
   project-service:
     build: 
-       context: ./services/project-service
+      context: ./services/project-service
     container_name: project-service
     environment:
       DB_PORT: ${DB_PORT}
@@ -49,9 +56,9 @@ services:
       DB_DATABASE_PROJECT: ${DB_DATABASE_PROJECT}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MONGODB_URI : ${MONGODB_URI}
+      MONGODB_URI: ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
-      VITE_AUTH_SERVICE_URL : ${VITE_AUTH_SERVICE_URL}
+      VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
       PORT: ${PORT}
     ports: 
       - "3002:80"
@@ -59,10 +66,10 @@ services:
       - cda-networks
     depends_on:
       mysql:
-         condition: service_healthy
+        condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-o", "http://localhost"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -79,26 +86,25 @@ services:
       DB_DATABASE_CHAT: ${DB_DATABASE_CHAT}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MONGODB_URI : ${MONGODB_URI}
+      MONGODB_URI: ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
       VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
-      VITE_PROJECT_SERVICE_URL : ${VITE_PROJECT_SERVICE_URL}
+      VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
       PORT: ${PORT}
     ports: 
       - "3001:80"
     networks:
       - cda-networks
     depends_on:
-       mysql:
-         condition: service_healthy
+      mysql:
+        condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-o", "http://localhost"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-
 
   project-user-post-service:
     build: 
@@ -111,10 +117,10 @@ services:
       DB_DATABASE_RELATION: ${DB_DATABASE_RELATION}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MONGODB_URI : ${MONGODB_URI}
+      MONGODB_URI: ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
-      VITE_AUTH_SERVICE_URL : ${VITE_AUTH_SERVICE_URL}
-      VITE_PROJECT_SERVICE_URL : ${VITE_PROJECT_SERVICE_URL}
+      VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+      VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
       VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
       PORT: ${PORT}
     ports: 
@@ -122,25 +128,25 @@ services:
     networks:
       - cda-networks
     depends_on:
-       mysql:
-         condition: service_healthy
+      mysql:
+        condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-o", "http://localhost"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-  
+
   mysql:
     image: mysql:latest
     container_name: mysql-service
     restart: always
     environment:
-       MYSQL_ROOT_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
-       MYSQL_USER: ${MYSQL_USER}
-       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-       MYSQL_MULTIPLE_DATABASES: "${DB_DATABASE_CHAT},${DB_DATABASE_PROJECT},${DB_DATABASE_RELATION}"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_MULTIPLE_DATABASES: "${DB_DATABASE_CHAT},${DB_DATABASE_PROJECT},${DB_DATABASE_RELATION}"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db/script.sh:/docker-entrypoint-initdb.d/script.sh
@@ -153,5 +159,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
 volumes:
   mysql_data:
