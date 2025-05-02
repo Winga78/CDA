@@ -15,11 +15,11 @@ env:
 
   ECS_CLUSTER: cda-cluster
 
-  ECS_TASK_AUTH_DEFINITION: auth_ECS_TaskDefinition_production
-  ECS_TASK_CHAT_DEFINITION: chat_ECS_TaskDefinition_production
-  ECS_TASK_PROJECT_DEFINITION: project_ECS_TaskDefinition_production
-  ECS_TASK_PROJECT_USER_POST_DEFINITION: project-user-post_ECS_TaskDefinition_production
-  ECS_TASK_FRONTEND_DEFINITION: frontend_ECS_TaskDefinition_production
+  ECS_TASK_AUTH_DEFINITION: auth_ECS_TaskDefinition_production:1
+  ECS_TASK_CHAT_DEFINITION: chat_ECS_TaskDefinition_production:1
+  ECS_TASK_PROJECT_DEFINITION: project_ECS_TaskDefinition_production:1
+  ECS_TASK_PROJECT_USER_POST_DEFINITION: project-user-post_ECS_TaskDefinition_production:1
+  ECS_TASK_FRONTEND_DEFINITION: frontend_ECS_TaskDefinition_production:1
                                  
   CONTAINER_PROJECT: project-service
   CONTAINER_CHAT: chat-service
