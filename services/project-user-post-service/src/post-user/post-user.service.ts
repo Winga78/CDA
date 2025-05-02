@@ -4,16 +4,13 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository , DataSource} from 'typeorm';
 import { PostUser } from './entities/post-user.entity';
 import { ProjectUser } from '../project-user/entities/project-user.entity';
-import { ConfigService } from '@nestjs/config';
-import { CONFIG_DATABASE } from '../config/database.config';
 import axios from 'axios';
+
 @Injectable()
 export class PostUserService {
     constructor(
       @InjectRepository(PostUser)
       private postsUsersRepository: Repository<PostUser>,
-     
-      private configService:ConfigService
     ) {}
 
     async create(createPostUserDto: CreatePostUserDto) {

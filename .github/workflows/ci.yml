@@ -33,6 +33,7 @@ jobs:
           echo "MYSQL_ADMIN_PASSWORD=${{ secrets.MYSQL_ADMIN_PASSWORD }}" >> .env
           echo "MYSQL_ADMIN_USER=${{ secrets.MYSQL_ADMIN_USER }}" >> .env
           echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
 
       - name: Start all services
         run: docker compose up -d
