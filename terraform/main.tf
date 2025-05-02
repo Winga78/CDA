@@ -8,5 +8,15 @@ module "vpc" {
 
 module "ecr" {
   source            = "./modules/ecr"
-  repository_name   = ["frontend-repo", "project-repo", "project-user-post-repo" , "auth-repo" , "chat-repo"]
+  repository_name   = var.services
+}
+
+
+module "ecs" {
+  source            = "./modules/ecs"
+  privates_subnets  = module.vpc.subnets_privates_id
+  public_subnets    = module.vpc.subnets_public_id
+  repository_url    = module.ecr.repository_url
+  vpc_id            = module.vpc.vpc_id
+  service_name      = var.services
 }

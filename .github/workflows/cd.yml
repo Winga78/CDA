@@ -7,24 +7,33 @@ on:
 
 env:
   AWS_REGION: eu-west-3  
-  # ECS_AUTH_SERVICE: auth_task-service
-  # ECS_CHAT_SERVICE: chat_task-service 
-  # ECS_PROJECT_SERVICE: project_task-service 
-  # ECS_PROJECT_USER_POST_SERVICE: project_user_post_task-service 
-  # ECS_FRONTEND_SERVICE: frontend_task-service 
+  ECS_AUTH_SERVICE: auth_ECS_Service_Production
+  ECS_CHAT_SERVICE: chat_ECS_Service_Production 
+  ECS_PROJECT_SERVICE: project_ECS_Service_Production
+  ECS_PROJECT_USER_POST_SERVICE: project-user-post_ECS_Service_production
+  ECS_FRONTEND_SERVICE: frontend_ECS_Service_Production
 
-  # ECS_CLUSTER: my-cda-ecs-cluster
+  ECS_CLUSTER: cda-cluster
 
-  # ECS_TASK_AUTH_DEFINITION: auth_task
-  # ECS_TASK_CHAT_DEFINITION: chat_task
-  # ECS_TASK_PROJECT_DEFINITION: project_task
-  # ECS_TASK_PROJECT_USER_POST_TASK_DEFINITION: project_user_post_task
-  # ECS_TASK_FRONTEND_DEFINITION: frontend_task                               
-  CONTAINER_PROJECT: project-service  
+  ECS_TASK_AUTH_DEFINITION: auth_ECS_TaskDefinition_production
+  ECS_TASK_CHAT_DEFINITION: chat_ECS_TaskDefinition_production
+  ECS_TASK_PROJECT_DEFINITION: project_ECS_TaskDefinition_production
+  ECS_TASK_PROJECT_USER_POST_DEFINITION: project-user-post_ECS_TaskDefinition_production
+  ECS_TASK_FRONTEND_DEFINITION: frontend_ECS_TaskDefinition_production
+                                 
+  CONTAINER_PROJECT: project-service
   CONTAINER_CHAT: chat-service
-  CONTAINER_PROJECT_USER_POST: project_user_post-service
+  CONTAINER_PROJECT_USER_POST: project-user-post-service
   CONTAINER_FRONTEND: frontend-service
   CONTAINER_AUTH: auth-service
+
+
+  ECR_FRONTEND_REPOSITORY: frontend-repo
+  ECR_PROJECT_REPOSITORY: project-repo
+  ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
+  ECR_AUTH_REPOSITORY: auth-repo
+  ECR_CHAT_REPOSITORY: chat-repo
+  IMAGE_TAG: latest
 
 jobs:
   deploy:
@@ -46,35 +55,145 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
 
-      - name: Build, tag Docker image
-        env: 
-          ECR_FRONTEND_REPOSITORY: frontend-repo
-          ECR_PROJECT_REPOSITORY: project-repo
-          ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
-          ECR_AUTH_REPOSITORY: auth-repo
-          ECR_CHAT_REPOSITORY: chat-repo
-          IMAGE_TAG: ${{ github.sha }}
+    # ****constuire auth-service***
+
+      - name: Build and push auth image
+        id: build-auth
+        env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-
         run: |
-         declare -A REPO_MAP=(
-           [auth]=$ECR_AUTH_REPOSITORY
-           [project]=$ECR_PROJECT_REPOSITORY
-           [chat]=$ECR_CHAT_REPOSITORY
-           [project-user-post]=$ECR_PROJECT_POST_USER_REPOSITORY
-         )
+          IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_AUTH_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker build -t $IMAGE_URI ./services/auth-service
+          docker push $IMAGE_URI
+          echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
 
-          build_and_push() {
-            REPOSITORY_NAME=$1
-            SERVICE_PATH=$2
-            docker build -f $SERVICE_PATH/Dockerfile -t $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG $SERVICE_PATH
-            docker push $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG
-            echo "image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
-          }
+      - name: Render task definition for auth
+        id: render-auth
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_AUTH_DEFINITION }}
+          container-name: ${{ env.CONTAINER_AUTH }}
+          image: ${{ steps.build-auth.outputs.image }}
 
-           for service in "${!REPO_MAP[@]}"; do
-            REPOSITORY_NAME="${REPO_MAP[$service]}"
-            build_and_push $REPOSITORY_NAME ./services/$service-service
-          done
+      - name: Deploy auth service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-auth.outputs.task-definition }}
+          service: ${{ env.ECS_AUTH_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
 
-            build_and_push $ECR_FRONTEND_REPOSITORY ./frontend
+
+    # ****constuire chat-service***
+
+      - name: Build and push chat image
+        id: build-chat
+        env:
+            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+            IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_CHAT_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            docker build -t $IMAGE_URI ./services/chat-service
+            docker push $IMAGE_URI
+            echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+  
+      - name: Render task definition for chat
+        id: render-chat
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+            task-definition: ${{ env.ECS_TASK_CHAT_DEFINITION }}
+            container-name: ${{ env.CONTAINER_CHAT }}
+            image: ${{ steps.build-chat.outputs.image }}
+  
+      - name: Deploy chat service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+            task-definition: ${{ steps.render-chat.outputs.task-definition }}
+            service: ${{ env.ECS_CHAT_SERVICE }}
+            cluster: ${{ env.ECS_CLUSTER }}
+            wait-for-service-stability: true
+
+
+      # ****constuire project-service***
+
+      - name: Build and push project image
+        id: build-project
+        env:
+            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+              IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_PROJECT_REPOSITORY }}:${{ env.IMAGE_TAG }}
+              docker build -t $IMAGE_URI ./services/project-service
+              docker push $IMAGE_URI
+              echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+    
+      - name: Render task definition for project
+        id: render-project
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+           task-definition: ${{ env.ECS_TASK_PROJECT_DEFINITION }}
+           container-name: ${{ env.CONTAINER_PROJECT }}
+           image: ${{ steps.build-project.outputs.image }}
+    
+      - name: Deploy project service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+              task-definition: ${{ steps.render-project.outputs.task-definition }}
+              service: ${{ env.ECS_PROJECT_SERVICE }}
+              cluster: ${{ env.ECS_CLUSTER }}
+              wait-for-service-stability: true
+
+
+      # ****constuire project-user-post-service***
+
+      - name: Build and push project-user-post image
+        id: build-project-user-post
+        env:
+           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+                IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_PROJECT_POST_USER_REPOSITORY }}:${{ env.IMAGE_TAG }}
+                docker build -t $IMAGE_URI ./services/project-user-post-service
+                docker push $IMAGE_URI
+                echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+      
+      - name: Render task definition for project-user-post
+        id: render-project-user-post
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+                task-definition: ${{ env.ECS_TASK_PROJECT_USER_POST_DEFINITION }}
+                container-name: ${{ env.CONTAINER_PROJECT_USER_POST }}
+                image: ${{ steps.build-project-user-post.outputs.image }}
+      
+      - name: Deploy project-user-post service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+                task-definition: ${{ steps.render-project-user-post.outputs.task-definition }}
+                service: ${{ env.ECS_PROJECT_USER_POST_SERVICE }}
+                cluster: ${{ env.ECS_CLUSTER }}
+                wait-for-service-stability: true
+
+         # ****constuire frontend-service***
+                
+      - name: Build and push frontend image
+        id: build-frontend
+        env:
+                ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+                  IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_FRONTEND_REPOSITORY }}:${{ env.IMAGE_TAG }}
+                  docker build -t $IMAGE_URI ./frontend
+                  docker push $IMAGE_URI
+                  echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+        
+      - name: Render task definition for frontend
+        id: render-frontend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+                  task-definition: ${{ env.ECS_TASK_FRONTEND_DEFINITION }}
+                  container-name: ${{ env.CONTAINER_FRONTEND }}
+                  image: ${{ steps.build-frontend.outputs.image }}
+        
+      - name: Deploy frontend service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+                  task-definition: ${{ steps.render-frontend.outputs.task-definition }}
+                  service: ${{ env.ECS_FRONTEND_SERVICE }}
+                  cluster: ${{ env.ECS_CLUSTER }}
+                  wait-for-service-stability: true
