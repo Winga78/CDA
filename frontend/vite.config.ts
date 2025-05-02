@@ -66,5 +66,3 @@ export default defineConfig({
     },
   },
 });
-
-console.log(process.env.VITE_AUTH_SERVICE_URL)

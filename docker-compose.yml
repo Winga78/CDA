@@ -6,10 +6,11 @@ services:
   frontend-service:
     build: 
       context: ./frontend
+      target: ${DOCKER_TARGET:-production}
     container_name: frontend-service
     restart: always
     ports:
-      - "4000:80"
+      - "4000:80"     
     networks:
       - cda-networks
     environment: 
@@ -17,7 +18,8 @@ services:
       VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
       VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
       VITE_PROJECT_USER_POST_SERVICE_URL: ${VITE_PROJECT_USER_POST_SERVICE_URL}
-      PORT: ${PORT}          
+      PORT: ${PORT}
+      NODE_ENV: ${NODE_ENV}          
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
       interval: 30s

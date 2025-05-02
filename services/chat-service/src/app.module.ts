@@ -48,7 +48,6 @@ import { SocketGateway } from './socket.gateway';
     }),
      PostsModule,
      AuthModule 
-    //base de donnée en mode production ici
   ],
   controllers: [AppController],
   providers: [
