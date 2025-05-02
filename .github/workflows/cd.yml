@@ -25,7 +25,7 @@ env:
   CONTAINER_PROJECT_USER_POST: project_user_post-service
   CONTAINER_FRONTEND: frontend-service
   CONTAINER_AUTH: auth-service
-                                  
+
 jobs:
   deploy:
     name: Deploy
