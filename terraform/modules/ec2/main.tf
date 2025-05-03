@@ -16,10 +16,15 @@ chmod 600 /home/ubuntu/.ssh/authorized_keys
 EOF
 
   tags = {
-    Name = "JacksBlogExample"
+    Name = "CDAInstance"
   }
 }
-resource "aws_eip" "cda_ip" {
-  instance = aws_instance.cda_server.id
-  vpc      = true
+
+resource "aws_eip" "this" {
+  domain = "vpc"
+}
+
+resource "aws_eip_association" "example" {
+  instance_id   = aws_instance.cda_server.id
+  allocation_id = aws_eip.this.id
 }
