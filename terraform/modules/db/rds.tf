@@ -16,14 +16,14 @@ resource "aws_db_instance" "mysql" {
   }
 }
 
-resource "null_resource" "init_databases" {
-  provisioner "local-exec" {
-    command = <<EOT
-       mysql -h ${aws_db_instance.mysql.address} -P 3306 -u ${var.MYSQL_ADMIN_USER} -p${var.MYSQL_ADMIN_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${var.DB_DATABASE_PROJECT}; CREATE DATABASE IF NOT EXISTS ${var.DB_DATABASE_RELATION};"
-    EOT
-  }
-  depends_on = [aws_db_instance.mysql]
-}
+# resource "null_resource" "init_databases" {
+#   provisioner "local-exec" {
+#     command = <<EOT
+#        mysql -h ${aws_db_instance.mysql.address} -P 3306 -u ${var.MYSQL_ADMIN_USER} -p${var.MYSQL_ADMIN_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${var.DB_DATABASE_PROJECT}; CREATE DATABASE IF NOT EXISTS ${var.DB_DATABASE_RELATION};"
+#     EOT
+#   }
+#   depends_on = [aws_db_instance.mysql]
+# }
 
 resource "aws_db_subnet_group" "mysql_subnet_group" {
   name       = "mysql-subnet-group"
