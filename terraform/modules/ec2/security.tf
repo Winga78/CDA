@@ -22,3 +22,16 @@ resource "aws_security_group" "ssh_access" {
     Name = "allow_ssh"
   }
 }
+
+
+resource "aws_security_group" "ec2_sg" {
+  name        = "ec2-sg"
+  description = "Allow EC2 to access RDS"
+  vpc_id      = var.vpc_id
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

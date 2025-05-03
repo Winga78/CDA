@@ -29,6 +29,7 @@ module "ecr" {
 module "db"{
   source                = "./modules/db"
   security_groups_ecs   = module.ecs.security_groups_ecs
+  security_groups_ec2   = module.ec2.security_groups_ec2
   vpc_id                = module.vpc.vpc_id
   DB_DATABASE_CHAT      = var.DB_DATABASE_CHAT
   DB_DATABASE_PROJECT   = var.DB_DATABASE_PROJECT
