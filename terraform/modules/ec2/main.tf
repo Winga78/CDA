@@ -19,7 +19,6 @@ EOF
     Name = "JacksBlogExample"
   }
 }
-
 resource "aws_eip" "cda_ip" {
   instance = aws_instance.cda_server.id
   vpc      = true
