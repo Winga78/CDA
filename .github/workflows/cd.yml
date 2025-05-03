@@ -133,8 +133,7 @@ jobs:
               --cluster ${{ env.ECS_CLUSTER }} \
               --service ${{ env.ECS_AUTH_SERVICE }} \
               --force-new-deployment
-        
-
+              
     # ****constuire chat-service***
 
       - name: Build and push chat image
