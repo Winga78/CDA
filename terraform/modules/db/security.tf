@@ -30,5 +30,5 @@ resource "aws_security_group_rule" "rds_ingress_from_ec2" {
   protocol                 = "tcp"
   description              = "Allow MySQL traffic from EC2 instances"
   security_group_id        = aws_security_group.rds_sg.id
-  source_security_group_id = var.security_groups_ec2[0]
+  source_security_group_id = var.security_groups_ec2
 }
