@@ -1,0 +1,23 @@
+# Node modules (on les installe dans l'image)
+node_modules
+
+# Dossiers de build locaux (tu buildes dans le container)
+dist
+build
+
+# Logs
+*.log
+npm-debug.log*
+
+# Git
+.git
+.gitignore
+
+# Docker files inutiles
+Dockerfile*
+.dockerignore
+
+# Configs et systèmes d’édition
+.env
+.vscode
+.idea
