@@ -15,6 +15,12 @@ module "vpc" {
   azs                     = ["eu-west-3a", "eu-west-3b"]
 }
 
+module ec2{
+  source            = "./modules/ec2"
+  public_subnets    = module.vpc.subnets_public_id
+  vpc_id            = module.vpc.vpc_id
+}
+
 module "ecr" {
   source            = "./modules/ecr"
   repository_name   = var.services
