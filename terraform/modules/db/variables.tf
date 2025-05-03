@@ -7,7 +7,7 @@ variable DB_DATABASE_RELATION {}
 variable security_groups_ecs {
   type = string
 }
-variable "security_groups_ec2" {
+variable security_groups_ec2 {
   description = "Security group IDs for EC2 instances that need to access RDS"
   type        = list(string)
 }
