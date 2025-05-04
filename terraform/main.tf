@@ -19,7 +19,7 @@ module ec2{
   source                 = "./modules/ec2"
   public_subnets         = module.vpc.subnets_public_id
   vpc_id                 = module.vpc.vpc_id
-  security_groups_rds_id = module.rds.security_groups_rds_id
+  security_groups_rds_id = module.db.security_groups_rds_id
 }
 
 module "ecr" {
@@ -46,7 +46,7 @@ module "ecs" {
   source                                 = "./modules/ecs"
   privates_subnets                       = module.vpc.subnets_privates_id
   public_subnets                         = module.vpc.subnets_public_id
-  security_groups_rds_id                 = module.rds.security_groups_rds_id
+  security_groups_rds_id                 = module.db.security_groups_rds_id
   repository_url                         = module.ecr.repository_url
   vpc_id                                 = module.vpc.vpc_id
   mysql_host                             = module.db.mysql_host
