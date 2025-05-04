@@ -74,6 +74,9 @@ variable vpc_id {
   type        = string
 }
 
+variable security_groups_rds_id {
+  type        = string
+}
 
 variable MONGODB_URI {}
 variable NODE_ENV {}

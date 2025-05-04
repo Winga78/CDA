@@ -6,3 +6,7 @@ variable "public_subnets" {
 variable vpc_id {
   type        = string
 }
+
+variable security_groups_rds_id {
+  type        = string
+}
