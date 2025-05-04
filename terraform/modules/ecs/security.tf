@@ -44,10 +44,6 @@ resource "aws_security_group_rule" "ecs_rds_mysql_ingress" {
   description              = "Allow MySQL access from RDS to ECS"
   security_group_id        = aws_security_group.ecs_sg.id
   source_security_group_id = var.security_groups_rds_id
-
-  tags = {
-    Name = "allow_mysql_from_rds"
-  }
 }
 
 # ------------------------------------------------------------------------------
