@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------------------
 resource "aws_security_group" "ecs_sg" {
     vpc_id                      = var.vpc_id
-    name                        = "sg-ecs"
+    name                        = "demo-sg-ecs"
     description                 = "Security group for ecs app"
     revoke_rules_on_delete      = true
 }
@@ -14,7 +14,7 @@ resource "aws_security_group" "ecs_sg" {
 # ------------------------------------------------------------------------------
 resource "aws_security_group" "alb_sg" {
     vpc_id                      = var.vpc_id
-    name                        = "sg-alb"
+    name                        = "demo-sg-alb"
     description                 = "Security group for alb"
     revoke_rules_on_delete      = true
 }
