@@ -68,15 +68,15 @@ jobs:
       - name: Start all services
         run: docker compose up -d
 
-      - name: Wait for services to be ready
-        run: |
-          echo "Waiting for services to be ready..."
-          until curl -s http://localhost:3001 > /dev/null; do echo "Waiting for chat-service..."; sleep 5; done
-          until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
-          until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
-          until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
-          until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
-          echo "All services are up!"
+      # - name: Wait for services to be ready
+      #   run: |
+      #     echo "Waiting for services to be ready..."
+      #     until curl -s http://localhost:3001 > /dev/null; do echo "Waiting for chat-service..."; sleep 5; done
+      #     until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
+      #     until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
+      #     until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
+      #     until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
+      #     echo "All services are up!"
 
       - name: Install MongoDB Shell
         run: |
