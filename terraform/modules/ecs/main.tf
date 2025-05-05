@@ -64,7 +64,7 @@ resource "aws_ecs_task_definition" "default" {
         { name = "DB_TYPE", value = var.DB_TYPE },
         { name = "JWT_SECRET", value = var.JWT_SECRET },
         { name = "PORT", value = var.PORT },
-        { name = "DB_HOST", value = var.mysql_host }
+        { name = "DB_HOST", value = var.DB_HOST }
       ]
 
       portMappings = [

@@ -49,7 +49,10 @@ jobs:
           until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
           until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
           echo "All services are up!"
-      
+          
+      - name : Wait to mysql service to be ready
+        run : ping ${{secrets.DB_HOST}}
+
       - name: Vérifier l’installation de vitest
         run: |
           cd frontend
@@ -58,28 +61,28 @@ jobs:
       - name: Run tests for Auth service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
-          compose-file: "docker-compose.yml"
+          compose-file: "docker-compose.prod.yml"
           test-container: "auth-service"
           test-command: "npm run test:e2e"
 
       - name: Run tests for Project service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
-            compose-file: "docker-compose.yml"
+            compose-file: "docker-compose.prod.yml"
             test-container: "project-service"
             test-command: "npm run test:e2e"
 
       - name: Run tests for Chat service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
-          compose-file: "docker-compose.yml"
+          compose-file: "docker-compose.prod.yml"
           test-container: "chat-service"
           test-command: "npm run test:e2e"
 
       - name: Run tests for project-user-post service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
-            compose-file: "docker-compose.yml"
+            compose-file: "docker-compose.prod.yml"
             test-container: "project-user-post-service"
             test-command: "npm run test:e2e"
 

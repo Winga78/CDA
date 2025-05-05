@@ -21,3 +21,4 @@ variable JWT_SECRET {}
 variable PORT {}
 variable MYSQL_ADMIN_PASSWORD {}
 variable MYSQL_ADMIN_USER {}
+variable DB_HOST {}

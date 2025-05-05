@@ -34,19 +34,6 @@ resource "aws_security_group_rule" "ecs_alb_ingress" {
 }
 
 # ------------------------------------------------------------------------------
-# ECS mysql Security Group Rules - INBOUND
-# ------------------------------------------------------------------------------
-resource "aws_security_group_rule" "ecs_rds_mysql_ingress" {
-  type                     = "ingress"
-  from_port                = 3306
-  to_port                  = 3306
-  protocol                 = "tcp"
-  description              = "Allow MySQL access from RDS to ECS"
-  security_group_id        = aws_security_group.ecs_sg.id
-  source_security_group_id = var.security_groups_rds_id
-}
-
-# ------------------------------------------------------------------------------
 # ECS app Security Group Rules - OUTBOUND
 # ------------------------------------------------------------------------------
 resource "aws_security_group_rule" "ecs_all_egress" {
@@ -58,8 +45,6 @@ resource "aws_security_group_rule" "ecs_all_egress" {
     security_group_id           = aws_security_group.ecs_sg.id
     cidr_blocks                 = ["0.0.0.0/0"] 
 }
-
-
 
 # ------------------------------------------------------------------------------
 # Alb Security Group Rules - INBOUND

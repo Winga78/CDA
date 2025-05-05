@@ -15,41 +15,18 @@ module "vpc" {
   azs                     = ["eu-west-3a", "eu-west-3b"]
 }
 
-module ec2{
-  source                 = "./modules/ec2"
-  public_subnets         = module.vpc.subnets_public_id
-  vpc_id                 = module.vpc.vpc_id
-  security_groups_rds_id = module.db.security_groups_rds_id
-}
-
 module "ecr" {
   source            = "./modules/ecr"
   repository_name   = var.services
 }
 
-module "db"{
-  source                = "./modules/db"
-  security_groups_ecs   = module.ecs.security_groups_ecs
-  security_groups_ec2   = module.ec2.security_groups_ec2
-  vpc_id                = module.vpc.vpc_id
-  DB_DATABASE_CHAT      = var.DB_DATABASE_CHAT
-  DB_DATABASE_PROJECT   = var.DB_DATABASE_PROJECT
-  DB_DATABASE_RELATION  = var.DB_DATABASE_RELATION
-  MYSQL_ADMIN_USER      = var.MYSQL_ADMIN_USER
-  MYSQL_ADMIN_PASSWORD  = var.MYSQL_ADMIN_PASSWORD
-  privates_subnets      = module.vpc.subnets_privates_id
-  public_subnets        = module.vpc.subnets_public_id
-}
-
-
 module "ecs" {
   source                                 = "./modules/ecs"
   privates_subnets                       = module.vpc.subnets_privates_id
   public_subnets                         = module.vpc.subnets_public_id
-  security_groups_rds_id                 = module.db.security_groups_rds_id
   repository_url                         = module.ecr.repository_url
   vpc_id                                 = module.vpc.vpc_id
-  mysql_host                             = module.db.mysql_host
+  DB_HOST                                = var.DB_HOST
   service_name                           = var.services
   DB_DATABASE_CHAT                       = var.DB_DATABASE_CHAT
   DB_DATABASE_PROJECT                    = var.DB_DATABASE_PROJECT

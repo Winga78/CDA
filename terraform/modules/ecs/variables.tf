@@ -74,10 +74,6 @@ variable vpc_id {
   type        = string
 }
 
-variable security_groups_rds_id {
-  type        = string
-}
-
 variable MONGODB_URI {}
 variable NODE_ENV {}
 variable VITE_AUTH_SERVICE_URL {}
@@ -93,4 +89,4 @@ variable DB_PORT {}
 variable DB_TYPE {}
 variable JWT_SECRET {}
 variable PORT {}
-variable mysql_host {}
+variable DB_HOST {}
