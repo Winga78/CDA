@@ -6,6 +6,31 @@ on:
       - main
       - dev
 
+env:
+  VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
+  VITE_AUTH_SERVICE_URL: ${{secrets.VITE_AUTH_SERVICE_URL}}
+  VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
+  VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
+  ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+  ME_CONFIG_MONGODB_ADMINPASSWORD: password
+  MONGO_INITDB_ROOT_USERNAME: root
+  MONGO_INITDB_ROOT_PASSWORD: password
+  DB_TYPE: mysql
+  DB_HOST: mysql
+  DB_PORT: 3306
+  DB_DATABASE_CHAT: chatdb
+  DB_DATABASE_PROJECT: projectdb
+  MYSQL_USER: user
+  MYSQL_PASSWORD: password
+  DB_DATABASE_RELATION: relationdb
+  ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongo-service:27017/
+  JWT_SECRET: my_secret
+  MYSQL_ADMIN_PASSWORD: password
+  MYSQL_ADMIN_USER: admin
+  PORT: 80
+  NODE_ENV: production
+  DOCKER_TARGET: production
+
 jobs:
   test-services:
     runs-on: ubuntu-latest
@@ -16,25 +41,29 @@ jobs:
 
       - name: Créer le fichier .env
         run: |
-          echo "VITE_PROJECT_SERVICE_URL=${{ secrets.VITE_PROJECT_SERVICE_URL }}" >> .env
-          echo "VITE_AUTH_SERVICE_URL=${{ secrets.VITE_AUTH_SERVICE_URL }}" >> .env
-          echo "VITE_CHAT_SERVICE_URL=${{ secrets.VITE_CHAT_SERVICE_URL }}" >> .env
-          echo "VITE_PROJECT_USER_POST_SERVICE_URL=${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}" >> .env
-          echo "DB_TYPE=${{ secrets.DB_TYPE }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-          echo "DB_DATABASE_CHAT=${{ secrets.DB_DATABASE_CHAT }}" >> .env
-          echo "DB_DATABASE_PROJECT=${{ secrets.DB_DATABASE_PROJECT }}" >> .env
-          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-          echo "DB_DATABASE_RELATION=${{ secrets.DB_DATABASE_RELATION }}" >> .env
-          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "MYSQL_ADMIN_PASSWORD=${{ secrets.MYSQL_ADMIN_PASSWORD }}" >> .env
-          echo "MYSQL_ADMIN_USER=${{ secrets.MYSQL_ADMIN_USER }}" >> .env
-          echo "PORT=${{ secrets.PORT }}" >> .env
-          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
-          echo "DOCKER_TARGET=${{ secrets.DOCKER_TARGET }}" >> .env
+          echo "VITE_PROJECT_SERVICE_URL=${{ env.VITE_PROJECT_SERVICE_URL }}" >> .env
+          echo "VITE_AUTH_SERVICE_URL=${{ env.VITE_AUTH_SERVICE_URL }}" >> .env
+          echo "VITE_CHAT_SERVICE_URL=${{ env.VITE_CHAT_SERVICE_URL }}" >> .env
+          echo "VITE_PROJECT_USER_POST_SERVICE_URL=${{ env.VITE_PROJECT_USER_POST_SERVICE_URL }}" >> .env
+          echo "DB_TYPE=${{ env.DB_TYPE }}" >> .env
+          echo "DB_HOST=${{ env.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ env.DB_PORT }}" >> .env
+          echo "DB_DATABASE_CHAT=${{ env.DB_DATABASE_CHAT }}" >> .env
+          echo "DB_DATABASE_PROJECT=${{ env.DB_DATABASE_PROJECT }}" >> .env
+          echo "MYSQL_USER=${{ env.MYSQL_USER }}" >> .env
+          echo "MYSQL_PASSWORD=${{ env.MYSQL_PASSWORD }}" >> .env
+          echo "DB_DATABASE_RELATION=${{ env.DB_DATABASE_RELATION }}" >> .env
+          echo "ME_CONFIG_MONGODB_URL=${{ env.ME_CONFIG_MONGODB_URL }}" >> .env
+          echo "JWT_SECRET=${{ env.JWT_SECRET }}" >> .env
+          echo "MYSQL_ADMIN_PASSWORD=${{ env.MYSQL_ADMIN_PASSWORD }}" >> .env
+          echo "MYSQL_ADMIN_USER=${{ env.MYSQL_ADMIN_USER }}" >> .env
+          echo "PORT=${{ env.PORT }}" >> .env
+          echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
+          echo "DOCKER_TARGET=${{ env.DOCKER_TARGET }}" >> .env
+          echo "MONGO_INITDB_ROOT_USERNAME=${{ env.MONGO_INITDB_ROOT_USERNAME }}" >> .env
+          echo "MONGO_INITDB_ROOT_PASSWORD=${{ env.MONGO_INITDB_ROOT_PASSWORD }}" >> .env
+          echo "ME_CONFIG_MONGODB_ADMINUSERNAME=${{ env.ME_CONFIG_MONGODB_ADMINUSERNAME }}" >> .env
+          echo "ME_CONFIG_MONGODB_ADMINPASSWORD=${{ env.ME_CONFIG_MONGODB_ADMINPASSWORD }}" >> .env
 
       - name: Start all services
         run: docker compose up -d
@@ -49,12 +78,20 @@ jobs:
           until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
           echo "All services are up!"
 
-      - name: Wait for MySQL to be ready
+      - name: Install MongoDB Shell
         run: |
-         until mysqladmin ping -h"${{ secrets.DB_HOST }}" -u"${{ secrets.MYSQL_USER }}" -p"${{ secrets.MYSQL_PASSWORD }}" --silent; do
-         echo "Waiting for MySQL..."
-         sleep 2
-         done
+           curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server.gpg
+           echo "deb [ signed-by=/usr/share/keyrings/mongodb-server.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+           sudo apt-get update
+           sudo apt-get install -y mongodb-mongosh
+       
+      - name: Wait for MongoDB to be ready
+        run: |
+             for i in {1..10}; do
+               mongosh "${{env.ME_CONFIG_MONGODB_URL}}" --eval "db.adminCommand('ping')" && break
+               echo "Waiting for MongoDB
+               sleep 5
+             done
 
       - name: Vérifier l’installation de vitest
         run: |
@@ -64,28 +101,28 @@ jobs:
       - name: Run tests for Auth service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
-          compose-file: "docker-compose.prod.yml"
+          compose-file: "docker-compose.yml"
           test-container: "auth-service"
           test-command: "npm run test:e2e"
 
       - name: Run tests for Project service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
-            compose-file: "docker-compose.prod.yml"
+            compose-file: "docker-compose.yml"
             test-container: "project-service"
             test-command: "npm run test:e2e"
 
       - name: Run tests for Chat service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
-          compose-file: "docker-compose.prod.yml"
+          compose-file: "docker-compose.yml"
           test-container: "chat-service"
           test-command: "npm run test:e2e"
 
       - name: Run tests for project-user-post service
         uses: adambirds/docker-compose-action@v1.5.0
         with:
-            compose-file: "docker-compose.prod.yml"
+            compose-file: "docker-compose.yml"
             test-container: "project-user-post-service"
             test-command: "npm run test:e2e"
 

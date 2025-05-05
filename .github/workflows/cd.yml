@@ -29,6 +29,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+    
+      - name: Wait for MySQL to be ready
+        run: |
+         until mysqladmin ping -h"${{ secrets.DB_HOST }}" -u"${{ secrets.MYSQL_USER }}" -p"${{ secrets.MYSQL_PASSWORD }}" --silent; do
+         echo "Waiting for MySQL..."
+         sleep 2
+         done
+
+      - name: Install MongoDB Shell
+        run: |
+           curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server.gpg
+           echo "deb [ signed-by=/usr/share/keyrings/mongodb-server.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+           sudo apt-get update
+           sudo apt-get install -y mongodb-mongosh
+       
+      - name: Wait for MongoDB to be ready
+        run: |
+             for i in {1..10}; do
+               mongosh "${{secrets.MONGODB_URI}}" --eval "db.adminCommand('ping')" && break
+               echo "Waiting for MongoDB..."
+               sleep 5
+             done
+         
         # ****se connecter à aws***
         
       - name: Configure AWS credentials
