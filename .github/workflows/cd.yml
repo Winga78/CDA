@@ -12,21 +12,7 @@ env:
   ECS_PROJECT_SERVICE: project_ECS_Service_production
   ECS_PROJECT_USER_POST_SERVICE: project-user-post_ECS_Service_production
   ECS_FRONTEND_SERVICE: frontend_ECS_Service_production
-
   ECS_CLUSTER: cda-cluster
-
-  ECS_TASK_AUTH_DEFINITION: auth_ECS_TaskDefinition_production
-  ECS_TASK_CHAT_DEFINITION: chat_ECS_TaskDefinition_production
-  ECS_TASK_PROJECT_DEFINITION: project_ECS_TaskDefinition_production
-  ECS_TASK_PROJECT_USER_POST_DEFINITION: project-user-post_ECS_TaskDefinition_production
-  ECS_TASK_FRONTEND_DEFINITION: frontend_ECS_TaskDefinition_production
-                                 
-  CONTAINER_PROJECT: project-service
-  CONTAINER_CHAT: chat-service
-  CONTAINER_PROJECT_USER_POST: project-user-post-service
-  CONTAINER_FRONTEND: frontend-service
-  CONTAINER_AUTH: auth-service
-
   ECR_FRONTEND_REPOSITORY: frontend-repo
   ECR_PROJECT_REPOSITORY: project-repo
   ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
