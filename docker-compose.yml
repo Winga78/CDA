@@ -181,7 +181,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      DB_AUTH: ${DB_AUTH}
     volumes:
       - mongodb_data:/data/db
     healthcheck:
