@@ -27,7 +27,7 @@ env:
   JWT_SECRET: my_secret
   MYSQL_ADMIN_PASSWORD: password
   MYSQL_ADMIN_USER: admin
-  PORT: 80
+  PORT: "80"
   NODE_ENV: production
   DOCKER_TARGET: production
 
@@ -57,7 +57,7 @@ jobs:
           echo "JWT_SECRET=${{ env.JWT_SECRET }}" >> .env
           echo "MYSQL_ADMIN_PASSWORD=${{ env.MYSQL_ADMIN_PASSWORD }}" >> .env
           echo "MYSQL_ADMIN_USER=${{ env.MYSQL_ADMIN_USER }}" >> .env
-          echo "PORT=${{ env.PORT }}" >> .env
+          echo "PORT=80" >> .env
           echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
           echo "DOCKER_TARGET=${{ env.DOCKER_TARGET }}" >> .env
           echo "MONGO_INITDB_ROOT_USERNAME=${{ env.MONGO_INITDB_ROOT_USERNAME }}" >> .env
@@ -68,15 +68,15 @@ jobs:
       - name: Start all services
         run: docker compose up -d
 
-      # - name: Wait for services to be ready
-      #   run: |
-      #     echo "Waiting for services to be ready..."
-      #     until curl -s http://localhost:3001 > /dev/null; do echo "Waiting for chat-service..."; sleep 5; done
-      #     until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
-      #     until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
-      #     until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
-      #     until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
-      #     echo "All services are up!"
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for services to be ready..."
+          until curl -s http://localhost:3001 > /dev/null; do echo "Waiting for chat-service..."; sleep 5; done
+          until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
+          until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
+          until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
+          until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
+          echo "All services are up!"
 
       - name: Install MongoDB Shell
         run: |
@@ -89,7 +89,7 @@ jobs:
         run: |
              for i in {1..10}; do
                mongosh "${{env.ME_CONFIG_MONGODB_URL}}" --eval "db.adminCommand('ping')" && break
-               echo "Waiting for MongoDB
+               echo "Waiting for MongoDB"
                sleep 5
              done
 
