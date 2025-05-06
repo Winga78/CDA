@@ -5,13 +5,9 @@ on:
     branches:
       - main
       - dev
-
-
-
 jobs:
   test-services:
     runs-on: ubuntu-latest
-
     env:
      VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
      VITE_AUTH_SERVICE_URL: ${{secrets.VITE_AUTH_SERVICE_URL}}

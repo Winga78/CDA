@@ -4,26 +4,24 @@ on:
   push:
     branches:
       - env
-
-env:
-  AWS_REGION: eu-west-3  
-  ECS_AUTH_SERVICE: auth_ECS_Service_production
-  ECS_CHAT_SERVICE: chat_ECS_Service_production
-  ECS_PROJECT_SERVICE: project_ECS_Service_production
-  ECS_PROJECT_USER_POST_SERVICE: project-user-post_ECS_Service_production
-  ECS_FRONTEND_SERVICE: frontend_ECS_Service_production
-  ECS_CLUSTER: cda-cluster
-  ECR_FRONTEND_REPOSITORY: frontend-repo
-  ECR_PROJECT_REPOSITORY: project-repo
-  ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
-  ECR_AUTH_REPOSITORY: auth-repo
-  ECR_CHAT_REPOSITORY: chat-repo
-  IMAGE_TAG: latest
-
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    env:
+     AWS_REGION: eu-west-3  
+     ECS_AUTH_SERVICE: auth_ECS_Service_production
+     ECS_CHAT_SERVICE: chat_ECS_Service_production
+     ECS_PROJECT_SERVICE: project_ECS_Service_production
+     ECS_PROJECT_USER_POST_SERVICE: project-user-post_ECS_Service_production
+     ECS_FRONTEND_SERVICE: frontend_ECS_Service_production
+     ECS_CLUSTER: cda-cluster
+     ECR_FRONTEND_REPOSITORY: frontend-repo
+     ECR_PROJECT_REPOSITORY: project-repo
+     ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
+     ECR_AUTH_REPOSITORY: auth-repo
+     ECR_CHAT_REPOSITORY: chat-repo
+     IMAGE_TAG: latest
     
     steps:
       - name: Checkout
