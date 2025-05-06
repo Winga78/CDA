@@ -6,34 +6,36 @@ on:
       - main
       - dev
 
-env:
-  VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
-  VITE_AUTH_SERVICE_URL: ${{secrets.VITE_AUTH_SERVICE_URL}}
-  VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
-  VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
-  ME_CONFIG_MONGODB_ADMINUSERNAME: user
-  ME_CONFIG_MONGODB_ADMINPASSWORD: password
-  MONGO_INITDB_ROOT_USERNAME: admin
-  MONGO_INITDB_ROOT_PASSWORD: password
-  DB_TYPE: mysql
-  DB_HOST: mysql
-  DB_PORT: 3306
-  DB_DATABASE_CHAT: chatdb
-  DB_DATABASE_PROJECT: projectdb
-  MYSQL_USER: user
-  MYSQL_PASSWORD: password
-  DB_DATABASE_RELATION: relationdb
-  ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongo-service:27017/
-  JWT_SECRET: my_secret
-  MYSQL_ADMIN_PASSWORD: password
-  MYSQL_ADMIN_USER: admin
-  PORT: "80"
-  NODE_ENV: production
-  DOCKER_TARGET: production
+
 
 jobs:
   test-services:
     runs-on: ubuntu-latest
+
+    env:
+     VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
+     VITE_AUTH_SERVICE_URL: ${{secrets.VITE_AUTH_SERVICE_URL}}
+     VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
+     VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
+     ME_CONFIG_MONGODB_ADMINUSERNAME: user
+     ME_CONFIG_MONGODB_ADMINPASSWORD: password
+     MONGO_INITDB_ROOT_USERNAME: admin
+     MONGO_INITDB_ROOT_PASSWORD: password
+     DB_TYPE: mysql
+     DB_HOST: mysql
+     DB_PORT: 3306
+     DB_DATABASE_CHAT: chatdb
+     DB_DATABASE_PROJECT: projectdb
+     MYSQL_USER: user
+     MYSQL_PASSWORD: password
+     DB_DATABASE_RELATION: relationdb
+     ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongo-service:27017/
+     JWT_SECRET: my_secret
+     MYSQL_ADMIN_PASSWORD: password
+     MYSQL_ADMIN_USER: admin
+     PORT: "80"
+     NODE_ENV: production
+     DOCKER_TARGET: production
 
     steps:
       - name: Checkout repository
@@ -65,20 +67,20 @@ jobs:
           echo "ME_CONFIG_MONGODB_ADMINUSERNAME=${{ env.ME_CONFIG_MONGODB_ADMINUSERNAME }}" >> .env
           echo "ME_CONFIG_MONGODB_ADMINPASSWORD=${{ env.ME_CONFIG_MONGODB_ADMINPASSWORD }}" >> .env
 
-      - name: Start all services
-        run: docker compose up -d
-
       - name: Wait for services to be ready
         run : |
                docker ps
                until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
+               until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
+               until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
+               until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
         # run: |
         #   # echo "Waiting for services to be ready..."
         #   # until curl -s http://localhost:3001 > /dev/null; do echo "Waiting for chat-service..."; sleep 5; done
-        #   # until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
+        #   # 
         #   # until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
             
-        #   # until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
+        #   # 
         #   # echo "All services are up!"
 
       - name: Install MongoDB Shell
@@ -95,6 +97,14 @@ jobs:
                echo "Waiting for MongoDB"
                sleep 5
              done
+
+      - name: Wait for Mysql to be ready
+        run: |
+              for i in {1..10}; do
+                 mysql -u "${{env.MYSQL_USER}}" -p"${{env.MYSQL_PASSWORD}}" -h "${{env.DB_HOST}}"
+                    echo "Waiting for Mysql"
+                    sleep 5
+              done
 
       - name: Vérifier l’installation de vitest
         run: |
