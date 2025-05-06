@@ -5,15 +5,19 @@ on:
     branches:
       - main
       - dev
+
+
+
 jobs:
   test-services:
     runs-on: ubuntu-latest
+
     env:
      VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
      VITE_AUTH_SERVICE_URL: ${{secrets.VITE_AUTH_SERVICE_URL}}
      VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
      VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
-     ME_CONFIG_MONGODB_ADMINUSERNAME: user
+     ME_CONFIG_MONGODB_ADMINUSERNAME: admin
      ME_CONFIG_MONGODB_ADMINPASSWORD: password
      MONGO_INITDB_ROOT_USERNAME: admin
      MONGO_INITDB_ROOT_PASSWORD: password
@@ -63,8 +67,11 @@ jobs:
           echo "ME_CONFIG_MONGODB_ADMINUSERNAME=${{ env.ME_CONFIG_MONGODB_ADMINUSERNAME }}" >> .env
           echo "ME_CONFIG_MONGODB_ADMINPASSWORD=${{ env.ME_CONFIG_MONGODB_ADMINPASSWORD }}" >> .env
 
+      - name: Start all services
+        run: docker compose up -d
+
       - name: Wait for services to be ready
-        run : |
+        run: |
                docker ps
                until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
                until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
@@ -96,11 +103,11 @@ jobs:
 
       - name: Wait for Mysql to be ready
         run: |
-              for i in {1..10}; do
-                 mysql -u "${{env.MYSQL_USER}}" -p"${{env.MYSQL_PASSWORD}}" -h "${{env.DB_HOST}}"
-                    echo "Waiting for Mysql"
-                    sleep 5
-              done
+            for i in {1..10}; do
+                  mysql -u "${{env.MYSQL_USER}}" -p"${{env.MYSQL_PASSWORD}}" -h "${{env.DB_HOST}}" && break
+                  echo "Waiting for Mysql"
+                  sleep 5
+            done
 
       - name: Vérifier l’installation de vitest
         run: |
