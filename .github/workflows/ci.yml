@@ -11,9 +11,9 @@ env:
   VITE_AUTH_SERVICE_URL: ${{secrets.VITE_AUTH_SERVICE_URL}}
   VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
   VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
-  ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+  ME_CONFIG_MONGODB_ADMINUSERNAME: user
   ME_CONFIG_MONGODB_ADMINPASSWORD: password
-  MONGO_INITDB_ROOT_USERNAME: root
+  MONGO_INITDB_ROOT_USERNAME: admin
   MONGO_INITDB_ROOT_PASSWORD: password
   DB_TYPE: mysql
   DB_HOST: mysql
@@ -69,13 +69,15 @@ jobs:
         run: docker compose up -d
 
       - name: Wait for services to be ready
-        run : docker ps
+        run : |
+               docker ps
+               until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
         # run: |
         #   # echo "Waiting for services to be ready..."
         #   # until curl -s http://localhost:3001 > /dev/null; do echo "Waiting for chat-service..."; sleep 5; done
         #   # until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
         #   # until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
-        #   # until curl -s http://localhost:3003 > /dev/null; do echo "Waiting for project-user-post-service..."; sleep 5; done
+            
         #   # until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
         #   # echo "All services are up!"
 
