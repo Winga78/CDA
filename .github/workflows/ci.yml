@@ -77,15 +77,8 @@ jobs:
                until curl -s http://localhost:3002 > /dev/null; do echo "Waiting for project-service..."; sleep 5; done
                until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
                until curl -s http://localhost:4000 > /dev/null; do echo "Waiting for frontend-service..."; sleep 5; done
-        # run: |
-        #   # echo "Waiting for services to be ready..."
-        #   # until curl -s http://localhost:3001 > /dev/null; do echo "Waiting for chat-service..."; sleep 5; done
-        #   # 
-        #   # until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
-            
-        #   # 
-        #   # echo "All services are up!"
-
+               until curl -s http://localhost:3000 > /dev/null; do echo "Waiting for auth-service..."; sleep 5; done
+       
       - name: Install MongoDB Shell
         run: |
            curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server.gpg
