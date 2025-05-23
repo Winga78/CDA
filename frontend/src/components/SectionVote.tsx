@@ -1,4 +1,3 @@
-import { FaArrowUp } from "react-icons/fa"; // Import de l'icône
 import { useState, useEffect, useRef } from "react";
 import { Button } from "react-bootstrap";
 import { checkIfVoted, getVoteCount} from "../services/postUserService";
@@ -25,7 +24,6 @@ const SectionVote = ({
   useEffect(() => {
     if (!postId) return;
 
-    // Initialisation de la connexion socket
     socketRef.current = io('', {
       path: '/vote/socket.io',
     });
@@ -33,7 +31,6 @@ const SectionVote = ({
 
     socket.emit("joinRoom", postId);
 
-    // Fonction pour récupérer l'état du vote
     const fetchVoteStatus = async () => {
       try {
         const hasVoted = await checkIfVoted(postId, userId);
@@ -43,7 +40,6 @@ const SectionVote = ({
       }
     };
 
-    // Fonction pour récupérer le nombre de votes
     const fetchCountVote = async () => {
       try {
         const count = await getVoteCount(postId);
@@ -58,12 +54,11 @@ const SectionVote = ({
     fetchVoteStatus();
     fetchCountVote();
 
-    // Fonction pour mettre à jour le score du vote
     const handleVoteUpdate = async (data: any) => {
       setVoted(data.isVoted);
       setScore(data.score);
       await updatePost(postId, { score: data.score });
-      onVoteChange(); // Appel du callback pour mettre à jour l'état parent
+      onVoteChange();
     };
 
     socket.on("statusVote", handleVoteUpdate);
@@ -75,7 +70,6 @@ const SectionVote = ({
     };
   }, [postId, userId, onVoteChange]);
 
-  // Fonction pour gérer le vote
   const handleVote = async () => {
     try {
       if (!socketRef.current) return;
@@ -91,19 +85,15 @@ const SectionVote = ({
   };
 
   return (
-    <div className="d-flex flex-column align-items-center">
+    <div>
       {error && <div className="alert alert-danger">{error}</div>}
       <Button
-        variant="outline-primary"
-        onClick={handleVote}
-        style={{ width: "40px", height: "40px", borderRadius: "50%" }}
-      >
-        <FaArrowUp size={24} color={score ? "green" : "black"} />
-      </Button>
-      <p>
-        {score} vote{score !== 1 ? "s" : ""}
-      </p>
-      <p>{voted ? "Annuler le vote" : "Cliquez pour voter"}</p>
+  className="btn btn-outline-secondary btn-sm"
+  style={{ backgroundColor: "#e0e0e0", color: "#000" }}
+  onClick={handleVote}>
+  👍{score} vote{score > 0 ? "s" : ""}
+</Button>
+
     </div>
   );
 };

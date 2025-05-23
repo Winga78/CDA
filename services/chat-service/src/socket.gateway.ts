@@ -10,6 +10,7 @@ import {
   import { Server, Socket } from 'socket.io';
   import { PostsService } from './posts/posts.service';
   import { CreatePostDto } from './posts/dto/create-post.dto';
+import { create } from 'domain';
 
   @WebSocketGateway({ cors: { origin: '*' } })
   export class SocketGateway
@@ -74,6 +75,7 @@ import {
         titre: createpost.titre,
         post_id: createpost.project_id,
         modifiedAt : createpost.modifiedAt,
+        createdAt : createpost.createdAt,
         score : createpost.score,
        });
       } catch (error) {

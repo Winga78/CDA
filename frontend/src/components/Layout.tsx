@@ -5,28 +5,52 @@ import { Outlet } from 'react-router-dom';
 import SectionProject from "./SectionProject";
 import { useUser } from "../context/UserContext";
 import logo from '../assets/logo.png';
+import { useEffect, useState } from "react";
+import { getUser } from "../services/authService";
 
 const Layout = () => {
   const { user, logout } = useUser();
-  const avatarUrl = `/api/uploads/${user?.avatar}`;
+  const [profile, setProfile] = useState<any>(null);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user) return;
+      try {
+        const storedUser = await getUser(user.id);
+        setProfile(storedUser || null);
+      } catch (error: any) {
+        setError("Erreur lors de la récupération du profil : " + error.message);
+      }
+    };
+    loadProfile();
+  }, [user]);
+
+  const avatarUrl = profile?.avatar ? `/api/uploads/${profile.avatar}` : "/default-avatar.jpg";
+
   return (
     <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
-      {/* Navbar horizontale */}
+       {error && <p className="text-danger">{error}</p>}
       <Navbar bg="dark" variant="dark" className="px-3 d-flex justify-content-between align-items-center">
-        <Navbar.Brand href="/"><img 
-          src={logo} 
-          alt="Mon Logo" 
-          // Ajuste la taille si nécessaire
-        /></Navbar.Brand>
+        <Navbar.Brand href="/">
+          <img src={logo} alt="Mon Logo" height="40" />
+        </Navbar.Brand>
 
-        {user != null && (
-          <Nav className="mx-auto">
-            <Nav.Link href="/accueil">Accueil</Nav.Link>
-            <Nav.Link href="/projects">Projets</Nav.Link>
-            <Nav.Link href="/notifications">Notifications</Nav.Link>
-            <button onClick={logout}>Déconnexion</button>
-          </Nav>
-        )}
+{user && (
+  <>
+    <Nav className="mx-auto">
+      <Nav.Link href="/accueil">Accueil</Nav.Link>
+      <Nav.Link href="/projects">Projets</Nav.Link>
+      <Nav.Link href="/notifications">Notifications</Nav.Link>
+    </Nav>
+    <Nav className="ms-4">
+      <Nav.Link as="button" className="btn btn-link nav-link" onClick={logout}>
+        Déconnexion
+      </Nav.Link>
+    </Nav>
+  </>
+)}
+
 
         <Nav>
           {user ? (
@@ -37,8 +61,9 @@ const Layout = () => {
                 className="rounded-circle"
                 width="40"
                 height="40"
+                style={{ objectFit: 'cover' }}
               />
-              <span className="ms-2 text-white">{user?.firstname} {user?.lastname}</span>
+              <span className="ms-2 text-white">{profile?.firstname} {profile?.lastname}</span>
             </Nav.Link>
           ) : (
             <>
@@ -50,9 +75,7 @@ const Layout = () => {
       </Navbar>
 
       {user ? (
-        <>
-          <SectionProject />
-        </>
+        <SectionProject />
       ) : (
         <Container className="flex-grow-1 mt-3">
           <Outlet />
@@ -67,9 +90,9 @@ const Layout = () => {
         </div>
         <div>
           <a href="/mentions-legales" className="text-dark fw-bold">Mentions légales</a> | 
-          <a href="/confidentialite" className="text-dark fw-bold"> Politique de confidentialité</a> | 
-          <a href="/cookies" className="text-dark fw-bold"> Politique de cookies</a> | 
-          <a href="/cgv" className="text-dark fw-bold"> Conditions générales de vente</a>
+          <a href="/politique-confidentialite" className="text-dark fw-bold"> Politique de confidentialité</a> | 
+          <a href="/politique-cookies" className="text-dark fw-bold"> Politique de cookies</a> | 
+          <a href="/conditions-generales-vente" className="text-dark fw-bold"> Conditions générales de vente</a>
         </div>
       </footer>
     </div>

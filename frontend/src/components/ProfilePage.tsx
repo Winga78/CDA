@@ -47,13 +47,14 @@ function ProfilePage() {
       formDataToSend.append('lastname', data.lastname);
       try {
         await updateUser(formDataToSend);
-        
+        window.location.reload();
       } catch (error: any) {
         setError(error.message || "Une erreur inconnue est survenue");
       }
     } else {
       try {
        await updateUser(data);
+       window.location.reload();
       } catch (error: any) {
         setError(error.message || "Une erreur inconnue est survenue");
       }

@@ -15,6 +15,7 @@ type UserContextType = {
   isLoading: boolean;
   login: (token: string) => void;
   logout: () => void;
+  updateUserContext: (updatedUser: Partial<User>) => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -67,7 +68,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       avatar: decoded.avatar,
     });
     setIsAuthenticated(true);
-    setIsLoading(false); // S'assurer que l'état de chargement est à jour
+    setIsLoading(false);
   };
 
   const logout = () => {
@@ -76,9 +77,18 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthenticated(false);
     setIsLoading(false);
   };
+    const updateUserContext = (updatedUser: Partial<User>) => {
+    setUserState((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        ...updatedUser,
+      };
+    });
+  };
 
   return (
-    <UserContext.Provider value={{ user, isAuthenticated, isLoading, login, logout }}>
+    <UserContext.Provider value={{ user, isAuthenticated, isLoading, login, logout , updateUserContext  }}>
       {children}
     </UserContext.Provider>
   );

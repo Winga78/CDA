@@ -11,6 +11,10 @@ import {UserProvider} from "./context/UserContext";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import ChatPage from "./components/ChatPage";
+import MentionsLegales from './pages/MentionsLegales';
+import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
+import PolitiqueCookies from './pages/PolitiqueCookies';
+import ConditionsVente from './pages/ConditionsVente';
 
 function App() {
   return (
@@ -32,7 +36,11 @@ function App() {
           <Route path="/notifications" element={<NotificationPage />} />
           <Route path="/project/:id" element={<ChatPage />} />
         </Route>
-      </Routes>
+         <Route path="/mentions-legales" element={<MentionsLegales />} />
+         <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+         <Route path="/politique-cookies" element={<PolitiqueCookies />} />
+         <Route path="/conditions-generales-vente" element={<ConditionsVente />} />
+         </Routes>
     </Router>
     </UserProvider>
   );
