@@ -30,7 +30,6 @@ export class RolesGuard implements CanActivate {
     const userConnected = request.user;
     const project = request.body;
 
-    // Récupération propre du token dans les headers
     const authHeader = request.headers['authorization'];
     if (!authHeader) {
       throw new UnauthorizedException('Token manquant');
@@ -45,16 +44,13 @@ export class RolesGuard implements CanActivate {
       throw new UnauthorizedException('Utilisateur ou projet non valide');
     }
 
-    // Récupération de l’ID du créateur du projet
     const response = await this.projectUserService.findProject(project.project_id, token);
     const userCreatorId = response.data.user_id;
 
-    // Si l'utilisateur connecté est le créateur, il a tous les droits
     if (userConnected.id === userCreatorId) {
       return true;
     }
 
-    // Sinon, on vérifie s’il a le rôle requis dans ce projet
     const userFromDb = await this.projectUserService.findUserByProject(
       project.project_id,
       userConnected.participant_id,

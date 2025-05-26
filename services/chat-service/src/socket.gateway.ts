@@ -75,10 +75,7 @@ import { create } from 'domain';
         titre: createpost.titre,
         post_id: createpost.project_id,
         modifiedAt : createpost.modifiedAt,
-<<<<<<< HEAD
-=======
         createdAt : createpost.createdAt,
->>>>>>> front
         score : createpost.score,
        });
       } catch (error) {
