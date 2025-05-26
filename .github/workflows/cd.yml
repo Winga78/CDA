@@ -10,11 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
      AWS_REGION: eu-west-3  
-     ECS_AUTH_SERVICE: auth_ECS_Service_production
-     ECS_CHAT_SERVICE: chat_ECS_Service_production
-     ECS_PROJECT_SERVICE: project_ECS_Service_production
-     ECS_PROJECT_USER_POST_SERVICE: project-user-post_ECS_Service_production
-     ECS_FRONTEND_SERVICE: frontend_ECS_Service_production
+     ECS_AUTH_SERVICE: auth-0_ECS_Service_prod
+     ECS_CHAT_SERVICE: chat-0_ECS_Service_prod
+     ECS_PROJECT_SERVICE: project-0_ECS_Service_prod
+     ECS_PROJECT_USER_POST_SERVICE0: project-user-post-0_ECS_Service_prod
+     ECS_PROJECT_USER_POST_SERVICE1: project-user-post-1_ECS_Service_prod
+     ECS_FRONTEND_SERVICE: frontend-0_ECS_Service_prod
      ECS_CLUSTER: cda-cluster
      ECR_FRONTEND_REPOSITORY: frontend-repo
      ECR_PROJECT_REPOSITORY: project-repo
@@ -185,8 +186,8 @@ jobs:
 
       # ****constuire project-user-post-service***
 
-      - name: Build and push project-user-post image
-        id: build-project-user-post
+      - name: Build and push project-user-post0 image
+        id: build-project-user-post0
         env:
            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
@@ -199,7 +200,24 @@ jobs:
         run: |
              aws ecs update-service \
              --cluster ${{ env.ECS_CLUSTER }} \
-             --service ${{ env.ECS_PROJECT_USER_POST_SERVICE }} \
+             --service ${{ env.ECS_PROJECT_USER_POST_SERVICE0 }} \
+             --force-new-deployment
+
+      - name: Build and push project-user-post1 image
+        id: build-project-user-post1
+        env:
+           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+                IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_PROJECT_POST_USER_REPOSITORY }}:${{ env.IMAGE_TAG }}
+                docker build -t $IMAGE_URI ./services/project-user-post-service
+                docker push $IMAGE_URI
+                echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+
+      - name: Deploy updated project-user-post task definition
+        run: |
+             aws ecs update-service \
+             --cluster ${{ env.ECS_CLUSTER }} \
+             --service ${{ env.ECS_PROJECT_USER_POST_SERVICE0 }} \
              --force-new-deployment
       
          # ****constuire frontend-service***
