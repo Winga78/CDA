@@ -17,20 +17,6 @@ variable repository_url {
   type        = map(string)
 }
 
-
-variable "priorities" {
-  type = map(number)
-  default = {
-    "frontend"     = 1
-    "auth"         = 2
-    "project"      = 3
-    "project-user" = 4
-    "post-user"    = 5
-    "chat"         = 6
-  }
-}
-
-
 variable "cpu_units" {
   type        = number
   default     = 1024

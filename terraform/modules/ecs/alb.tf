@@ -28,6 +28,7 @@ locals {
         name     = service_key
         path     = path
         position = idx
+        priority = idx + 1 + index(keys(var.service_name), service_key) * 10
       }
     }
   ]...)
@@ -47,7 +48,7 @@ resource "aws_lb_target_group" "target_group" {
 resource "aws_lb_listener_rule" "lb_listener_rule" {
 for_each       = local.flattened_routes
   listener_arn = aws_lb_listener.listener.arn
-  priority     = lookup(var.priorities, each.key, 100)
+  priority     = each.value.priority
 
   action {
     type             = "forward"
