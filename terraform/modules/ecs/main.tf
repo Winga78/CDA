@@ -56,8 +56,9 @@ resource "aws_ecs_task_definition" "default" {
      { name = "DB_PORT",                      value = var.DB_PORT },
      { name = "DB_TYPE",                      value = var.DB_TYPE },
      { name = "JWT_SECRET",                   value = var.JWT_SECRET },
-     { name = "PORT",                        value = var.PORT },
-     { name = "DB_HOST",                     value = var.DB_HOST },
+     { name = "PORT",                         value = var.PORT },
+     { name = "DB_HOST",                      value = var.DB_HOST },
+     { name = "MONGODB_URI",                  value = var.MONGODB_URI },
    ]
 
 
