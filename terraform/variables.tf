@@ -1,10 +1,10 @@
 variable services {
   type                 = map(list(string))
   default              = {
-   "frontend"          = ["/"],
+   "frontend"          = ["/*"],
    "project"           = ["/api/projects/*"],
    "project-user-post" = ["/api/project-user/*", "/api/post-user/*"],
-   "auth"              = ["/api/users","/api/auth/*"],
+   "auth"              = ["/api/users/*","/api/auth/*"],
    "chat"              = ["/api/posts/*"]
   }
   description = "description"
