@@ -9,7 +9,7 @@ resource "aws_ecs_service" "service" {
   launch_type                        = "FARGATE"
 
   load_balancer {
-    target_group_arn = aws_alb_target_group.target_group.arn
+    target_group_arn = aws_lb_target_group.target_group[each.key].arn
     container_name   = "${each.value}-service"
     container_port   = var.container_port
   }

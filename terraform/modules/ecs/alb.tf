@@ -5,7 +5,7 @@ resource "aws_alb" "application_load_balancer" {
   subnets            = var.public_subnets
   security_groups    = [aws_security_group.alb_sg.id]
 }
-resource "aws_alb_listener" "listener" {
+resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_alb.application_load_balancer.arn
   port              = 80
   protocol          = "HTTP"
