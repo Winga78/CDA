@@ -217,7 +217,7 @@ jobs:
         run: |
              aws ecs update-service \
              --cluster ${{ env.ECS_CLUSTER }} \
-             --service ${{ env.ECS_PROJECT_USER_POST_SERVICE0 }} \
+             --service ${{ env.ECS_PROJECT_USER_POST_SERVICE1 }} \
              --force-new-deployment
       
          # ****constuire frontend-service***
