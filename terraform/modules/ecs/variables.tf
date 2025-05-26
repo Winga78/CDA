@@ -17,6 +17,32 @@ variable repository_url {
   type        = map(string)
 }
 
+variable routes {
+  type        = map(string)
+  default     = {
+    "frontend"            = "/"
+    "project"             = "/projects/*"
+    "project-user"        = "/project-user/*"
+    "post-user"           = "/post-user/*"
+    "auth"                = "/auth/*"
+    "chat"                = "/posts/*"
+  }
+  description = "routes for each service"
+}
+
+variable "priorities" {
+  type = map(number)
+  default = {
+    "frontend"     = 1
+    "auth"         = 2
+    "project"      = 3
+    "project-user" = 4
+    "post-user"    = 5
+    "chat"         = 6
+  }
+}
+
+
 variable "cpu_units" {
   type        = number
   default     = 1024
@@ -73,8 +99,6 @@ variable "environment" {
 variable vpc_id {
   type        = string
 }
-<<<<<<< HEAD
-=======
 
 variable MONGODB_URI {}
 variable NODE_ENV {}
@@ -92,4 +116,3 @@ variable DB_TYPE {}
 variable JWT_SECRET {}
 variable PORT {}
 variable DB_HOST {}
->>>>>>> front

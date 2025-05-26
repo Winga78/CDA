@@ -133,7 +133,7 @@ const ChatPage = () => {
         />
         <div>
           <p className="mb-1">
-            {msg.user.firstname} {msg.user.lastname} {formatModifiedDate(msg.modifiedAt)}
+            {msg.user.firstname} {msg.user.lastname} {formatModifiedDate(msg.createdAt)}
           </p>
           <p className="mb-1 fw-bold">{msg.titre}</p>
           <p className="mb-2">{msg.description}</p>

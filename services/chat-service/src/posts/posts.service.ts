@@ -4,7 +4,6 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository, UpdateResult } from 'typeorm';
-import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class PostsService {

@@ -1,5 +1,3 @@
-## Creates an ECS Service running on Fargate
-
 resource "aws_ecs_service" "service" {
   for_each                           = toset(var.service_name)
   name                               = "${each.value}_ECS_Service_${var.environment}"
@@ -27,16 +25,13 @@ resource "aws_ecs_service" "service" {
   }
 }
 
-
-## Creates ECS Task Definition
-
 resource "aws_ecs_task_definition" "default" {
   for_each                 = toset(var.service_name)
   family                   = "${each.value}_ECS_TaskDefinition_${var.environment}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
-  task_role_arn      = aws_iam_role.ecsTaskRole.arn
+  execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
+  task_role_arn            = aws_iam_role.ecsTaskRole.arn
   cpu                      = var.cpu_units
   memory                   = var.memory
 
