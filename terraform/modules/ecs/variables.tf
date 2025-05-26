@@ -76,10 +76,6 @@ variable vpc_id {
 
 variable MONGODB_URI {}
 variable NODE_ENV {}
-variable VITE_AUTH_SERVICE_URL {}
-variable VITE_CHAT_SERVICE_URL {}
-variable VITE_PROJECT_SERVICE_URL {}
-variable VITE_PROJECT_USER_POST_SERVICE_URL {}
 variable MYSQL_PASSWORD {}
 variable MYSQL_USER {}
 variable DB_DATABASE_CHAT {}
