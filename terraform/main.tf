@@ -38,9 +38,5 @@ module "ecs" {
   MONGODB_URI                            = var.MONGODB_URI
   MYSQL_PASSWORD                         = var.MYSQL_PASSWORD
   MYSQL_USER                             = var.MYSQL_USER
-  VITE_AUTH_SERVICE_URL                  = var.VITE_AUTH_SERVICE_URL
-  VITE_CHAT_SERVICE_URL                  = var.VITE_CHAT_SERVICE_URL
-  VITE_PROJECT_SERVICE_URL               = var.VITE_PROJECT_SERVICE_URL
-  VITE_PROJECT_USER_POST_SERVICE_URL     = var.VITE_PROJECT_USER_POST_SERVICE_URL
   NODE_ENV                               = var.NODE_ENV
 } 
