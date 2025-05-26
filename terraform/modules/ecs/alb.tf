@@ -19,7 +19,6 @@ resource "aws_lb_listener" "listener" {
     }
   }
 }
-
 locals {
   flattened_routes = merge([
     for service_key, paths in var.service_name : {
@@ -33,7 +32,6 @@ locals {
     }
   ]...)
 }
-
 resource "aws_lb_target_group" "target_group" {
   for_each    = local.flattened_routes
 
