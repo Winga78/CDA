@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
      AWS_REGION: eu-west-3  
-     ECS_AUTH_SERVICE: auth-0_ECS_Service_prod
+     ECS_AUTH_SERVICE0: auth-0_ECS_Service_prod
+     ECS_AUTH_SERVICE1: auth-1_ECS_Service_prod
      ECS_CHAT_SERVICE: chat-0_ECS_Service_prod
      ECS_PROJECT_SERVICE: project-0_ECS_Service_prod
      ECS_PROJECT_USER_POST_SERVICE0: project-user-post-0_ECS_Service_prod
@@ -83,10 +84,6 @@ jobs:
         env:
           TF_VAR_MONGODB_URI: ${{ secrets.MONGODB_URI }}
           TF_VAR_NODE_ENV: ${{ secrets.NODE_ENV }}
-          TF_VAR_VITE_AUTH_SERVICE_URL: ${{ secrets.VITE_AUTH_SERVICE_URL }}
-          TF_VAR_VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
-          TF_VAR_VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
-          TF_VAR_VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
           TF_VAR_MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           TF_VAR_MYSQL_USER: ${{ secrets.MYSQL_USER }}
           TF_VAR_DB_DATABASE_CHAT: ${{ secrets.DB_DATABASE_CHAT }}
@@ -106,10 +103,6 @@ jobs:
         env:
           TF_VAR_MONGODB_URI: ${{ secrets.MONGODB_URI }}
           TF_VAR_NODE_ENV: ${{ secrets.NODE_ENV }}
-          TF_VAR_VITE_AUTH_SERVICE_URL: ${{ secrets.VITE_AUTH_SERVICE_URL }}
-          TF_VAR_VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
-          TF_VAR_VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
-          TF_VAR_VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
           TF_VAR_MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           TF_VAR_MYSQL_USER: ${{ secrets.MYSQL_USER }}
           TF_VAR_DB_DATABASE_CHAT: ${{ secrets.DB_DATABASE_CHAT }}
@@ -127,8 +120,8 @@ jobs:
 
     # ****constuire auth-service***
 
-      - name: Build and push auth image
-        id: build-auth
+      - name: Build and push auth0 image
+        id: build-auth0
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
@@ -141,7 +134,24 @@ jobs:
         run: |
             aws ecs update-service \
               --cluster ${{ env.ECS_CLUSTER }} \
-              --service ${{ env.ECS_AUTH_SERVICE }} \
+              --service ${{ env.ECS_AUTH_SERVICE0 }} \
+              --force-new-deployment
+
+      - name: Build and push auth1 image
+        id: build-auth1
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_AUTH_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker build -t $IMAGE_URI ./services/auth-service
+          docker push $IMAGE_URI
+          echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+
+      - name: Deploy updated auth task definition
+        run: |
+            aws ecs update-service \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --service ${{ env.ECS_AUTH_SERVICE1 }} \
               --force-new-deployment
 
     # ****constuire chat-service***
@@ -225,7 +235,7 @@ jobs:
       - name: Build and push frontend image
         id: build-frontend
         env:
-                ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
                   IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_FRONTEND_REPOSITORY }}:${{ env.IMAGE_TAG }}
                   docker build -t $IMAGE_URI --target production ./frontend

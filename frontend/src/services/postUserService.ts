@@ -1,7 +1,7 @@
 import axios from "axios";
 import { PostUser } from "../models/PostUser";
 
-const API_BASE_URL = "/api/post-user";
+const API_BASE_URL = import.meta.env.VITE_POST_USER_SERVICE_URL || "/api/post-user";
 
 const voteService = axios.create({
   baseURL: API_BASE_URL,
