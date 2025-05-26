@@ -47,6 +47,26 @@ resource "aws_ecs_task_definition" "default" {
       cpu          = var.cpu_units
       memory       = var.memory
       essential    = true
+
+       environment = [
+        { name = "MONGODB_URI", value = var.MONGODB_URI },
+        { name = "NODE_ENV", value = var.NODE_ENV },
+        { name = "VITE_AUTH_SERVICE_URL", value = var.VITE_AUTH_SERVICE_URL },
+        { name = "VITE_CHAT_SERVICE_URL", value = var.VITE_CHAT_SERVICE_URL },
+        { name = "VITE_PROJECT_SERVICE_URL", value = var.VITE_PROJECT_SERVICE_URL },
+        { name = "VITE_PROJECT_USER_POST_SERVICE_URL", value = var.VITE_PROJECT_USER_POST_SERVICE_URL },
+        { name = "MYSQL_PASSWORD", value = var.MYSQL_PASSWORD },
+        { name = "MYSQL_USER", value = var.MYSQL_USER },
+        { name = "DB_DATABASE_CHAT", value = var.DB_DATABASE_CHAT },
+        { name = "DB_DATABASE_PROJECT", value = var.DB_DATABASE_PROJECT },
+        { name = "DB_DATABASE_RELATION", value = var.DB_DATABASE_RELATION },
+        { name = "DB_PORT", value = var.DB_PORT },
+        { name = "DB_TYPE", value = var.DB_TYPE },
+        { name = "JWT_SECRET", value = var.JWT_SECRET },
+        { name = "PORT", value = var.PORT },
+        { name = "DB_HOST", value = var.DB_HOST }
+      ]
+
       portMappings = [
         {
           containerPort = var.container_port

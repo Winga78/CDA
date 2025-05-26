@@ -3,47 +3,55 @@ name: Deploy to Amazon ECS
 on:
   push:
     branches:
-      - main
-
-env:
-  AWS_REGION: eu-west-3  
-  ECS_AUTH_SERVICE: auth_ECS_Service_Production
-  ECS_CHAT_SERVICE: chat_ECS_Service_Production 
-  ECS_PROJECT_SERVICE: project_ECS_Service_Production
-  ECS_PROJECT_USER_POST_SERVICE: project-user-post_ECS_Service_production
-  ECS_FRONTEND_SERVICE: frontend_ECS_Service_Production
-
-  ECS_CLUSTER: cda-cluster
-
-  ECS_TASK_AUTH_DEFINITION: auth_ECS_TaskDefinition_production:1
-  ECS_TASK_CHAT_DEFINITION: chat_ECS_TaskDefinition_production:1
-  ECS_TASK_PROJECT_DEFINITION: project_ECS_TaskDefinition_production:1
-  ECS_TASK_PROJECT_USER_POST_DEFINITION: project-user-post_ECS_TaskDefinition_production:1
-  ECS_TASK_FRONTEND_DEFINITION: frontend_ECS_TaskDefinition_production:1
-                                 
-  CONTAINER_PROJECT: project-service
-  CONTAINER_CHAT: chat-service
-  CONTAINER_PROJECT_USER_POST: project-user-post-service
-  CONTAINER_FRONTEND: frontend-service
-  CONTAINER_AUTH: auth-service
-
-
-  ECR_FRONTEND_REPOSITORY: frontend-repo
-  ECR_PROJECT_REPOSITORY: project-repo
-  ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
-  ECR_AUTH_REPOSITORY: auth-repo
-  ECR_CHAT_REPOSITORY: chat-repo
-  IMAGE_TAG: latest
-
+      - env
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    env:
+     AWS_REGION: eu-west-3  
+     ECS_AUTH_SERVICE: auth_ECS_Service_production
+     ECS_CHAT_SERVICE: chat_ECS_Service_production
+     ECS_PROJECT_SERVICE: project_ECS_Service_production
+     ECS_PROJECT_USER_POST_SERVICE: project-user-post_ECS_Service_production
+     ECS_FRONTEND_SERVICE: frontend_ECS_Service_production
+     ECS_CLUSTER: cda-cluster
+     ECR_FRONTEND_REPOSITORY: frontend-repo
+     ECR_PROJECT_REPOSITORY: project-repo
+     ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
+     ECR_AUTH_REPOSITORY: auth-repo
+     ECR_CHAT_REPOSITORY: chat-repo
+     IMAGE_TAG: latest
     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+    
+      - name: Wait for MySQL to be ready
+        run: |
+         until mysqladmin ping -h"${{ secrets.DB_HOST }}" -u"${{ secrets.MYSQL_USER }}" -p"${{ secrets.MYSQL_PASSWORD }}" --silent; do
+         echo "Waiting for MySQL..."
+         sleep 2
+         done
+
+      - name: Install MongoDB Shell
+        run: |
+           curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server.gpg
+           echo "deb [ signed-by=/usr/share/keyrings/mongodb-server.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+           sudo apt-get update
+           sudo apt-get install -y mongodb-mongosh
+       
+      - name: Wait for MongoDB to be ready
+        run: |
+             for i in {1..10}; do
+               mongosh "${{secrets.MONGODB_URI}}" --eval "db.adminCommand('ping')" && break
+               echo "Waiting for MongoDB..."
+               sleep 5
+             done
+         
+        # ****se connecter à aws***
+        
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
         with:
@@ -54,6 +62,67 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
+
+     # ****lancer les scripts terraform***
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: terraform
+        run: terraform validate
+      
+      - name: Terraform Plan
+        working-directory: terraform
+        run: terraform plan
+        env:
+          TF_VAR_MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          TF_VAR_NODE_ENV: ${{ secrets.NODE_ENV }}
+          TF_VAR_VITE_AUTH_SERVICE_URL: ${{ secrets.VITE_AUTH_SERVICE_URL }}
+          TF_VAR_VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
+          TF_VAR_VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
+          TF_VAR_VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
+          TF_VAR_MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          TF_VAR_MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          TF_VAR_DB_DATABASE_CHAT: ${{ secrets.DB_DATABASE_CHAT }}
+          TF_VAR_DB_DATABASE_PROJECT: ${{ secrets.DB_DATABASE_PROJECT }}
+          TF_VAR_DB_DATABASE_RELATION: ${{ secrets.DB_DATABASE_RELATION }}
+          TF_VAR_DB_PORT: ${{ secrets.DB_PORT }}
+          TF_VAR_DB_TYPE: ${{ secrets.DB_TYPE }}
+          TF_VAR_JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TF_VAR_PORT: ${{ secrets.PORT }}
+          TF_VAR_MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
+          TF_VAR_MYSQL_ADMIN_USER: ${{ secrets.MYSQL_ADMIN_USER }}
+          TF_VAR_DB_HOST: ${{ secrets.DB_HOST }}
+      
+
+      - name: Terraform Apply
+        working-directory: terraform
+        env:
+          TF_VAR_MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          TF_VAR_NODE_ENV: ${{ secrets.NODE_ENV }}
+          TF_VAR_VITE_AUTH_SERVICE_URL: ${{ secrets.VITE_AUTH_SERVICE_URL }}
+          TF_VAR_VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
+          TF_VAR_VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
+          TF_VAR_VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
+          TF_VAR_MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          TF_VAR_MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          TF_VAR_DB_DATABASE_CHAT: ${{ secrets.DB_DATABASE_CHAT }}
+          TF_VAR_DB_DATABASE_PROJECT: ${{ secrets.DB_DATABASE_PROJECT }}
+          TF_VAR_DB_DATABASE_RELATION: ${{ secrets.DB_DATABASE_RELATION }}
+          TF_VAR_DB_PORT: ${{ secrets.DB_PORT }}
+          TF_VAR_DB_TYPE: ${{ secrets.DB_TYPE }}
+          TF_VAR_JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TF_VAR_PORT: ${{ secrets.PORT }}
+          TF_VAR_MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
+          TF_VAR_MYSQL_ADMIN_USER: ${{ secrets.MYSQL_ADMIN_USER }}
+          TF_VAR_DB_HOST: ${{ secrets.DB_HOST }}
+
+        run: terraform apply -auto-approve
 
     # ****constuire auth-service***
 
@@ -67,22 +136,12 @@ jobs:
           docker push $IMAGE_URI
           echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
 
-      - name: Render task definition for auth
-        id: render-auth
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.ECS_TASK_AUTH_DEFINITION }}
-          container-name: ${{ env.CONTAINER_AUTH }}
-          image: ${{ steps.build-auth.outputs.image }}
-
-      - name: Deploy auth service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-auth.outputs.task-definition }}
-          service: ${{ env.ECS_AUTH_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
-
+      - name: Deploy updated auth task definition
+        run: |
+            aws ecs update-service \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --service ${{ env.ECS_AUTH_SERVICE }} \
+              --force-new-deployment
 
     # ****constuire chat-service***
 
@@ -95,24 +154,15 @@ jobs:
             docker build -t $IMAGE_URI ./services/chat-service
             docker push $IMAGE_URI
             echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
-  
-      - name: Render task definition for chat
-        id: render-chat
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-            task-definition: ${{ env.ECS_TASK_CHAT_DEFINITION }}
-            container-name: ${{ env.CONTAINER_CHAT }}
-            image: ${{ steps.build-chat.outputs.image }}
-  
-      - name: Deploy chat service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-            task-definition: ${{ steps.render-chat.outputs.task-definition }}
-            service: ${{ env.ECS_CHAT_SERVICE }}
-            cluster: ${{ env.ECS_CLUSTER }}
-            wait-for-service-stability: true
 
-
+      - name: Deploy updated chat task definition
+        run: |
+              aws ecs update-service \
+                --cluster ${{ env.ECS_CLUSTER }} \
+                --service ${{ env.ECS_CHAT_SERVICE }} \
+                --force-new-deployment
+          
+  
       # ****constuire project-service***
 
       - name: Build and push project image
@@ -124,22 +174,13 @@ jobs:
               docker build -t $IMAGE_URI ./services/project-service
               docker push $IMAGE_URI
               echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
-    
-      - name: Render task definition for project
-        id: render-project
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-           task-definition: ${{ env.ECS_TASK_PROJECT_DEFINITION }}
-           container-name: ${{ env.CONTAINER_PROJECT }}
-           image: ${{ steps.build-project.outputs.image }}
-    
-      - name: Deploy project service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-              task-definition: ${{ steps.render-project.outputs.task-definition }}
-              service: ${{ env.ECS_PROJECT_SERVICE }}
-              cluster: ${{ env.ECS_CLUSTER }}
-              wait-for-service-stability: true
+
+      - name: Deploy updated project task definition
+        run: |
+              aws ecs update-service \
+                      --cluster ${{ env.ECS_CLUSTER }} \
+                      --service ${{ env.ECS_PROJECT_SERVICE }} \
+                      --force-new-deployment
 
 
       # ****constuire project-user-post-service***
@@ -153,23 +194,14 @@ jobs:
                 docker build -t $IMAGE_URI ./services/project-user-post-service
                 docker push $IMAGE_URI
                 echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
-      
-      - name: Render task definition for project-user-post
-        id: render-project-user-post
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-                task-definition: ${{ env.ECS_TASK_PROJECT_USER_POST_DEFINITION }}
-                container-name: ${{ env.CONTAINER_PROJECT_USER_POST }}
-                image: ${{ steps.build-project-user-post.outputs.image }}
-      
-      - name: Deploy project-user-post service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-                task-definition: ${{ steps.render-project-user-post.outputs.task-definition }}
-                service: ${{ env.ECS_PROJECT_USER_POST_SERVICE }}
-                cluster: ${{ env.ECS_CLUSTER }}
-                wait-for-service-stability: true
 
+      - name: Deploy updated project-user-post task definition
+        run: |
+             aws ecs update-service \
+             --cluster ${{ env.ECS_CLUSTER }} \
+             --service ${{ env.ECS_PROJECT_USER_POST_SERVICE }} \
+             --force-new-deployment
+      
          # ****constuire frontend-service***
                 
       - name: Build and push frontend image
@@ -178,22 +210,13 @@ jobs:
                 ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
                   IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_FRONTEND_REPOSITORY }}:${{ env.IMAGE_TAG }}
-                  docker build -t $IMAGE_URI ./frontend
+                  docker build -t $IMAGE_URI --target production ./frontend
                   docker push $IMAGE_URI
                   echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
-        
-      - name: Render task definition for frontend
-        id: render-frontend
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-                  task-definition: ${{ env.ECS_TASK_FRONTEND_DEFINITION }}
-                  container-name: ${{ env.CONTAINER_FRONTEND }}
-                  image: ${{ steps.build-frontend.outputs.image }}
-        
-      - name: Deploy frontend service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-                  task-definition: ${{ steps.render-frontend.outputs.task-definition }}
-                  service: ${{ env.ECS_FRONTEND_SERVICE }}
-                  cluster: ${{ env.ECS_CLUSTER }}
-                  wait-for-service-stability: true
+
+      - name: Deploy updated frontend task definition
+        run: |
+                       aws ecs update-service \
+                       --cluster ${{ env.ECS_CLUSTER }} \
+                       --service ${{ env.ECS_FRONTEND_SERVICE }} \
+                       --force-new-deployment

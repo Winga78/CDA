@@ -3,15 +3,16 @@ import { useState, useEffect, useRef } from "react";
 import SectionParticipant from "./SectionParticipant";
 import { getProject } from "../services/projectService";
 import { Project } from "../models/Project";
-import { Container, Button, Form, Alert } from "react-bootstrap";
-import { BsPlus } from "react-icons/bs";
+import {Alert, Button } from "react-bootstrap";
 import { useUser } from "../context/UserContext";
 import { io, Socket } from 'socket.io-client';
 import ParticipantModal from "./ModalAddParticipants";
 import { getPostsWithUserInfo} from '../services/postService';
 import SectionVote from './SectionVote';
 import { formatModifiedDate } from "../utils/dateUtils";
-
+import { BsPlus } from 'react-icons/bs';
+import ChatMessageModal from './ChatMessageModal';
+import { CiUser } from "react-icons/ci";
 const ChatPage = () => {
     const { id } = useParams();
     const { user } = useUser();
@@ -24,8 +25,8 @@ const ChatPage = () => {
     const socketRef = useRef<Socket | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const avatarUrl = `/api/uploads`;
-
+    const [showModalMessage, setShowModalMessage] = useState(false);
+  
     if (!id) return null;
 
     const loadPosts = async () => {
@@ -95,94 +96,57 @@ const ChatPage = () => {
         <p>Chargement des messages...</p>
     }
 
-    return (
-        <Container className="mt-4">
-          <h1 className="text-center mb-2">{project?.name}</h1>
-          <h3 className="text-center mb-4 text-muted">{project?.description}</h3>
-    
-          <div className="d-flex flex-column align-items-end">
-            <Button
-              variant="dark"
-              className="rounded-circle d-flex align-items-center justify-content-center mb-3"
-              style={{ width: "40px", height: "40px" }}
-              onClick={() => setShowModalAddParticipant(true)}
-            >
-              <BsPlus size={24} />
-            </Button>
-            <SectionParticipant />
-          </div>
-    
-          <ParticipantModal
-            project_id={id}
-            show={showModalAddParticipant}
-            handleClose={() => setShowModalAddParticipant(false)}
-          />
-    
-          <div>
-            <h2>Chat en temps réel</h2>
-    
-           <div>
-  {messages.length === 0 ? (
-    <p>Aucune discussion</p>
-  ) : (
-    messages.map((msg) => (
-      <div key={msg.post_id} className="mb-3 d-flex justify-content-between align-items-start">
-  <Alert variant="light" className="flex-grow-1 me-3">
-    <div className="d-flex align-items-center mb-2">
-      <img
-        src={`${avatarUrl}/${msg.user.avatar}`}
-        alt={`${msg.user.firstname} ${msg.user.lastname}`}
-        className="rounded-circle me-2"
-        style={{ width: "40px", height: "40px", objectFit: "cover" }}
-      />
-      <strong>
-        {msg.user.firstname} {msg.user.lastname}
-      </strong>
-      <em className="text-muted" style={{ marginLeft: "10px" }}>
-  {formatModifiedDate(msg.modifiedAt)}
-</em>
-    </div>
-    <div>
-      <strong>{msg.titre}</strong>
-      <p className="mb-0">{msg.description}</p>
-    </div>
-  </Alert>
+  return (
+    <div className="container-fluid vh-100 d-flex p-0">
+         <main className="flex-grow-1 p-4">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                 <h1 className="h4 m-0">{project?.name}</h1> 
+                 <Button className="btn btn-dark rounded-pill px-4 mt-3" onClick={() => setShowModalMessage(true)}>
+                  <BsPlus className="me-1" /> Ajouter un message
+                 </Button>
+                <ChatMessageModal
+                      show={showModalMessage}
+                      handleClose={() => setShowModalMessage(false)}
+                      titre={titre}
+                      message={message}
+                      onTitreChange={setTitre}
+                      onMessageChange={setMessage}
+                      onSend={sendMessage}
+                />
+                <button className="btn btn-dark rounded-pill px-1" onClick={() => setShowModalAddParticipant(true)}><CiUser /></button>
+                <ParticipantModal project_id={id} show={showModalAddParticipant} handleClose={() => setShowModalAddParticipant(false)}/>
+            </div>
 
-  <div style={{ minWidth: "100px" }}>
-    <SectionVote userId={user!.id} postId={msg.post_id} onVoteChange={loadPosts} />
-  </div>
-</div>
-    ))
-  )}
-</div>
+           
+          {messages.length === 0 ? (
+  <p>Aucune discussion</p>
+) : (
+  messages.map((msg, index) => {
+    const avatar = msg.user?.avatar ? `/api/uploads/${msg.user.avatar}` : "/default-avatar.jpg";
+    return (
+      <div key={index} className="d-flex align-items-start mb-4">
+        <img
+          src={avatar}
+          alt={`${msg.user.firstname} ${msg.user.lastname}`}
+          className="rounded-circle me-3"
+          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+        />
+        <div>
+          <p className="mb-1">
+            {msg.user.firstname} {msg.user.lastname} {formatModifiedDate(msg.modifiedAt)}
+          </p>
+          <p className="mb-1 fw-bold">{msg.titre}</p>
+          <p className="mb-2">{msg.description}</p>
+          <SectionVote userId={user!.id} postId={msg.post_id} onVoteChange={loadPosts} />
+        </div>
+      </div>
+    );
+  })
+)}
+        </main>
+        <SectionParticipant project_description={project?.description}/>
             {error && <Alert variant="danger">{error}</Alert>}
-    
-            <Form>
-              <Form.Group className="mb-3" controlId="formTitre">
-                <Form.Control
-                  type="text"
-                  value={titre}
-                  onChange={(e) => setTitre(e.target.value)}
-                  placeholder="Écris un titre..."
-                />
-              </Form.Group>
-    
-              <Form.Group className="mb-3" controlId="formMessage">
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Écris un message..."
-                />
-              </Form.Group>
-    
-              <Button className="btn btn-dark text-light rounded-pill px-4 py-2 m-2 fw-semibold w-15" onClick={sendMessage}>
-                Envoyer
-              </Button>
-            </Form>
-          </div>
-        </Container>
+        </div> 
       );
 };
 

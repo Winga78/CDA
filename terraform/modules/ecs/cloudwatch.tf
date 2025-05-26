@@ -7,7 +7,7 @@ resource "aws_cloudwatch_log_group" "log_group" {
     Application = "CDA"
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }

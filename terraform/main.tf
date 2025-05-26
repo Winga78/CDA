@@ -1,3 +1,12 @@
+terraform {
+  backend "s3" {
+    bucket = "mon-terraform-state-cda-1746282858"
+    key    = "production/terraform.tfstate"
+    region = "eu-west-3"
+    encrypt = true
+  }
+}
+
 module "vpc" {
   source                  = "./modules/vpc"
   vpc_cidr_block          = "10.0.0.0/16"
@@ -11,12 +20,27 @@ module "ecr" {
   repository_name   = var.services
 }
 
-
 module "ecs" {
-  source            = "./modules/ecs"
-  privates_subnets  = module.vpc.subnets_privates_id
-  public_subnets    = module.vpc.subnets_public_id
-  repository_url    = module.ecr.repository_url
-  vpc_id            = module.vpc.vpc_id
-  service_name      = var.services
-}
+  source                                 = "./modules/ecs"
+  privates_subnets                       = module.vpc.subnets_privates_id
+  public_subnets                         = module.vpc.subnets_public_id
+  repository_url                         = module.ecr.repository_url
+  vpc_id                                 = module.vpc.vpc_id
+  DB_HOST                                = var.DB_HOST
+  service_name                           = var.services
+  DB_DATABASE_CHAT                       = var.DB_DATABASE_CHAT
+  DB_DATABASE_PROJECT                    = var.DB_DATABASE_PROJECT
+  DB_DATABASE_RELATION                   = var.DB_DATABASE_RELATION
+  DB_PORT                                = var.DB_PORT
+  DB_TYPE                                = var.DB_TYPE
+  JWT_SECRET                             = var.JWT_SECRET
+  PORT                                   = var.PORT
+  MONGODB_URI                            = var.MONGODB_URI
+  MYSQL_PASSWORD                         = var.MYSQL_PASSWORD
+  MYSQL_USER                             = var.MYSQL_USER
+  VITE_AUTH_SERVICE_URL                  = var.VITE_AUTH_SERVICE_URL
+  VITE_CHAT_SERVICE_URL                  = var.VITE_CHAT_SERVICE_URL
+  VITE_PROJECT_SERVICE_URL               = var.VITE_PROJECT_SERVICE_URL
+  VITE_PROJECT_USER_POST_SERVICE_URL     = var.VITE_PROJECT_USER_POST_SERVICE_URL
+  NODE_ENV                               = var.NODE_ENV
+} 

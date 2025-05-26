@@ -7,6 +7,19 @@ resource "aws_security_group" "ecs_sg" {
     description                 = "Security group for ecs app"
     revoke_rules_on_delete      = true
 }
+
+
+# ------------------------------------------------------------------------------
+# Security Group for alb
+# ------------------------------------------------------------------------------
+resource "aws_security_group" "alb_sg" {
+    vpc_id                      = var.vpc_id
+    name                        = "demo-sg-alb"
+    description                 = "Security group for alb"
+    revoke_rules_on_delete      = true
+}
+
+
 # ------------------------------------------------------------------------------
 # ECS app Security Group Rules - INBOUND
 # ------------------------------------------------------------------------------
@@ -19,6 +32,7 @@ resource "aws_security_group_rule" "ecs_alb_ingress" {
     security_group_id           = aws_security_group.ecs_sg.id
     source_security_group_id    = aws_security_group.alb_sg.id
 }
+
 # ------------------------------------------------------------------------------
 # ECS app Security Group Rules - OUTBOUND
 # ------------------------------------------------------------------------------
@@ -32,15 +46,6 @@ resource "aws_security_group_rule" "ecs_all_egress" {
     cidr_blocks                 = ["0.0.0.0/0"] 
 }
 
-# ------------------------------------------------------------------------------
-# Security Group for alb
-# ------------------------------------------------------------------------------
-resource "aws_security_group" "alb_sg" {
-    vpc_id                      = var.vpc_id
-    name                        = "demo-sg-alb"
-    description                 = "Security group for alb"
-    revoke_rules_on_delete      = true
-}
 # ------------------------------------------------------------------------------
 # Alb Security Group Rules - INBOUND
 # ------------------------------------------------------------------------------

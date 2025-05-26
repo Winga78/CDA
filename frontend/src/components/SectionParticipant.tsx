@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
-import { ListGroup } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { User } from "../models/User";
 import { findParticipant } from "../services/projectUserService";
 import { getUser } from "../services/authService";
 import { ProjectUser } from "../models/ProjectUser";
 
-const SectionParticipant = () => {
+const SectionParticipant = ({project_description }: {project_description:any}) => {
   const [participants, setParticipants] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
-
+  
   useEffect(() => {
     const loadParticipants = async () => {
       if (!id) return;
@@ -34,22 +33,39 @@ const SectionParticipant = () => {
 
   return (
     <aside
-    className="position-sticky  top-0 end-0 mt-3 me-3 border p-3 rounded shadow-sm"
-    style={{ width: "250px", maxHeight: "calc(100vh - 20px)", overflowY: "auto" }}
+   className="bg-light border-start p-3" style={{ width: '250px' }}
   >
-      <h5 className="text-center">Participants</h5>
+       <h5>Membres</h5>
 
-      <ListGroup>
-        {participants.length > 0 ? (
-          participants.map((user) => (
-            <ListGroup.Item key={user._id}>
-              {user.firstname} {user.lastname}
-            </ListGroup.Item>
-          ))
-        ) : (
-          <ListGroup.Item>Aucun participant</ListGroup.Item>
-        )}
-      </ListGroup>
+    <div className="d-flex mb-3 flex-wrap">
+      {participants.length > 0 ? (
+       participants.map((user, index) => {
+      const key = `${user?.firstname}-${user?.lastname}-${user?.email || index}`;
+      const avatar = user?.avatar ? `/api/uploads/${user.avatar}` : "/default-avatar.jpg";
+
+      return (
+        <div key={key} className="d-flex flex-column align-items-center me-3 mb-2">
+          <img
+            src={avatar}
+            alt={`${user?.firstname} ${user?.lastname}`}
+            className="rounded-circle"
+            width="40"
+            height="40"
+            style={{ objectFit: 'cover' }}
+          />
+          <span className="small">{user?.firstname} {user?.lastname}</span>
+        </div>
+      );
+      })
+    ) : (
+    <div key="no-participant">Aucun participant</div>
+   )}
+</div>
+
+       <h6>Info</h6>
+        <p className="small">
+          {project_description}
+        </p>
       </aside>
   );
 };
