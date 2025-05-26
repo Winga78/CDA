@@ -1,8 +1,8 @@
 resource "aws_ecs_service" "service" {
-  for_each                           = toset(var.service_name)
-  name                               = "${each.value}_ECS_Service_${var.environment}"
+  for_each                           = local.flattened_routes
+  name                               = "${each.value.name}_ECS_Service_${var.environment}"
   cluster                            = aws_ecs_cluster.default.id
-  task_definition                    = aws_ecs_task_definition.default[each.key].arn
+  task_definition                    = aws_ecs_task_definition.default[each.value.name].arn
   desired_count                      = var.ecs_task_desired_count
   deployment_minimum_healthy_percent = var.ecs_task_deployment_minimum_healthy_percent
   deployment_maximum_percent         = var.ecs_task_deployment_maximum_percent
@@ -10,14 +10,14 @@ resource "aws_ecs_service" "service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.target_group[each.key].arn
-    container_name   = "${each.value}-service"
+    container_name   = "${each.value.name}-service"
     container_port   = var.container_port
   }
  
   network_configuration {
     security_groups  = [aws_security_group.ecs_sg.id]
-    subnets          = each.value == "frontend" ? var.public_subnets : var.privates_subnets
-    assign_public_ip = each.value == "frontend" ? true : false
+    subnets          = each.value.name == "frontend" ? var.public_subnets : var.privates_subnets
+    assign_public_ip = each.value.name == "frontend" ? true : false
   }
 
   lifecycle {
@@ -26,8 +26,8 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_ecs_task_definition" "default" {
-  for_each                 = toset(var.service_name)
-  family                   = "${each.value}_ECS_TaskDefinition_${var.environment}"
+  for_each                 = var.service_name
+  family                   = "${each.key}_ECS_TaskDefinition_${var.environment}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
@@ -37,8 +37,8 @@ resource "aws_ecs_task_definition" "default" {
 
   container_definitions = jsonencode([
     {
-      name         = "${each.value}-service"
-      image        = "${var.repository_url[each.value]}:${var.hash}"
+      name         = "${each.key}-service"
+      image        = "${var.repository_url[each.key]}:${var.hash}"
       cpu          = var.cpu_units
       memory       = var.memory
       essential    = true
@@ -74,7 +74,7 @@ resource "aws_ecs_task_definition" "default" {
         options   = {
           "awslogs-group"         = aws_cloudwatch_log_group.log_group.name,
           "awslogs-region"        = var.region,
-          "awslogs-stream-prefix" = "${each.value}-log-stream-${var.environment}"
+          "awslogs-stream-prefix" = "${each.key}-log-stream-${var.environment}"
         }
       }
     }

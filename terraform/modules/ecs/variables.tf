@@ -17,18 +17,6 @@ variable repository_url {
   type        = map(string)
 }
 
-variable routes {
-  type        = map(string)
-  default     = {
-    "frontend"            = "/"
-    "project"             = "/projects/*"
-    "project-user"        = "/project-user/*"
-    "post-user"           = "/post-user/*"
-    "auth"                = "/auth/*"
-    "chat"                = "/posts/*"
-  }
-  description = "routes for each service"
-}
 
 variable "priorities" {
   type = map(number)
@@ -68,7 +56,7 @@ variable "region" {
 }
 
 variable "service_name" {
-  type        = list(string)
+  type        = map(list(string))
   description = "List of ECS service names"
 }
 
@@ -92,7 +80,7 @@ variable "ecs_task_deployment_maximum_percent" {
 
 variable "environment" {
   type        = string
-  default     = "production"
+  default     = "prod"
   description = "Environment name (e.g., dev, staging, production)"
 }
 

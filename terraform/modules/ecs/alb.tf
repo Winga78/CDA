@@ -1,4 +1,4 @@
-resource "aws_alb" "application_load_balancer" {
+resource "aws_lb" "application_load_balancer" {
   name               = "alb-${var.environment}"
   internal           = false
   load_balancer_type = "application"
@@ -6,7 +6,7 @@ resource "aws_alb" "application_load_balancer" {
   security_groups    = [aws_security_group.alb_sg.id]
 }
 resource "aws_lb_listener" "listener" {
-  load_balancer_arn = aws_alb.application_load_balancer.arn
+  load_balancer_arn = aws_lb.application_load_balancer.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -19,9 +19,24 @@ resource "aws_lb_listener" "listener" {
     }
   }
 }
+
+locals {
+  flattened_routes = merge([
+    for service_key, paths in var.service_name : {
+      for idx, path in paths :
+      "${service_key}-${idx}" => {
+        name     = service_key
+        path     = path
+        position = idx
+      }
+    }
+  ]...)
+}
+
 resource "aws_lb_target_group" "target_group" {
-  for_each    = var.routes
-  name        = "${var.environment}-${each.key}-tg"
+  for_each    = local.flattened_routes
+
+  name        = "${var.environment}-${each.value.name}-${each.value.position + 1}-tg"
   port        = var.container_port
   protocol    = "HTTP"
   target_type = "ip"
@@ -30,7 +45,7 @@ resource "aws_lb_target_group" "target_group" {
 
 
 resource "aws_lb_listener_rule" "lb_listener_rule" {
-  for_each     = var.routes
+for_each       = local.flattened_routes
   listener_arn = aws_lb_listener.listener.arn
   priority     = lookup(var.priorities, each.key, 100)
 
@@ -41,7 +56,7 @@ resource "aws_lb_listener_rule" "lb_listener_rule" {
 
   condition {
     path_pattern {
-      values = [each.value]
+      values = [each.value.path]
     }
   }
 }
