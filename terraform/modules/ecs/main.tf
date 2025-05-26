@@ -1,6 +1,6 @@
 resource "aws_ecs_service" "service" {
   for_each                           = local.flattened_routes
-  name                               = "${each.value.name}_ECS_Service_${var.environment}"
+  name                               = "${each.key}_ECS_Service_${var.environment}"
   cluster                            = aws_ecs_cluster.default.id
   task_definition                    = aws_ecs_task_definition.default[each.value.name].arn
   desired_count                      = var.ecs_task_desired_count
