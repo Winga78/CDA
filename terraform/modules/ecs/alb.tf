@@ -59,3 +59,43 @@ for_each       = local.flattened_routes
     }
   }
 }
+
+locals {
+  frontend_key = one([
+    for k, v in local.flattened_routes :
+    k if v.name == "frontend" && v.position == 0
+  ])
+}
+
+
+resource "aws_lb_listener_rule" "frontend_assets" {
+  listener_arn = aws_lb_listener.listener.arn
+  priority     = 22
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target_group[local.frontend_key].arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/assets/*"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "frontend_vite_svg" {
+  listener_arn = aws_lb_listener.listener.arn
+  priority     = 23
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target_group[local.frontend_key].arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/vite.svg"]
+    }
+  }
+}
