@@ -9,10 +9,15 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-     VITE_PROJECT_SERVICE_URL: ${{ secrets.VITE_PROJECT_SERVICE_URL }}
-     VITE_AUTH_SERVICE_URL: ${{secrets.VITE_AUTH_SERVICE_URL}}
-     VITE_CHAT_SERVICE_URL: ${{ secrets.VITE_CHAT_SERVICE_URL }}
-     VITE_PROJECT_USER_POST_SERVICE_URL: ${{ secrets.VITE_PROJECT_USER_POST_SERVICE_URL }}
+     VITE_AUTH_SERVICE_URL: http://auth-service:3000
+     VITE_USER_SERVICE_URL: http://auth-service:3000
+     VITE_UPLOADS_URL: http://auth-service:3000
+     VITE_CHAT_SERVICE_URL: http://chat-service:3001
+     VITE_SOCKET_CHAT_SERVICE_URL: http://chat-service:3001
+     VITE_PROJECT_SERVICE_URL: http://project-service:3002
+     VITE_PROJECT_USER_SERVICE_URL: http://project-user-post-service:3003
+     VITE_POST_USER_SERVICE_URL: http://project-user-post-service:3003
+     VITE_SOCKET_VOTE_SERVICE_URL: http://project-user-post-service:3003
      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
      ME_CONFIG_MONGODB_ADMINPASSWORD: password
      MONGO_INITDB_ROOT_USERNAME: admin
@@ -29,9 +34,12 @@ jobs:
      JWT_SECRET: my_secret
      MYSQL_ADMIN_PASSWORD: password
      MYSQL_ADMIN_USER: admin
-     PORT: "80"
-     NODE_ENV: development
-     DOCKER_TARGET: dev
+     PORT_FRONTEND: 4000
+     PORT_AUTH: 3000
+     PORT_CHAT: 3001
+     PORT_PROJECT: 3002
+     PORT_PROJECT_USER_POST: 3003
+     MODE: development
 
     steps:
       - name: Checkout repository
@@ -39,10 +47,15 @@ jobs:
 
       - name: Créer le fichier .env
         run: |
-          echo "VITE_PROJECT_SERVICE_URL=${{ env.VITE_PROJECT_SERVICE_URL }}" >> .env
           echo "VITE_AUTH_SERVICE_URL=${{ env.VITE_AUTH_SERVICE_URL }}" >> .env
+          echo "VITE_USER_SERVICE_URL=${{ env.VITE_USER_SERVICE_URL }}" >> .env
+          echo "VITE_UPLOADS_URL=${{ env.VITE_UPLOADS_URL }}" >> .env
           echo "VITE_CHAT_SERVICE_URL=${{ env.VITE_CHAT_SERVICE_URL }}" >> .env
-          echo "VITE_PROJECT_USER_POST_SERVICE_URL=${{ env.VITE_PROJECT_USER_POST_SERVICE_URL }}" >> .env
+          echo "VITE_SOCKET_CHAT_SERVICE_URL=${{ env.VITE_SOCKET_CHAT_SERVICE_URL }}" >> .env
+          echo "VITE_PROJECT_SERVICE_URL=${{ env.VITE_PROJECT_SERVICE_URL }}" >> .env
+          echo "VITE_PROJECT_USER_SERVICE_URL=${{ env.VITE_PROJECT_USER_SERVICE_URL }}" >> .env
+          echo "VITE_POST_USER_SERVICE_URL=${{ env.VITE_POST_USER_SERVICE_URL }}" >> .env
+          echo "VITE_SOCKET_VOTE_SERVICE_URL=${{ env.VITE_SOCKET_VOTE_SERVICE_URL }}" >> .env
           echo "DB_TYPE=${{ env.DB_TYPE }}" >> .env
           echo "DB_HOST=${{ env.DB_HOST }}" >> .env
           echo "DB_PORT=${{ env.DB_PORT }}" >> .env
@@ -55,8 +68,12 @@ jobs:
           echo "JWT_SECRET=${{ env.JWT_SECRET }}" >> .env
           echo "MYSQL_ADMIN_PASSWORD=${{ env.MYSQL_ADMIN_PASSWORD }}" >> .env
           echo "MYSQL_ADMIN_USER=${{ env.MYSQL_ADMIN_USER }}" >> .env
-          echo "PORT=80" >> .env
-          echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
+          echo "PORT_FRONTEND=${{ env.PORT_FRONTEND }}" >> .env
+          echo "PORT_AUTH=${{ env.PORT_AUTH }}" >> .env
+          echo "PORT_CHAT=${{ env.PORT_CHAT }}" >> .env
+          echo "PORT_PROJECT=${{ env.PORT_PROJECT }}" >> .env
+          echo "PORT_PROJECT_USER_POST=${{ env.PORT_PROJECT_USER_POST }}" >> .env
+          echo "MODE=${{ env.MODE }}" >> .env
           echo "MONGO_INITDB_ROOT_USERNAME=${{ env.MONGO_INITDB_ROOT_USERNAME }}" >> .env
           echo "MONGO_INITDB_ROOT_PASSWORD=${{ env.MONGO_INITDB_ROOT_PASSWORD }}" >> .env
           echo "ME_CONFIG_MONGODB_ADMINUSERNAME=${{ env.ME_CONFIG_MONGODB_ADMINUSERNAME }}" >> .env
