@@ -44,9 +44,15 @@ resource "aws_ecs_task_definition" "default" {
       essential    = true
 
     environment = [
-     { name = "VITE_AUTH_SERVICE_URL",       value = "http://${aws_lb.application_load_balancer.dns_name}" },
-     { name = "VITE_CHAT_SERVICE_URL",       value = "http://${aws_lb.application_load_balancer.dns_name}" },
-     { name = "VITE_PROJECT_SERVICE_URL",    value = "http://${aws_lb.application_load_balancer.dns_name}" },
+     { name = "VITE_AUTH_SERVICE_URL",         value = "http://${aws_lb.application_load_balancer.dns_name}/auth" },
+     { name = "VITE_USER_SERVICE_URL",         value = "http://${aws_lb.application_load_balancer.dns_name}/users" },
+     { name = "VITE_UPLOADS_URL",              value = "http://${aws_lb.application_load_balancer.dns_name}/uploads" },
+     { name = "VITE_CHAT_SERVICE_URL",         value = "http://${aws_lb.application_load_balancer.dns_name}/posts" },
+     { name = "VITE_SOCKET_CHAT_SERVICE_URL",  value = "http://${aws_lb.application_load_balancer.dns_name}/sockets.io" },
+     { name = "VITE_PROJECT_SERVICE_URL",      value = "http://${aws_lb.application_load_balancer.dns_name}/projects" },
+     { name = "VITE_PROJECT_USER_SERVICE_URL", value = "http://${aws_lb.application_load_balancer.dns_name}/project-user" },
+     { name = "VITE_POST_USER_SERVICE_URL",    value = "http://${aws_lb.application_load_balancer.dns_name}/post-user" },
+     { name = "VITE_POST_USER_SERVICE_URL",    value = "http://${aws_lb.application_load_balancer.dns_name}/socket.io" },
      
      { name = "MYSQL_PASSWORD",               value = var.MYSQL_PASSWORD },
      { name = "MYSQL_USER",                   value = var.MYSQL_USER },
