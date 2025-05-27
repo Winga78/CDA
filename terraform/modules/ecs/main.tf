@@ -54,6 +54,7 @@ resource "aws_ecs_task_definition" "default" {
      { name = "VITE_POST_USER_SERVICE_URL",    value = "http://${aws_lb.application_load_balancer.dns_name}/post-user" },
      { name = "VITE_POST_USER_SERVICE_URL",    value = "http://${aws_lb.application_load_balancer.dns_name}/socket.io" },
      
+     { name = "NODE_ENV",                     value = var.NODE_ENV },
      { name = "MYSQL_PASSWORD",               value = var.MYSQL_PASSWORD },
      { name = "MYSQL_USER",                   value = var.MYSQL_USER },
      { name = "DB_DATABASE_CHAT",             value = var.DB_DATABASE_CHAT },

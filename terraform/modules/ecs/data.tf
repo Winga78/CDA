@@ -1,5 +1,6 @@
 data "template_file" "frontend_env" {
   template = <<EOF
+MODE=production
 VITE_AUTH_SERVICE_URL=http://${aws_lb.application_load_balancer.dns_name}/auth
 VITE_USER_SERVICE_URL=http://${aws_lb.application_load_balancer.dns_name}/users
 VITE_UPLOADS_URL=http://${aws_lb.application_load_balancer.dns_name}/uploads

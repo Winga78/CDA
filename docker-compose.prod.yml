@@ -5,9 +5,7 @@ networks:
 services:
   frontend-service:
     build: 
-      context: ./frontend
-      args:
-        ENV_FILE: ${ENV_FILE:-.env.production}   
+      context: ./frontend   
       target: production
     container_name: frontend-service
     restart: always
@@ -25,13 +23,13 @@ services:
   auth-service:
     build:
       context: ./services/auth-service
-      args:
-        ENV_FILE: ${ENV_FILE:-.env.production}   
     container_name: auth-service
     ports: 
       - "3000:80"
     networks:
       - cda-networks
+    env_file:
+      - .env.production
     restart: always
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
@@ -43,13 +41,13 @@ services:
   project-service:
     build: 
       context: ./services/project-service
-      args:
-        ENV_FILE: ${ENV_FILE:-.env.production}   
     container_name: project-service
     ports: 
       - "3002:80"
     networks:
       - cda-networks
+    env_file:
+      - .env.production
     restart: always
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
@@ -68,6 +66,8 @@ services:
       - "3001:80"
     networks:
       - cda-networks
+    env_file:
+      - .env.production
     restart: always
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
@@ -86,6 +86,8 @@ services:
       - "3003:80"
     networks:
       - cda-networks
+    env_file:
+      - .env.production
     restart: always
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
