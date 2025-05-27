@@ -79,7 +79,7 @@ export class PostUserService {
 
        const user_uri = SERVICE_URLS.user || "http://localhost:3000/users";
        const project_uri = SERVICE_URLS.project || "http://localhost:3002/projects";
-       
+
       const notifications = await Promise.all(
         infos.map(async (p) => {
           try {

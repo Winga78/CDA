@@ -5,10 +5,10 @@ const isProd = process.env.NODE_ENV === 'production';
 
 export const SERVICE_URLS = {
   user: isProd
-    ? `${process.env.USER_SERVICE_BASE_URL}`
-    : `${process.env.USER_SERVICE_BASE_URL}/users`,
+    ? `${process.env.VITE_USER_SERVICE_URL}`
+    : `${process.env.VITE_USER_SERVICE_URL}/users`,
 
   project: isProd
-    ? `${process.env.PROJECT_SERVICE_BASE_URL}`
-    : `${process.env.PROJECT_SERVICE_BASE_URL}/projects`,
+    ? `${process.env.VITE_PROJECT_SERVICE_URL}`
+    : `${process.env.VITE_PROJECT_SERVICE_URL}/projects`,
 };
