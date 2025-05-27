@@ -5,7 +5,7 @@ import UpdateModal from "./ModalUpdate";
 import { getUserProjects } from "../services/projectService";
 import { Project } from "../models/Project";
 import { Button } from "react-bootstrap";
-import { formatModifiedDate } from "../utils/dateUtils";
+import { formatDate } from "../utils/dateUtils";
 import { useUser } from "../context/UserContext";
 
 const ProjectPage = () => {
@@ -78,7 +78,7 @@ const ProjectPage = () => {
                       <h5 className="card-title">{project.name}</h5>
                       <p className="card-text">{project.description}</p>
                       <p className="card-text text-muted small">
-                        Modifié: {formatModifiedDate(project.modifiedAt!)}
+                        Modifié: {project.modifiedAt ? formatDate(project.modifiedAt) : "Date inconnue"}
                       </p>
                       <Button
                         className="btn btn-dark text-light rounded-pill px-4 py-2 m-2 fw-semibold w-50"

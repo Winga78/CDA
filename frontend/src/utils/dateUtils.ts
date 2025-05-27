@@ -1,6 +1,5 @@
-export const formatModifiedDate = (modifiedAt: string): string => {
-  // Sécurise le format pour Date()
-  const safeDateStr = modifiedAt.replace(" ", "T");
+export const formatDate = (dateStr: string): string => {
+  const safeDateStr = dateStr.replace(" ", "T");
   const modifiedDate = new Date(safeDateStr);
   const now = new Date();
 

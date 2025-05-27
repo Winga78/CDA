@@ -22,7 +22,7 @@ import { join } from 'path';
      }),
     ConfigModule.forRoot({
       isGlobal: true,  
-      envFilePath: '.env',
+      envFilePath: ['.env', '.env.production'],
       load: [configuration]
     }),
     MongooseModule.forRootAsync({

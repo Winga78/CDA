@@ -3,11 +3,7 @@ name: CI - Docker Compose Tests
 on: 
   push:
     branches:
-      - main
       - dev
-
-
-
 jobs:
   test-services:
     runs-on: ubuntu-latest
@@ -34,8 +30,8 @@ jobs:
      MYSQL_ADMIN_PASSWORD: password
      MYSQL_ADMIN_USER: admin
      PORT: "80"
-     NODE_ENV: production
-     DOCKER_TARGET: production
+     NODE_ENV: development
+     DOCKER_TARGET: dev
 
     steps:
       - name: Checkout repository
@@ -61,7 +57,6 @@ jobs:
           echo "MYSQL_ADMIN_USER=${{ env.MYSQL_ADMIN_USER }}" >> .env
           echo "PORT=80" >> .env
           echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
-          echo "DOCKER_TARGET=${{ env.DOCKER_TARGET }}" >> .env
           echo "MONGO_INITDB_ROOT_USERNAME=${{ env.MONGO_INITDB_ROOT_USERNAME }}" >> .env
           echo "MONGO_INITDB_ROOT_PASSWORD=${{ env.MONGO_INITDB_ROOT_PASSWORD }}" >> .env
           echo "ME_CONFIG_MONGODB_ADMINUSERNAME=${{ env.ME_CONFIG_MONGODB_ADMINUSERNAME }}" >> .env

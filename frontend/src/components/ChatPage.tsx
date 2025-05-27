@@ -9,7 +9,7 @@ import { io, Socket } from 'socket.io-client';
 import ParticipantModal from "./ModalAddParticipants";
 import { getPostsWithUserInfo} from '../services/postService';
 import SectionVote from './SectionVote';
-import { formatModifiedDate } from "../utils/dateUtils";
+import { formatDate } from "../utils/dateUtils";
 import { BsPlus } from 'react-icons/bs';
 import ChatMessageModal from './ChatMessageModal';
 import { CiUser } from "react-icons/ci";
@@ -26,7 +26,8 @@ const ChatPage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [showModalMessage, setShowModalMessage] = useState(false);
-  
+    const isDev = import.meta.env.MODE === "development";
+
     if (!id) return null;
 
     const loadPosts = async () => {
@@ -47,9 +48,11 @@ const ChatPage = () => {
     useEffect(() => {
         if (!id) return;
 
+        const socketPath = isDev ?  '/chat/socket.io' : import.meta.env.VITE_SOCKET_CHAT_SERVICE_URL
+
         setRoom(id);
         socketRef.current = io('', {
-          path: '/chat/socket.io',
+          path: socketPath,
         });
         const socket = socketRef.current;
 
@@ -69,6 +72,7 @@ const ChatPage = () => {
         loadPosts();
 
         socket.on('message', (data) => {
+          console.log('Message reçu:', data);
             setMessages((prevMessages) => [...prevMessages, data]);
         });
           
@@ -133,7 +137,8 @@ const ChatPage = () => {
         />
         <div>
           <p className="mb-1">
-            {msg.user.firstname} {msg.user.lastname} {formatModifiedDate(msg.createdAt)}
+            {msg.user.firstname} {msg.user.lastname} {" "}
+            {msg.createdAt ? formatDate(msg.createdAt) : "Date inconnue"}
           </p>
           <p className="mb-1 fw-bold">{msg.titre}</p>
           <p className="mb-2">{msg.description}</p>

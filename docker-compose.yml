@@ -6,20 +6,24 @@ services:
   frontend-service:
     build: 
       context: ./frontend
-      target: ${DOCKER_TARGET:-production}
+      target: dev
     container_name: frontend-service
     restart: always
     ports:
-      - "4000:80"     
+      - "4000:4000"     
     networks:
       - cda-networks
     environment: 
       VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
       VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+      VITE_USER_SERVICE_URL: ${VITE_USER_SERVICE_URL}
       VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
-      VITE_PROJECT_USER_POST_SERVICE_URL: ${VITE_PROJECT_USER_POST_SERVICE_URL}
-      PORT: ${PORT}
-      NODE_ENV: ${NODE_ENV}          
+      VITE_SOCKET_CHAT_SERVICE_URL: ${VITE_SOCKET_CHAT_SERVICE_URL}
+      VITE_PROJECT_USER_SERVICE_URL: ${VITE_PROJECT_USER_SERVICE_URL}
+      VITE_POST_USER_SERVICE_URL: ${VITE_POST_USER_SERVICE_URL}
+      VITE_SOCKET_VOTE_SERVICE_URL: ${VITE_SOCKET_VOTE_SERVICE_URL}
+      PORT: ${PORT_FRONTEND}
+      NODE_ENV: ${MODE} 
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
       interval: 30s
@@ -34,9 +38,10 @@ services:
     environment:
       MONGODB_URI: ${ME_CONFIG_MONGODB_URL}
       JWT_SECRET: ${JWT_SECRET}
-      PORT: ${PORT}
+      PORT: ${PORT_AUTH}
+      NODE_ENV: ${MODE}
     ports: 
-      - "3000:80"
+      - "3000:3000"
     networks:
       - cda-networks
     depends_on:
@@ -64,9 +69,11 @@ services:
       MONGODB_URI: ${ME_CONFIG_MONGODB_URL}
       JWT_SECRET: ${JWT_SECRET}
       VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
-      PORT: ${PORT}
+      VITE_USER_SERVICE_URL: ${VITE_USER_SERVICE_URL}
+      PORT: ${PORT_PROJECT}
+      NODE_ENV: ${MODE}
     ports: 
-      - "3002:80"
+      - "3002:3002"
     networks:
       - cda-networks
     depends_on:
@@ -96,10 +103,12 @@ services:
       MONGODB_URI: ${ME_CONFIG_MONGODB_URL}
       JWT_SECRET: ${JWT_SECRET}
       VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+      VITE_USER_SERVICE_URL: ${VITE_USER_SERVICE_URL}
       VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
-      PORT: ${PORT}
+      PORT: ${PORT_CHAT}
+      NODE_ENV: ${MODE}
     ports: 
-      - "3001:80"
+      - "3001:3001"
     networks:
       - cda-networks
     depends_on:
@@ -129,11 +138,13 @@ services:
       MONGODB_URI: ${ME_CONFIG_MONGODB_URL}
       JWT_SECRET: ${JWT_SECRET}
       VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+      VITE_USER_SERVICE_URL: ${VITE_USER_SERVICE_URL}
       VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
       VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
-      PORT: ${PORT}
+      PORT: ${PORT_PROJECT_USER_POST}
+      NODE_ENV: ${MODE}
     ports: 
-      - "3003:80"
+      - "3003:3003"
     networks:
       - cda-networks
     depends_on:

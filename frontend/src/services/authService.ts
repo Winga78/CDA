@@ -1,9 +1,10 @@
 import axios from "axios";
 import { User } from "../models/User";
 
-const API_AUTH_BASE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || "/api/auth";
+const isDev = import.meta.env.MODE === "development";
 
-const API_USER_BASE_URL = import.meta.env.VITE_USER_SERVICE_URL || "/api/users";
+const API_AUTH_BASE_URL = isDev ? "/api/auth" : import.meta.env.VITE_AUTH_SERVICE_URL;
+const API_USER_BASE_URL = isDev ? "/api/users" : import.meta.env.VITE_USER_SERVICE_URL;
 
 const authService = axios.create({
   baseURL: API_AUTH_BASE_URL,

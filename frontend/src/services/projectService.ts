@@ -1,7 +1,9 @@
 import axios from "axios";
 import { Project } from "../models/Project";
 
-const API_BASE_URL = import.meta.env.VITE_PROJECT_SERVICE_URL || "/api/projects";
+const isDev = import.meta.env.MODE === "development";
+
+const API_BASE_URL = isDev ? "/api/projects" :  import.meta.env.VITE_PROJECT_SERVICE_URL;
 
 const projectService = axios.create({
   baseURL: API_BASE_URL,

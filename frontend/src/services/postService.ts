@@ -2,7 +2,10 @@ import axios from "axios";
 import { Post } from "../models/Post";
 import { getUser } from "./authService";
 
-const API_BASE_URL = import.meta.env.VITE_CHAT_SERVICE_URL || "/api/posts";
+const isDev = import.meta.env.MODE === "development";
+
+const API_BASE_URL = isDev ? "/api/posts" : import.meta.env.VITE_CHAT_SERVICE_URL;
+
 const chatService = axios.create({
   baseURL: API_BASE_URL,
 });
@@ -62,6 +65,7 @@ export const getPostsWithUserInfo = async (projectId: string) => {
           description: post.description,
           post_id: post.id,
           modifiedAt: post.modifiedAt,
+          createdAt: post.createdAt,
           score: post.score,
         };
       })

@@ -21,7 +21,7 @@ import { SocketGateway } from './socket.gateway';
   }),
     ConfigModule.forRoot({
       isGlobal: true,  
-      envFilePath: '.env',
+      envFilePath: ['.env', '.env.production'],
       load: [configuration]
     }),
     MongooseModule.forRootAsync({

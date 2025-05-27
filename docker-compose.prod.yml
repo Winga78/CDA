@@ -1,0 +1,95 @@
+networks: 
+  cda-networks:
+    driver: bridge
+
+services:
+  frontend-service:
+    build: 
+      context: ./frontend
+      args:
+        ENV_FILE: ${ENV_FILE:-.env.production}   
+      target: production
+    container_name: frontend-service
+    restart: always
+    ports:
+      - "4000:80"     
+    networks:
+      - cda-networks
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+      args:
+        ENV_FILE: ${ENV_FILE:-.env.production}   
+    container_name: auth-service
+    ports: 
+      - "3000:80"
+    networks:
+      - cda-networks
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  project-service:
+    build: 
+      context: ./services/project-service
+      args:
+        ENV_FILE: ${ENV_FILE:-.env.production}   
+    container_name: project-service
+    ports: 
+      - "3002:80"
+    networks:
+      - cda-networks
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  chat-service:
+    build: 
+      context: ./services/chat-service
+      args:
+        ENV_FILE: ${ENV_FILE:-.env.production}   
+    container_name: chat-service
+    ports: 
+      - "3001:80"
+    networks:
+      - cda-networks
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  project-user-post-service:
+    build: 
+      context: ./services/project-user-post-service
+      args:
+        ENV_FILE: ${ENV_FILE:-.env.production}   
+    container_name: project-user-post-service
+    ports: 
+      - "3003:80"
+    networks:
+      - cda-networks
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s

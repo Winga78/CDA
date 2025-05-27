@@ -12,6 +12,7 @@ const Layout = () => {
   const { user, logout } = useUser();
   const [profile, setProfile] = useState<any>(null);
   const [error, setError] = useState<string>("");
+  const isDev = import.meta.env.MODE === "development";
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -26,7 +27,11 @@ const Layout = () => {
     loadProfile();
   }, [user]);
 
-  const avatarUrl = profile?.avatar ? `/api/uploads/${profile.avatar}` : "/default-avatar.jpg";
+  const avatarUrl = profile?.avatar
+  ? isDev
+    ? `/api/uploads/${profile.avatar}`
+    : `${import.meta.env.VITE_UPLOADS_URL}/${profile.avatar}`
+  : "/default-avatar.jpg";
 
   return (
     <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>

@@ -3,7 +3,9 @@ import { Project } from "../models/Project";
 import { ProjectUser } from "../models/ProjectUser";
 import { projectServiceRes } from "./projectService";
 
-const API_BASE_URL = import.meta.env.VITE_PROJECT_USER_SERVICE_URL || "/api/project-user";
+const isDev = import.meta.env.MODE === "development";
+
+const API_BASE_URL = isDev ? "/api/project-user": import.meta.env.VITE_PROJECT_USER_SERVICE_URL;
 
 const projectUserService = axios.create({
   baseURL: API_BASE_URL,

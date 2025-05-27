@@ -2,7 +2,7 @@ import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { database, imports , api_project_URL, api_chat_URL, api_auth_URL } from './constantsPost';
+import { database, imports , api_project_URL, api_chat_URL, api_auth_URL,api_user_URL } from './constantsPost';
 import { faker } from '@faker-js/faker';
 import { PostUser } from '../src/post-user/entities/post-user.entity';
 import axios from 'axios';
@@ -57,15 +57,15 @@ const createProject = {
 
 describe('Vote Endpoints (e2e)', () => {
     beforeAll(async () => {
-        const createUserResponse = await axios.post(`${api_auth_URL}/users`, createUser);
-        const loginRes = await axios.post(`${api_auth_URL}/auth/login`, { email: createUserResponse.data.email, password: createUser.password });
+        const createUserResponse = await axios.post(`${api_user_URL}/`, createUser);
+        const loginRes = await axios.post(`${api_auth_URL}/login`, { email: createUserResponse.data.email, password: createUser.password });
     
         token = loginRes.data.access_token;
     
         const userProfile = await request(app.getHttpServer()).get('/relation/profile').set('Authorization', `Bearer ${token}`);
         userConnected = userProfile.body;
 
-        const projectResponse = await axios.post(`${api_project_URL}/projects/`, createProject, {
+        const projectResponse = await axios.post(`${api_project_URL}/`, createProject, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ describe('Vote Endpoints (e2e)', () => {
             score : 0
         };
 
-        const postResponse = await axios.post(`${api_chat_URL}/posts/`, createPost, {
+        const postResponse = await axios.post(`${api_chat_URL}/`, createPost, {
           headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',

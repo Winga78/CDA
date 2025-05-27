@@ -57,7 +57,7 @@ export class PostUserService {
       if (!token) {
         throw new Error('Authorization token manquant');
       }
-    
+
       let notif_info: any = [];
     
       const infos = await this.postsUsersRepository
@@ -75,18 +75,17 @@ export class PostUserService {
         .orderBy('post_user.createdAt', 'DESC')
         .getRawMany();
     
-      const project_uri = process.env.VITE_PROJECT_SERVICE_URL || "http://localhost:3002";
-      const user_uri = process.env.VITE_AUTH_SERVICE_URL || "http://localhost:3000";
-    
-      // Utiliser Promise.all pour gérer plusieurs appels asynchrones
+      const project_uri = process.env.VITE_PROJECT_SERVICE_URL || "http://localhost:3002/projects";
+      const user_uri = process.env.VITE_AUTH_SERVICE_URL || "http://localhost:3000/users";
+
       const notifications = await Promise.all(
         infos.map(async (p) => {
           try {
-            const userResponse = await axios.get(`${user_uri}/users/${p.post_user_id}`, {
+            const userResponse = await axios.get(`${user_uri}/${p.post_user_id}`, {
               headers: { Authorization: `Bearer ${token}` }
             });
     
-            const projectResponse = await axios.get(`${project_uri}/projects/${p.project_id}`, {
+            const projectResponse = await axios.get(`${project_uri}/${p.project_id}`, {
               headers: { Authorization: `Bearer ${token}` }
             });
     
