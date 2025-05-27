@@ -4,6 +4,7 @@ import { ProjectUser } from './entities/project-user.entity';
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm';
 import axios from 'axios';
+import { SERVICE_URLS } from '../config/uri.config';
 
 @Injectable()
 export class ProjectUserService {
@@ -63,9 +64,8 @@ export class ProjectUserService {
 
   
   async findProject(project_id: number, token: string) {
-    const uri = process.env.VITE_PROJECT_SERVICE_URL || "http://localhost:3002";
-  
-    const project = await axios.get(`${uri}/projects/${project_id}`, {
+    const project_uri = SERVICE_URLS.project || "http://localhost:3002";
+    const project = await axios.get(`${project_uri}/${project_id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

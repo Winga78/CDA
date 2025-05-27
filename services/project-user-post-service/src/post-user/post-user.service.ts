@@ -4,6 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository , DataSource} from 'typeorm';
 import { PostUser } from './entities/post-user.entity';
 import { ProjectUser } from '../project-user/entities/project-user.entity';
+import { SERVICE_URLS } from '../config/uri.config';
+
 import axios from 'axios';
 
 @Injectable()
@@ -74,10 +76,10 @@ export class PostUserService {
         .where('project_user.participant_id = :user_id', { user_id })
         .orderBy('post_user.createdAt', 'DESC')
         .getRawMany();
-    
-      const project_uri = process.env.VITE_PROJECT_SERVICE_URL || "http://localhost:3002/projects";
-      const user_uri = process.env.VITE_AUTH_SERVICE_URL || "http://localhost:3000/users";
 
+       const user_uri = SERVICE_URLS.user || "http://localhost:3000/users";
+       const project_uri = SERVICE_URLS.project || "http://localhost:3002/projects";
+       
       const notifications = await Promise.all(
         infos.map(async (p) => {
           try {

@@ -15,8 +15,8 @@ export const database  = {
     entities: [Project]
 }
 
-export const api_auth_URL = process.env.VITE_AUTH_SERVICE_URL|| "http://localhost:3000/auth";
-export const api_user_URL = process.env.VITE_USER_SERVICE_URL|| "http://localhost:3000/users";
+export const api_auth_URL = `${process.env.VITE_AUTH_SERVICE_URL}/auth`|| "http://localhost:3000/auth";
+export const api_user_URL = `${process.env.VITE_USER_SERVICE_URL}/users`|| "http://localhost:3000/users";
 
 export const imports = [
     TypeOrmModule.forRoot(database),
