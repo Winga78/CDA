@@ -88,8 +88,7 @@ resource "aws_ecs_task_definition" "default" {
     }
   ])
 }
-
 resource "local_file" "env_file" {
   content  = data.template_file.frontend_env.rendered
-  filename = "${path.module}/../frontend/.env.production"
+  filename = "${path.module}/../../../frontend/.env.production"
 }
