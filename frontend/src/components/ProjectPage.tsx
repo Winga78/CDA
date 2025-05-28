@@ -36,14 +36,16 @@ const ProjectPage = () => {
       try {
         const data = await getUserProjects();
         setIsLoaded(true);
-        setProjects(data);
+        setProjects(data ?? []);
       } catch (error : any) {
           setError(error.message ||"Une erreur inconnue est survenue" )
       }
     };
 
+  if (user?.id) {
     loadProjects();
-  }, []);
+  }
+  }, [user]);
 
   return (
     <div className="d-flex flex-column vh-100">
@@ -65,7 +67,7 @@ const ProjectPage = () => {
         ) : (
           <div className="container mt-4">
             <div className="row">
-              {projects.map((project) => (
+              { Array.isArray(projects) && projects.map((project) => (
                 <div key={project.id} className="col-md-4 mb-4">
                   <div
                     className="card shadow-sm"

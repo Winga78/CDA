@@ -72,7 +72,7 @@ export class ProjectsService {
   }
 
   async findAllByUserId(user:any): Promise<Project[]>{
-  
+   if (!user?.id) return [];
     return await this.projectsRepository.findBy({user_id : user.id});
   }
 

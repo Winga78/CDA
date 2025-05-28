@@ -20,7 +20,7 @@ function NotificationSection() {
     const loadNotifications = async () => {
       try {
         const data = await getVoteNotifications();
-
+         console.log("Notifications récupérées :", data);
         if (!data || data.length === 0) {
           setMessage("Aucune notification trouvée");
         } else {

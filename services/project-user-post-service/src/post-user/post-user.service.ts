@@ -55,55 +55,53 @@ export class PostUserService {
       return {message : 'Vote supprimé avec succès'};
     }
   
-    async notificationPost(user_id: string, token: string) {
-      if (!token) {
-        throw new Error('Authorization token manquant');
+  async notificationPost(user_id: string, token: string) {
+  if (!token) {
+    throw new Error('Authorization token manquant');
+  }
+
+  const infos = await this.postsUsersRepository
+    .createQueryBuilder('post_user')
+    .select([
+      'post_user.participant_id AS post_user_id',
+      'post_user.post_id AS post_id',
+      'project_user.project_id AS project_id',
+      'project_user.participant_id AS project_user_id',
+      'post_user.createdAt AS createdAt',
+      'post_user.modifiedAt AS modifiedAt'
+    ])
+    .innerJoin(ProjectUser, 'project_user', 'post_user.participant_id = project_user.participant_id')
+    .where('project_user.participant_id = :user_id', { user_id })
+    .orderBy('post_user.createdAt', 'DESC')
+    .getRawMany();
+
+  const user_uri = SERVICE_URLS.user || "http://localhost:3000/users";
+  const project_uri = SERVICE_URLS.project || "http://localhost:3002/projects";
+
+  const notifications = await Promise.all(
+    infos.map(async (p) => {
+      try {
+        const userResponse = await axios.get(`${user_uri}/${p.post_user_id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const projectResponse = await axios.get(`${project_uri}/${p.project_id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        return {
+          user: userResponse.data,
+          project: projectResponse.data,
+        };
+      } catch (err) {
+        console.error(`Erreur pour l'utilisateur ${p.post_user_id} :`, err);
+        return null;
       }
+    })
+  );
 
-      let notif_info: any = [];
-    
-      const infos = await this.postsUsersRepository
-        .createQueryBuilder('post_user')
-        .select([
-          'post_user.participant_id AS post_user_id',
-          'post_user.post_id AS post_id',
-          'project_user.project_id AS project_id',
-          'project_user.participant_id AS project_user_id',
-          'post_user.createdAt AS createdAt',
-          'post_user.modifiedAt AS modifiedAt'
-        ])
-        .innerJoin(ProjectUser, 'project_user', 'post_user.participant_id = project_user.participant_id')
-        .where('project_user.participant_id = :user_id', { user_id })
-        .orderBy('post_user.createdAt', 'DESC')
-        .getRawMany();
+  return notifications.filter((notif) => notif !== null);
+}
 
-       const user_uri = SERVICE_URLS.user || "http://localhost:3000/users";
-       const project_uri = SERVICE_URLS.project || "http://localhost:3002/projects";
-
-      const notifications = await Promise.all(
-        infos.map(async (p) => {
-          try {
-            const userResponse = await axios.get(`${user_uri}/${p.post_user_id}`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-    
-            const projectResponse = await axios.get(`${project_uri}/${p.project_id}`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-    
-            // Fusionner les données et les ajouter à notif_info
-            notif_info.push({
-              user: userResponse.data,
-              project: projectResponse.data,
-            });
-    
-          } catch (err) {
-            console.error(`Erreur pour l'utilisateur ${p.post_user_id} :`, err);
-            return null;
-          }
-        })
-      );
-      return notif_info;
-    }
     
 }
