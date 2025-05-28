@@ -37,7 +37,9 @@ const mapProjectUsersToProjects = async (projectUsers: ProjectUser[]): Promise<P
 export const lastProjects = async (): Promise<Project[]> => {
   try {
     const response = await projectUserService.get<ProjectUser[]>("/last");
-    return await mapProjectUsersToProjects(response.data);
+    const data= await mapProjectUsersToProjects(response.data);
+    console.log("Projets récents récupérés :", data);
+    return data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération des projets :", error.message);
     throw new Error("Impossible de récupérer les projets. Veuillez réessayer.");

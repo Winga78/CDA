@@ -10,7 +10,7 @@ export default defineConfig({
   },
 
   server: {
-    port: Number(process.env.PORT_FRONTEND) || 4000,
+    port: Number(process.env.PORT) || 4000,
     host: '0.0.0.0',
     cors: true,
     proxy: {

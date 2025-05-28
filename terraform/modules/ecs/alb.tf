@@ -67,20 +67,3 @@ locals {
   ])
 }
 
-
-resource "aws_lb_listener_rule" "frontend_static" {
-  listener_arn = aws_lb_listener.listener.arn
-  priority     = 20
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.target_group[local.frontend_key].arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/assets/*", "/vite.svg"]
-    }
-  }
-}
-

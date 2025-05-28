@@ -70,17 +70,12 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
+      - name: Terraform Init & Apply
         working-directory: terraform
-        run: terraform init
-
-      - name: Terraform Validate
-        working-directory: terraform
-        run: terraform validate
-      
-      - name: Terraform Plan
-        working-directory: terraform
-        run: terraform plan
+        run: |
+          terraform init
+          terraform validate
+          terraform apply -auto-approve
         env:
           TF_VAR_MONGODB_URI: ${{ secrets.MONGODB_URI }}
           TF_VAR_NODE_ENV: ${{ secrets.NODE_ENV }}
@@ -97,31 +92,10 @@ jobs:
           TF_VAR_MYSQL_ADMIN_USER: ${{ secrets.MYSQL_ADMIN_USER }}
           TF_VAR_DB_HOST: ${{ secrets.DB_HOST }}
       
-
-      - name: Terraform Apply
-        working-directory: terraform
-        env:
-          TF_VAR_MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          TF_VAR_NODE_ENV: ${{ secrets.NODE_ENV }}
-          TF_VAR_MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-          TF_VAR_MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          TF_VAR_DB_DATABASE_CHAT: ${{ secrets.DB_DATABASE_CHAT }}
-          TF_VAR_DB_DATABASE_PROJECT: ${{ secrets.DB_DATABASE_PROJECT }}
-          TF_VAR_DB_DATABASE_RELATION: ${{ secrets.DB_DATABASE_RELATION }}
-          TF_VAR_DB_PORT: ${{ secrets.DB_PORT }}
-          TF_VAR_DB_TYPE: ${{ secrets.DB_TYPE }}
-          TF_VAR_JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          TF_VAR_PORT: ${{ secrets.PORT }}
-          TF_VAR_MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
-          TF_VAR_MYSQL_ADMIN_USER: ${{ secrets.MYSQL_ADMIN_USER }}
-          TF_VAR_DB_HOST: ${{ secrets.DB_HOST }}
-
-        run: terraform apply -auto-approve
-
     # ****constuire auth-service***
 
-      - name: Build and push auth0 image
-        id: build-auth0
+      - name: Build and push auth image
+        id: build-auth
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
@@ -137,23 +111,11 @@ jobs:
               --service ${{ env.ECS_AUTH_SERVICE0 }} \
               --force-new-deployment
 
-      - name: Build and push auth1 image
-        id: build-auth1
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_AUTH_REPOSITORY }}:${{ env.IMAGE_TAG }}
-          docker build -t $IMAGE_URI ./services/auth-service
-          docker push $IMAGE_URI
-          echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
-
-      - name: Deploy updated auth task definition
-        run: |
             aws ecs update-service \
               --cluster ${{ env.ECS_CLUSTER }} \
               --service ${{ env.ECS_AUTH_SERVICE1 }} \
               --force-new-deployment
-
+            
     # ****constuire chat-service***
 
       - name: Build and push chat image
@@ -196,8 +158,8 @@ jobs:
 
       # ****constuire project-user-post-service***
 
-      - name: Build and push project-user-post0 image
-        id: build-project-user-post0
+      - name: Build and push project-user-post image
+        id: build-project-user-post
         env:
            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
@@ -213,18 +175,6 @@ jobs:
              --service ${{ env.ECS_PROJECT_USER_POST_SERVICE0 }} \
              --force-new-deployment
 
-      - name: Build and push project-user-post1 image
-        id: build-project-user-post1
-        env:
-           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-                IMAGE_URI=${ECR_REGISTRY}/${{ env.ECR_PROJECT_POST_USER_REPOSITORY }}:${{ env.IMAGE_TAG }}
-                docker build -t $IMAGE_URI ./services/project-user-post-service
-                docker push $IMAGE_URI
-                echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
-
-      - name: Deploy updated project-user-post task definition
-        run: |
              aws ecs update-service \
              --cluster ${{ env.ECS_CLUSTER }} \
              --service ${{ env.ECS_PROJECT_USER_POST_SERVICE1 }} \
