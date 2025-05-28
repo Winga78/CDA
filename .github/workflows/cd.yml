@@ -66,16 +66,11 @@ jobs:
         uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
 
      # ****lancer les scripts terraform***
-
-      - name: Setup Terraform
+      - name: Terraform Deploy
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init & Apply
+      - name: Terraform Init, Validate, Plan, and Apply
         working-directory: terraform
-        run: |
-          terraform init
-          terraform validate
-          terraform apply -auto-approve
         env:
           TF_VAR_MONGODB_URI: ${{ secrets.MONGODB_URI }}
           TF_VAR_NODE_ENV: ${{ secrets.NODE_ENV }}
@@ -91,7 +86,12 @@ jobs:
           TF_VAR_MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
           TF_VAR_MYSQL_ADMIN_USER: ${{ secrets.MYSQL_ADMIN_USER }}
           TF_VAR_DB_HOST: ${{ secrets.DB_HOST }}
-      
+        run: |
+         terraform init
+         terraform validate
+         terraform plan
+         terraform apply -auto-approve
+   
     # ****constuire auth-service***
 
       - name: Build and push auth image
