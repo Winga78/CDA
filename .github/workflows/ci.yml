@@ -9,15 +9,15 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-     VITE_AUTH_SERVICE_URL: http://auth-service:3000
-     VITE_USER_SERVICE_URL: http://auth-service:3000
-     VITE_UPLOADS_URL: http://auth-service:3000
-     VITE_CHAT_SERVICE_URL: http://chat-service:3001
-     VITE_SOCKET_CHAT_SERVICE_URL: http://chat-service:3001
-     VITE_PROJECT_SERVICE_URL: http://project-service:3002
-     VITE_PROJECT_USER_SERVICE_URL: http://project-user-post-service:3003
-     VITE_POST_USER_SERVICE_URL: http://project-user-post-service:3003
-     VITE_SOCKET_VOTE_SERVICE_URL: http://project-user-post-service:3003
+     VITE_AUTH_SERVICE_URL: http://auth-service:3000/auth
+     VITE_USER_SERVICE_URL: http://auth-service:3000/users
+     VITE_UPLOADS_URL: http://auth-service:3000/uploads
+     VITE_CHAT_SERVICE_URL: http://chat-service:3001/posts
+     VITE_SOCKET_CHAT_SERVICE_URL: http://chat-service:3001/chat/socket.io
+     VITE_PROJECT_SERVICE_URL: http://project-service:3002/projects
+     VITE_PROJECT_USER_SERVICE_URL: http://project-user-post-service:3003/project-user
+     VITE_POST_USER_SERVICE_URL: http://project-user-post-service:3003/post-user
+     VITE_SOCKET_VOTE_SERVICE_URL: http://project-user-post-service:3003/vote/socket.io
      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
      ME_CONFIG_MONGODB_ADMINPASSWORD: password
      MONGO_INITDB_ROOT_USERNAME: admin

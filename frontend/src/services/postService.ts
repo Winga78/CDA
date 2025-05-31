@@ -2,9 +2,7 @@ import axios from "axios";
 import { Post } from "../models/Post";
 import { getUser } from "./authService";
 
-const isDev = import.meta.env.MODE === "development";
-
-const API_BASE_URL = isDev ? "/api/posts" : import.meta.env.VITE_CHAT_SERVICE_URL;
+const API_BASE_URL = import.meta.env.VITE_CHAT_SERVICE_URL;
 
 const chatService = axios.create({
   baseURL: API_BASE_URL,

@@ -72,7 +72,6 @@ const ChatPage = () => {
         loadPosts();
 
         socket.on('message', (data) => {
-          console.log('Message reçu:', data);
             setMessages((prevMessages) => [...prevMessages, data]);
         });
           

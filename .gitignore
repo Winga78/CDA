@@ -137,3 +137,5 @@ terraform.tfstate
 terraform/.terraform.tfstate.lock.info
 
 .env.prod
+
+nginx.conf

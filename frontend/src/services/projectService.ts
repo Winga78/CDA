@@ -42,7 +42,6 @@ export const createProject = async (project: Project): Promise<Project> => {
 export const getUserProjects = async (): Promise<Project[]> => {
   try {
     const response = await projectService.get<Project[]>("/user");
-    console.log("Données reçues du backend :", response.data);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération des projets utilisateur :", error.message);

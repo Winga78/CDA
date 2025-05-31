@@ -48,11 +48,11 @@ resource "aws_ecs_task_definition" "default" {
      { name = "VITE_USER_SERVICE_URL",         value = "http://${aws_lb.application_load_balancer.dns_name}/users" },
      { name = "VITE_UPLOADS_URL",              value = "http://${aws_lb.application_load_balancer.dns_name}/uploads" },
      { name = "VITE_CHAT_SERVICE_URL",         value = "http://${aws_lb.application_load_balancer.dns_name}/posts" },
-     { name = "VITE_SOCKET_CHAT_SERVICE_URL",  value = "http://${aws_lb.application_load_balancer.dns_name}/sockets.io" },
+     { name = "VITE_SOCKET_CHAT_SERVICE_URL",  value = "http://${aws_lb.application_load_balancer.dns_name}/chat/sockets.io" },
      { name = "VITE_PROJECT_SERVICE_URL",      value = "http://${aws_lb.application_load_balancer.dns_name}/projects" },
      { name = "VITE_PROJECT_USER_SERVICE_URL", value = "http://${aws_lb.application_load_balancer.dns_name}/project-user" },
      { name = "VITE_POST_USER_SERVICE_URL",    value = "http://${aws_lb.application_load_balancer.dns_name}/post-user" },
-     { name = "VITE_POST_USER_SERVICE_URL",    value = "http://${aws_lb.application_load_balancer.dns_name}/socket.io" },
+     { name = "VITE_SOCKET_VOTE_SERVICE_URL",  value = "http://${aws_lb.application_load_balancer.dns_name}/vote/socket.io" },
      
      { name = "NODE_ENV",                     value = var.NODE_ENV },
      { name = "MYSQL_PASSWORD",               value = var.MYSQL_PASSWORD },

@@ -3,9 +3,9 @@ variable services {
   default              = {
    "frontend"          = ["/*"],
    "project"           = ["/projects/*"],
-   "project-user-post" = ["/project-user/*", "/post-user/*"],
-   "auth"              = ["/users/*","/auth/*"],
-   "chat"              = ["/posts/*"]
+   "project-user-post" = ["/project-user/*", "/post-user/*","/vote/socket.io/*"],
+   "auth"              = ["/users/*","/auth/*","uploads/*"],
+   "chat"              = ["/posts/*","/chat/socket.io/*"]
   }
   description = "description"
 }
@@ -24,3 +24,4 @@ variable PORT {}
 variable MYSQL_ADMIN_PASSWORD {}
 variable MYSQL_ADMIN_USER {}
 variable DB_HOST {}
+variable hash {}

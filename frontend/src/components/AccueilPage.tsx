@@ -55,7 +55,6 @@ const AccueilPage = () => {
   if (isLoaded) {
     return <div>Chargement...</div>;
   }
- console.log("Projets récents récupérés :", projects);
   return (
     <div>
     <div className="container my-5">

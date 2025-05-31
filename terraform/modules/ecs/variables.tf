@@ -8,7 +8,6 @@ variable "privates_subnets" {
 
 variable hash {
   type        = string
-  default     = "latest"
   description = "hash d'image"
 }
 

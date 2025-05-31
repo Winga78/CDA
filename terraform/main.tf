@@ -39,4 +39,5 @@ module "ecs" {
   MYSQL_PASSWORD                         = var.MYSQL_PASSWORD
   MYSQL_USER                             = var.MYSQL_USER
   NODE_ENV                               = var.NODE_ENV
+  hash                                   = var.hash
 } 
