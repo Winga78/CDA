@@ -91,7 +91,7 @@ jobs:
           TF_VAR_MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
           TF_VAR_MYSQL_ADMIN_USER: ${{ secrets.MYSQL_ADMIN_USER }}
           TF_VAR_DB_HOST: ${{ secrets.DB_HOST }}
-          hash: ${{env.IMAGE_TAG}}
+          TF_VAR_hash: ${{ env.IMAGE_TAG }}
         run: |
          terraform init
          terraform validate
