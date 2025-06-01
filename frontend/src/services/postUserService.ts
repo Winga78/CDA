@@ -4,7 +4,7 @@ import { PostUser } from "../models/PostUser";
 const API_BASE_URL = import.meta.env.VITE_POST_USER_SERVICE_URL;
 
 const voteService = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/post-user`,
 });
 
 voteService.interceptors.request.use((config) => {

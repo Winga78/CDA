@@ -5,7 +5,7 @@ import { getUser } from "./authService";
 const API_BASE_URL = import.meta.env.VITE_CHAT_SERVICE_URL;
 
 const chatService = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/posts`,
 });
 
 chatService.interceptors.request.use((config) => {

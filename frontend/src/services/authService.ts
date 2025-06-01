@@ -7,11 +7,11 @@ const API_AUTH_BASE_URL = isDev ? "/api/auth" : import.meta.env.VITE_AUTH_SERVIC
 const API_USER_BASE_URL = isDev ? "/api/users" : import.meta.env.VITE_USER_SERVICE_URL;
 
 const authService = axios.create({
-  baseURL: API_AUTH_BASE_URL,
+  baseURL: `${API_AUTH_BASE_URL}/auth`
 });
 
 const userService = axios.create({
-  baseURL: API_USER_BASE_URL,
+  baseURL: `${API_USER_BASE_URL}/users`,
 });
 
 const attachToken = (config: any) => {

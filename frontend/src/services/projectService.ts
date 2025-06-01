@@ -6,7 +6,7 @@ const isDev = import.meta.env.MODE === "development";
 const API_BASE_URL = isDev ? "/api/projects" :  import.meta.env.VITE_PROJECT_SERVICE_URL;
 
 const projectService = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/projects`,
 });
 
 projectService.interceptors.request.use((config) => {

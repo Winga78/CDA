@@ -6,7 +6,7 @@ import { projectServiceRes } from "./projectService";
 const API_BASE_URL = import.meta.env.VITE_PROJECT_USER_SERVICE_URL;
 
 const projectUserService = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/project-user`
 });
 
 projectUserService.interceptors.request.use((config) => {
