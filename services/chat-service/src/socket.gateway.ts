@@ -10,9 +10,8 @@ import {
   import { Server, Socket } from 'socket.io';
   import { PostsService } from './posts/posts.service';
   import { CreatePostDto } from './posts/dto/create-post.dto';
-import { create } from 'domain';
 
-  @WebSocketGateway({ cors: { origin: '*' } })
+  @WebSocketGateway({ path: '/chat/socket.io', cors: { origin: '*' } })
   export class SocketGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   {

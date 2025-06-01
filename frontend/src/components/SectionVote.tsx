@@ -27,9 +27,10 @@ const SectionVote = ({
 
     const socketPath = isDev ?  '/vote/socket.io' : import.meta.env.VITE_SOCKET_VOTE_SERVICE_URL
 
-    socketRef.current = io('', {
-      path: socketPath,
-    });
+        socketRef.current = io(socketPath, {
+          path: '/vote/socket.io',
+          transports: ['websocket'],
+        });
     const socket = socketRef.current;
 
     socket.emit("joinRoom", postId);

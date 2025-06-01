@@ -51,8 +51,9 @@ const ChatPage = () => {
         const socketPath = isDev ?  '/chat/socket.io' : import.meta.env.VITE_SOCKET_CHAT_SERVICE_URL
 
         setRoom(id);
-        socketRef.current = io('', {
-          path: socketPath,
+        socketRef.current = io(socketPath, {
+          path: '/chat/socket.io',
+          transports: ['websocket'],
         });
         const socket = socketRef.current;
 

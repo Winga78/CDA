@@ -40,7 +40,6 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
     }),
-    //base de donnée en mode production ici
   ],
   controllers: [AppController],
   providers: [
