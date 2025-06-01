@@ -6,12 +6,6 @@ variable "privates_subnets" {
   type = list(string)
 }
 
-variable hash {
-  type        = string
-  description = "hash d'image"
-}
-
-
 variable repository_url {
   type        = map(string)
 }
@@ -85,3 +79,4 @@ variable DB_TYPE {}
 variable JWT_SECRET {}
 variable PORT {}
 variable DB_HOST {}
+variable hash {}
