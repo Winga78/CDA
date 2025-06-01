@@ -58,11 +58,6 @@ jobs:
                sleep 5
              done
 
-      - name: Création du fichier nginx
-        run: |
-          cd frontend
-          echo "${{ secrets.NGINX }}" > nginx.conf
-         
         # ****se connecter à aws***
         
       - name: Configure AWS credentials
