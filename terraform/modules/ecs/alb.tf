@@ -27,7 +27,11 @@ locals {
         name     = service_key
         path     = path
         position = idx
-        priority = idx + 1 + index(keys(var.service_name), service_key) * 10
+        priority = (
+          service_key == "frontend"
+          ? 999
+          : idx + 1 + index(keys(var.services), service_key) * 10
+        )
       }
     }
   ]...)
