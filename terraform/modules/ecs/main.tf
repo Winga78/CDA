@@ -23,6 +23,10 @@ resource "aws_ecs_service" "service" {
   lifecycle {
     ignore_changes = [desired_count]
   }
+
+  depends_on = [
+    aws_lb_listener_rule.lb_listener_rule
+  ]
 }
 
 resource "aws_ecs_task_definition" "default" {
