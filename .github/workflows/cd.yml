@@ -12,10 +12,16 @@ jobs:
      AWS_REGION: eu-west-3  
      ECS_AUTH_SERVICE0: auth-0_ECS_Service_prod
      ECS_AUTH_SERVICE1: auth-1_ECS_Service_prod
-     ECS_CHAT_SERVICE: chat-0_ECS_Service_prod
+     ECS_AUTH_SERVICE2: auth-2_ECS_Service_prod
+
+     ECS_CHAT_SERVICE0: chat-0_ECS_Service_prod
+     ECS_CHAT_SERVICE1: chat-1_ECS_Service_prod
+
      ECS_PROJECT_SERVICE: project-0_ECS_Service_prod
      ECS_PROJECT_USER_POST_SERVICE0: project-user-post-0_ECS_Service_prod
      ECS_PROJECT_USER_POST_SERVICE1: project-user-post-1_ECS_Service_prod
+     ECS_PROJECT_USER_POST_SERVICE2: project-user-post-2_ECS_Service_prod
+     
      ECS_FRONTEND_SERVICE: frontend-0_ECS_Service_prod
      ECS_CLUSTER: cda-cluster
      ECR_FRONTEND_REPOSITORY: frontend-repo
@@ -121,6 +127,11 @@ jobs:
               --cluster ${{ env.ECS_CLUSTER }} \
               --service ${{ env.ECS_AUTH_SERVICE1 }} \
               --force-new-deployment
+
+            aws ecs update-service \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --service ${{ env.ECS_AUTH_SERVICE2 }} \
+              --force-new-deployment  
             
     # ****constuire chat-service***
 
@@ -138,7 +149,12 @@ jobs:
         run: |
               aws ecs update-service \
                 --cluster ${{ env.ECS_CLUSTER }} \
-                --service ${{ env.ECS_CHAT_SERVICE }} \
+                --service ${{ env.ECS_CHAT_SERVICE0 }} \
+                --force-new-deployment
+
+              aws ecs update-service \
+                --cluster ${{ env.ECS_CLUSTER }} \
+                --service ${{ env.ECS_CHAT_SERVICE1 }} \
                 --force-new-deployment
           
   
@@ -184,6 +200,11 @@ jobs:
              aws ecs update-service \
              --cluster ${{ env.ECS_CLUSTER }} \
              --service ${{ env.ECS_PROJECT_USER_POST_SERVICE1 }} \
+             --force-new-deployment
+
+             aws ecs update-service \
+             --cluster ${{ env.ECS_CLUSTER }} \
+             --service ${{ env.ECS_PROJECT_USER_POST_SERVICE2 }} \
              --force-new-deployment
       
          # ****constuire frontend-service***
