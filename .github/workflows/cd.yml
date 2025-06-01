@@ -23,7 +23,7 @@ jobs:
      ECR_PROJECT_POST_USER_REPOSITORY: project-user-post-repo
      ECR_AUTH_REPOSITORY: auth-repo
      ECR_CHAT_REPOSITORY: chat-repo
-     IMAGE_TAG: ${{ github.sha }}
+     IMAGE_TAG: latest
     
     steps:
       - name: Checkout
