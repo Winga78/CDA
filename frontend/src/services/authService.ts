@@ -1,10 +1,8 @@
 import axios from "axios";
 import { User } from "../models/User";
 
-const isDev = import.meta.env.MODE === "development";
-
-const API_AUTH_BASE_URL = isDev ? "/api/auth" : import.meta.env.VITE_AUTH_SERVICE_URL;
-const API_USER_BASE_URL = isDev ? "/api/users" : import.meta.env.VITE_USER_SERVICE_URL;
+const API_AUTH_BASE_URL = "/api/auth" 
+const API_USER_BASE_URL = "/api/users"
 
 const authService = axios.create({
   baseURL: `${API_AUTH_BASE_URL}`
@@ -87,7 +85,9 @@ export const getUser = async (id: string): Promise<User> => {
 
 export const getUserByEmail = async (email: string): Promise<User> => {
   try {
-    const response = await userService.get(`/other/${email}`);
+    const response = await userService.get(`/other`, {
+      params: { email },
+    });
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération du profil par email :", error.message);

@@ -23,7 +23,7 @@ services:
       VITE_POST_USER_SERVICE_URL: ${VITE_POST_USER_SERVICE_URL}
       VITE_SOCKET_VOTE_SERVICE_URL: ${VITE_SOCKET_VOTE_SERVICE_URL}
       PORT: ${PORT_FRONTEND}
-      NODE_ENV: ${MODE} 
+      MODE: ${MODE} 
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:4000"]
       interval: 30s
@@ -49,7 +49,7 @@ services:
         condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -83,7 +83,7 @@ services:
         condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3002"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -118,7 +118,7 @@ services:
         condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -154,7 +154,7 @@ services:
         condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3003"]
       interval: 30s
       timeout: 10s
       retries: 5
