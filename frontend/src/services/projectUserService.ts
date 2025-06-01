@@ -3,7 +3,7 @@ import { Project } from "../models/Project";
 import { ProjectUser } from "../models/ProjectUser";
 import { projectServiceRes } from "./projectService";
 
-const API_BASE_URL = import.meta.env.VITE_PROJECT_USER_SERVICE_URL;
+const API_BASE_URL = "/api/project-user";
 
 const projectUserService = axios.create({
   baseURL: API_BASE_URL,
