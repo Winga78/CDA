@@ -17,7 +17,9 @@ jobs:
      ECS_CHAT_SERVICE0: chat-0_ECS_Service_prod
      ECS_CHAT_SERVICE1: chat-1_ECS_Service_prod
 
-     ECS_PROJECT_SERVICE: project-0_ECS_Service_prod
+     ECS_PROJECT_SERVICE0: project-0_ECS_Service_prod
+     ECS_PROJECT_SERVICE1: project-1_ECS_Service_prod
+
      ECS_PROJECT_USER_POST_SERVICE0: project-user-post-0_ECS_Service_prod
      ECS_PROJECT_USER_POST_SERVICE1: project-user-post-1_ECS_Service_prod
      ECS_PROJECT_USER_POST_SERVICE2: project-user-post-2_ECS_Service_prod

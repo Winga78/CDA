@@ -2,7 +2,7 @@ variable services {
   type                 = map(list(string))
   default              = {
    "frontend"          = ["/*"],
-   "project"           = ["/projects/*"],
+   "project"           = ["/projects/*","projects"],
    "project-user-post" = ["/project-user/*", "/post-user/*","/vote/socket.io/*"],
    "auth"              = ["/users/*","/auth/*","uploads/*"],
    "chat"              = ["/posts/*","/chat/socket.io/*"]
