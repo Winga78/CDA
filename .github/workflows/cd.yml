@@ -171,9 +171,12 @@ jobs:
         run: |
               aws ecs update-service \
                       --cluster ${{ env.ECS_CLUSTER }} \
-                      --service ${{ env.ECS_PROJECT_SERVICE }} \
+                      --service ${{ env.ECS_PROJECT_SERVICE0 }} \
                       --force-new-deployment
-
+              aws ecs update-service \
+                      --cluster ${{ env.ECS_CLUSTER }} \
+                      --service ${{ env.ECS_PROJECT_SERVICE1 }} \
+                      --force-new-deployment
 
       # ****constuire project-user-post-service***
 
