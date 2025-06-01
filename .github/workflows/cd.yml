@@ -61,7 +61,7 @@ jobs:
       - name: Création du fichier nginx
         run: |
           cd frontend
-          echo "${{ secrets.NGINX }}" >> nginx.conf
+          echo "${{ secrets.NGINX }}" > nginx.conf
          
         # ****se connecter à aws***
         
