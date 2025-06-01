@@ -5,7 +5,7 @@ import { getUser } from "./authService";
 const API_BASE_URL = import.meta.env.VITE_CHAT_SERVICE_URL;
 
 const chatService = axios.create({
-  baseURL: `${API_BASE_URL}/posts`,
+  baseURL: `${API_BASE_URL}`,
 });
 
 chatService.interceptors.request.use((config) => {
@@ -18,7 +18,7 @@ chatService.interceptors.request.use((config) => {
 
 export const createPost = async (post: Post): Promise<Post> => {
   try {
-    const response = await chatService.post<Post>("/", post);
+    const response = await chatService.post<Post>("", post);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la création du post :", error.message);
@@ -29,7 +29,7 @@ export const createPost = async (post: Post): Promise<Post> => {
 
 export const findPostsByProjectId = async (projectId: string): Promise<Post[]> => {
   try {
-    const response = await chatService.get<Post[]>(`/project/${projectId}`);
+    const response = await chatService.get<Post[]>(`project/${projectId}`);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération des posts :", error.message);
@@ -43,7 +43,7 @@ export const updatePost = async (
   updateData: Partial<Post>
 ): Promise<Post> => {
   try {
-    const response = await chatService.patch<Post>(`/${postId}`, updateData);
+    const response = await chatService.patch<Post>(`${postId}`, updateData);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la mise à jour du post :", error.message);
