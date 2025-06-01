@@ -6,7 +6,7 @@ import { projectServiceRes } from "./projectService";
 const API_BASE_URL = import.meta.env.VITE_PROJECT_USER_SERVICE_URL;
 
 const projectUserService = axios.create({
-  baseURL: `${API_BASE_URL}/project-user`
+  baseURL: `${API_BASE_URL}`
 });
 
 projectUserService.interceptors.request.use((config) => {
@@ -34,7 +34,7 @@ const mapProjectUsersToProjects = async (projectUsers: ProjectUser[]): Promise<P
 
 export const lastProjects = async (): Promise<Project[]> => {
   try {
-    const response = await projectUserService.get<ProjectUser[]>("last");
+    const response = await projectUserService.get<ProjectUser[]>("/last");
     const data= await mapProjectUsersToProjects(response.data);
     return data;
   } catch (error: any) {
@@ -46,7 +46,7 @@ export const lastProjects = async (): Promise<Project[]> => {
 
 export const addParticipant = async (projectUser: ProjectUser): Promise<ProjectUser> => {
   try {
-    const response = await projectUserService.post<ProjectUser>("", projectUser);
+    const response = await projectUserService.post<ProjectUser>("/", projectUser);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de l'ajout du participant :", error.message);
@@ -57,7 +57,7 @@ export const addParticipant = async (projectUser: ProjectUser): Promise<ProjectU
 
 export const deleteProjectUser = async (projectId: number, userId: string): Promise<ProjectUser> => {
   try {
-    const response = await projectUserService.delete<ProjectUser>(`${projectId}/${userId}`);
+    const response = await projectUserService.delete<ProjectUser>(`/${projectId}/${userId}`);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la suppression du participant :", error.message);
@@ -68,7 +68,7 @@ export const deleteProjectUser = async (projectId: number, userId: string): Prom
 
 export const findAllParticipantProject = async (): Promise<Project[]> => {
   try {
-    const response = await projectUserService.get<ProjectUser[]>("projects");
+    const response = await projectUserService.get<ProjectUser[]>("/projects");
     return await mapProjectUsersToProjects(response.data);
   } catch (error: any) {
     console.error("Erreur lors de la récupération des projets participants :", error);
@@ -78,7 +78,7 @@ export const findAllParticipantProject = async (): Promise<Project[]> => {
 
 export const findParticipant = async (projectId: string): Promise<ProjectUser[]> => {
   try {
-    const response = await projectUserService.get<ProjectUser[]>(`users/${projectId}`);
+    const response = await projectUserService.get<ProjectUser[]>(`/users/${projectId}`);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération des participants :", error.message);

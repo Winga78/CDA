@@ -19,7 +19,7 @@ projectService.interceptors.request.use((config) => {
 
 export const getProject = async (id: string | number): Promise<Project> => {
   try {
-    const response = await projectService.get<Project>(`${id}`);
+    const response = await projectService.get<Project>(`/${id}`);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération du projet :", error.message);
@@ -31,7 +31,7 @@ export const projectServiceRes = getProject;
 
 export const createProject = async (project: Project): Promise<Project> => {
   try {
-    const response = await projectService.post<Project>("", project);
+    const response = await projectService.post<Project>("/", project);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la création du projet :", error.message);
@@ -41,7 +41,7 @@ export const createProject = async (project: Project): Promise<Project> => {
 
 export const getUserProjects = async (): Promise<Project[]> => {
   try {
-    const response = await projectService.get<Project[]>("user");
+    const response = await projectService.get<Project[]>("/user");
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération des projets utilisateur :", error.message);
@@ -51,7 +51,7 @@ export const getUserProjects = async (): Promise<Project[]> => {
 
 export const deleteProject = async (id: number): Promise<Project> => {
   try {
-    const response = await projectService.delete<Project>(`${id}`);
+    const response = await projectService.delete<Project>(`/${id}`);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la suppression du projet :", error.message);
@@ -64,7 +64,7 @@ export const updateProject = async (
   projectUpdate: Project
 ): Promise<Project> => {
   try {
-    const response = await projectService.patch<Project>(`${id}`, projectUpdate);
+    const response = await projectService.patch<Project>(`/${id}`, projectUpdate);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la mise à jour du projet :", error.message);

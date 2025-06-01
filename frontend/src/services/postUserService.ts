@@ -17,7 +17,7 @@ voteService.interceptors.request.use((config) => {
 
 export const createVote = async (postUser: PostUser): Promise<PostUser> => {
   try {
-    const response = await voteService.post<PostUser>("", postUser);
+    const response = await voteService.post<PostUser>("/", postUser);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors du vote :", error.message);
@@ -27,7 +27,7 @@ export const createVote = async (postUser: PostUser): Promise<PostUser> => {
 
 export const getVoteCount = async (postId: string): Promise<number> => {
   try {
-    const response = await voteService.get(`votes/${postId}`);
+    const response = await voteService.get(`/votes/${postId}`);
     return response.data.count;
   } catch (error: any) {
     console.error("Erreur lors de la récupération des votes :", error.message);
@@ -40,7 +40,7 @@ export const deleteVote = async (
   participantId: string
 ): Promise<PostUser> => {
   try {
-    const response = await voteService.delete(`vote/${postId}/${participantId}`);
+    const response = await voteService.delete(`/vote/${postId}/${participantId}`);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la suppression du vote :", error.message);
@@ -53,7 +53,7 @@ export const checkIfVoted = async (
   participantId: string
 ): Promise<PostUser> => {
   try {
-    const response = await voteService.get<PostUser>(`vote/${postId}/${participantId}`);
+    const response = await voteService.get<PostUser>(`/vote/${postId}/${participantId}`);
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la vérification du vote :", error.message);
@@ -63,7 +63,7 @@ export const checkIfVoted = async (
 
 export const getVoteNotifications = async (): Promise<any> => {
   try {
-    const response = await voteService.get("notification/posts/details");
+    const response = await voteService.get("/notification/posts/details");
     return response.data;
   } catch (error: any) {
     console.error("Erreur lors de la récupération des notifications :", error);
