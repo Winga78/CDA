@@ -100,7 +100,7 @@ describe('User Endpoints (e2e)', () => {
 
     it('should get a user by email', async () => {
       const res = await request(app.getHttpServer())
-        .get(`/users/other/${user_connected.email}`)
+        .get(`/users/other?email=${user_connected.email}`)
         .set('Authorization', `Bearer ${token}`)
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('_id', user_connected.id);
@@ -108,9 +108,8 @@ describe('User Endpoints (e2e)', () => {
 
     it('should return 404 if user by email is not found', async () => {
       const res = await request(app.getHttpServer())
-        .get('/users/other/non-existent-email')
+        .get('/users/other?email=nonexistent@example.com')
         .set('Authorization', `Bearer ${token}`)
-        .send({ email: 'nonexistent@example.com' });
       expect(res.statusCode).toBe(404);
       expect(res.body).toHaveProperty('message', "Utilisateur non trouvé");
     });
