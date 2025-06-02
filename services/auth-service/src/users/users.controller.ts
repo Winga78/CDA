@@ -62,7 +62,7 @@ findOneByEmail(@Query('email') email: string) {
     file?: Express.Multer.File,
   ) {
     if (file) {
-      const avatarPath = `uploads/users/avatars/${file.filename}`;
+      const avatarPath = `/users/avatars/${file.filename}`;
       updateUserDto.avatar = avatarPath;
     }
 

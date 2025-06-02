@@ -18,17 +18,16 @@ const SectionVote = ({
   const [error, setError] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const room = postId || "";
-  const isDev = import.meta.env.MODE === "development";
-
+  
   if (!postId) return null;
 
   useEffect(() => {
     if (!postId) return;
 
-    const socketPath = isDev ?  '/vote/socket.io' : import.meta.env.VITE_SOCKET_VOTE_SERVICE_URL
+    const socketPath = '/vote/socket.io';
 
-        socketRef.current = io(socketPath, {
-          path: '/vote/socket.io',
+        socketRef.current = io('', {
+          path: socketPath,
           transports: ['websocket'],
         });
     const socket = socketRef.current;

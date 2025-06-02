@@ -17,10 +17,6 @@ CMD ["npm", "run", "dev"]
 
 FROM base AS builder
 
-ARG ENV_FILE=.env.production
-
-COPY ${ENV_FILE} .env
-
 COPY . .
 
 RUN npm run build

@@ -1,0 +1,222 @@
+networks: 
+  cda-networks:
+    driver: bridge
+
+services:
+  frontend-service:
+    build: 
+      context: ./frontend
+      target: production
+    container_name: frontend-service
+    restart: always
+    ports:
+      - "4000:8080"     
+    networks:
+      - cda-networks
+    environment: 
+      VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
+      VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+      VITE_USER_SERVICE_URL: ${VITE_USER_SERVICE_URL}
+      VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
+      VITE_SOCKET_CHAT_SERVICE_URL: ${VITE_SOCKET_CHAT_SERVICE_URL}
+      VITE_PROJECT_USER_SERVICE_URL: ${VITE_PROJECT_USER_SERVICE_URL}
+      VITE_POST_USER_SERVICE_URL: ${VITE_POST_USER_SERVICE_URL}
+      VITE_SOCKET_VOTE_SERVICE_URL: ${VITE_SOCKET_VOTE_SERVICE_URL}
+      PORT: ${PORT_FRONTEND}
+      MODE: ${MODE} 
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+    container_name: auth-service
+    environment:
+      MONGODB_URI: ${ME_CONFIG_MONGODB_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT_AUTH}
+      NODE_ENV: ${MODE}
+    ports: 
+      - "3000:80"
+    networks:
+      - cda-networks
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  project-service:
+    build: 
+      context: ./services/project-service
+    container_name: project-service
+    environment:
+      DB_PORT: ${DB_PORT}
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE_PROJECT: ${DB_DATABASE_PROJECT}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MONGODB_URI: ${ME_CONFIG_MONGODB_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+      VITE_USER_SERVICE_URL: ${VITE_USER_SERVICE_URL}
+      PORT: ${PORT_PROJECT}
+      NODE_ENV: ${MODE}
+    ports: 
+      - "3002:80"
+    networks:
+      - cda-networks
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  chat-service:
+    build: 
+      context: ./services/chat-service
+    container_name: chat-service
+    environment:
+      DB_PORT: ${DB_PORT}
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE_CHAT: ${DB_DATABASE_CHAT}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MONGODB_URI: ${ME_CONFIG_MONGODB_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+      VITE_USER_SERVICE_URL: ${VITE_USER_SERVICE_URL}
+      VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
+      PORT: ${PORT_CHAT}
+      NODE_ENV: ${MODE}
+    ports: 
+      - "3001:80"
+    networks:
+      - cda-networks
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  project-user-post-service:
+    build: 
+      context: ./services/project-user-post-service
+    container_name: project-user-post-service
+    environment:
+      DB_PORT: ${DB_PORT}
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE_RELATION: ${DB_DATABASE_RELATION}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MONGODB_URI: ${ME_CONFIG_MONGODB_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      VITE_AUTH_SERVICE_URL: ${VITE_AUTH_SERVICE_URL}
+      VITE_USER_SERVICE_URL: ${VITE_USER_SERVICE_URL}
+      VITE_PROJECT_SERVICE_URL: ${VITE_PROJECT_SERVICE_URL}
+      VITE_CHAT_SERVICE_URL: ${VITE_CHAT_SERVICE_URL}
+      PORT: ${PORT_PROJECT_USER_POST}
+      NODE_ENV: ${MODE}
+    ports: 
+      - "3003:80"
+    networks:
+      - cda-networks
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql-service
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_MULTIPLE_DATABASES: "${DB_DATABASE_CHAT},${DB_DATABASE_PROJECT},${DB_DATABASE_RELATION}"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/script.sh:/docker-entrypoint-initdb.d/script.sh
+    ports:
+      - "3306:3306"
+    networks:
+      - cda-networks
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+  mongo:
+    image: mongo
+    container_name: mongo-service
+    restart: always
+    networks:
+      - cda-networks
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' |  mongosh --authenticationDatabase admin --host localhost -u ${MONGO_INITDB_ROOT_USERNAME} -p ${MONGO_INITDB_ROOT_PASSWORD} admin --quiet | grep -q 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  mongo-express:
+    image: mongo-express
+    restart: always
+    networks:
+      - cda-networks
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${ME_CONFIG_MONGODB_ADMINUSERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${ME_CONFIG_MONGODB_ADMINPASSWORD}
+      ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
+      ME_CONFIG_BASICAUTH: "false"
+   
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  mongodb_data:

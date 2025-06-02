@@ -11,7 +11,7 @@ import {
   import { PostsService } from './posts/posts.service';
   import { CreatePostDto } from './posts/dto/create-post.dto';
 
-  @WebSocketGateway({ path: '/chat/socket.io', cors: { origin: '*' } })
+  @WebSocketGateway({cors: { origin: '*' } })
   export class SocketGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   {
@@ -69,10 +69,11 @@ import {
         const createpost = await this.postService.create(newPost);
       // Envoi du message à tous les clients de la room après l'enregistrement
         this.server.to(data.room).emit('message', {
+        post_id: createpost.id,
         user: data.user,
         description: createpost.description,
         titre: createpost.titre,
-        post_id: createpost.project_id,
+        project_id: createpost.project_id,
         modifiedAt : createpost.modifiedAt,
         createdAt : createpost.createdAt,
         score : createpost.score,

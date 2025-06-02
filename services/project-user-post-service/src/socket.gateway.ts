@@ -11,7 +11,7 @@ import {
   import { PostUserService } from './post-user/post-user.service';
   import { CreatePostUserDto } from './post-user/dto/create-post-user.dto';
 
-  @WebSocketGateway({path: '/vote/socket.io', cors: { origin: '*' } })
+  @WebSocketGateway({cors: { origin: '*' } })
   export class SocketGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
   {

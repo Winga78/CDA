@@ -26,8 +26,7 @@ const ChatPage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [showModalMessage, setShowModalMessage] = useState(false);
-    const isDev = import.meta.env.MODE === "development";
-
+    
     if (!id) return null;
 
     const loadPosts = async () => {
@@ -48,11 +47,11 @@ const ChatPage = () => {
     useEffect(() => {
         if (!id) return;
 
-        const socketPath = isDev ?  '/chat/socket.io' : import.meta.env.VITE_SOCKET_CHAT_SERVICE_URL
+        const socketPath = '/chat/socket.io';
 
         setRoom(id);
-        socketRef.current = io(socketPath, {
-          path: '/chat/socket.io',
+        socketRef.current = io('', {
+          path: socketPath,
           transports: ['websocket'],
         });
         const socket = socketRef.current;
